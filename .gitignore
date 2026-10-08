@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+*.tsbuildinfo
+next-env.d.ts
+
+# secrets and machine-specific settings - never commit
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
+
+# local reference exports with real people's data
+/reference-data

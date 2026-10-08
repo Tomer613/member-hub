@@ -1,0 +1,860 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "A-Badge.dc.html": {
+      "h": 844,
+      "title": "א · כנס · תג פתוח",
+      "w": 390,
+      "x": 470,
+      "y": 5040
+    },
+    "A-Mobile.dc.html": {
+      "h": 844,
+      "title": "סבב ראשון · א · מסך חבר",
+      "w": 390,
+      "x": 1520,
+      "y": 8340
+    },
+    "A-Wallet.dc.html": {
+      "h": 844,
+      "title": "א · כנס · ארנק",
+      "w": 390,
+      "x": 0,
+      "y": 5040
+    },
+    "B-Badge.dc.html": {
+      "h": 844,
+      "title": "ב · VIP · תג פתוח",
+      "w": 390,
+      "x": 470,
+      "y": 6140
+    },
+    "B-Desktop.dc.html": {
+      "h": 900,
+      "title": "סבב ראשון · ב · מסך ניהול",
+      "w": 1440,
+      "x": 0,
+      "y": 9440
+    },
+    "B-Mobile.dc.html": {
+      "h": 844,
+      "title": "סבב ראשון · ב · מסך חבר",
+      "w": 390,
+      "x": 1520,
+      "y": 9440
+    },
+    "B-Wallet.dc.html": {
+      "h": 844,
+      "title": "ב · VIP · ארנק",
+      "w": 390,
+      "x": 0,
+      "y": 6140
+    },
+    "C-Badge.dc.html": {
+      "h": 844,
+      "title": "ג · פסטיבל · תג פתוח",
+      "w": 390,
+      "x": 470,
+      "y": 7240
+    },
+    "C-Desktop.dc.html": {
+      "h": 900,
+      "title": "סבב ראשון · ג · מסך ניהול",
+      "w": 1440,
+      "x": 0,
+      "y": 10540
+    },
+    "C-Mobile.dc.html": {
+      "h": 844,
+      "title": "סבב ראשון · ג · מסך חבר",
+      "w": 390,
+      "x": 1520,
+      "y": 10540
+    },
+    "C-Wallet.dc.html": {
+      "h": 844,
+      "title": "ג · פסטיבל · ארנק",
+      "w": 390,
+      "x": 0,
+      "y": 7240
+    },
+    "D-Access.dc.html": {
+      "h": 844,
+      "title": "ד · הגדרות חבר · נגישות",
+      "w": 390,
+      "x": 3610,
+      "y": 340
+    },
+    "D-AdmAccount.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · חשבון והסכם",
+      "w": 1440,
+      "x": 30400,
+      "y": 3720
+    },
+    "D-AdmActivities.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · פעילויות ואירועים",
+      "w": 1440,
+      "x": 27360,
+      "y": 3720
+    },
+    "D-AdmAppearance.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · מראה וצבע",
+      "w": 1440,
+      "x": 28880,
+      "y": 3720
+    },
+    "D-AdmCharge.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · יצירת חיוב",
+      "w": 1440,
+      "x": 9120,
+      "y": 3720
+    },
+    "D-AdmInquiries.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · פניות",
+      "w": 1440,
+      "x": 25840,
+      "y": 3720
+    },
+    "D-AdmKupa.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · קופה",
+      "w": 1440,
+      "x": 7600,
+      "y": 3720
+    },
+    "D-AdmLabels.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · תוויות",
+      "w": 1440,
+      "x": 10640,
+      "y": 3720
+    },
+    "D-AdmMember.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · תיק חבר",
+      "w": 1440,
+      "x": 15200,
+      "y": 3720
+    },
+    "D-AdmMessage.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · הודעה לחברים",
+      "w": 1440,
+      "x": 16720,
+      "y": 3720
+    },
+    "D-AdmModules.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · סוג ארגון ומודולים",
+      "w": 1440,
+      "x": 22800,
+      "y": 3720
+    },
+    "D-AdmOrgSettings.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · הגדרות · נראות והזמנה",
+      "w": 1440,
+      "x": 3040,
+      "y": 3720
+    },
+    "D-AdmOverview.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · סקירה",
+      "w": 1440,
+      "x": 24320,
+      "y": 3720
+    },
+    "D-AdmPublicPage.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · עמוד ציבורי",
+      "w": 1440,
+      "x": 19760,
+      "y": 3720
+    },
+    "D-AdmReports.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · דוחות",
+      "w": 1440,
+      "x": 18240,
+      "y": 3720
+    },
+    "D-AdmRequests.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · בקשות הצטרפות",
+      "w": 1440,
+      "x": 13680,
+      "y": 3720
+    },
+    "D-AdmRoles.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · צוות והרשאות",
+      "w": 1440,
+      "x": 12160,
+      "y": 3720
+    },
+    "D-AdmTypes.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · ליבה וחבילות",
+      "w": 1440,
+      "x": 21280,
+      "y": 3720
+    },
+    "D-AdmWizard3.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · הקמה · אופן הגבייה",
+      "w": 1440,
+      "x": 4560,
+      "y": 3720
+    },
+    "D-AdmWizard4.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול · הקמה · חשבון לקבלת כסף",
+      "w": 1440,
+      "x": 6080,
+      "y": 3720
+    },
+    "D-Admin.dc.html": {
+      "h": 900,
+      "title": "ד · מסך ניהול · חברים",
+      "w": 1440,
+      "x": 0,
+      "y": 3720
+    },
+    "D-AutoPay.dc.html": {
+      "h": 844,
+      "title": "ד · חיוב אוטומטי",
+      "w": 390,
+      "x": 17560,
+      "y": 340
+    },
+    "D-AutoPayList.dc.html": {
+      "h": 1040,
+      "title": "ד · חיובים אוטומטיים (ניהול)",
+      "w": 390,
+      "x": 18030,
+      "y": 340
+    },
+    "D-Badge.dc.html": {
+      "h": 844,
+      "title": "ד · כנס+פסטיבל · תג פתוח",
+      "w": 390,
+      "x": 470,
+      "y": 340
+    },
+    "D-BadgeGym.dc.html": {
+      "h": 844,
+      "title": "ד · כרטיס חברות · חדר כושר",
+      "w": 390,
+      "x": 1410,
+      "y": 340
+    },
+    "D-CancelMember.dc.html": {
+      "h": 844,
+      "title": "ד · ביטול חברות",
+      "w": 390,
+      "x": 19910,
+      "y": 340
+    },
+    "D-ChangePhone.dc.html": {
+      "h": 844,
+      "title": "ד · החלפת טלפון · 1",
+      "w": 390,
+      "x": 22260,
+      "y": 340
+    },
+    "D-ChangePhone2.dc.html": {
+      "h": 844,
+      "title": "ד · החלפת טלפון · 2",
+      "w": 390,
+      "x": 22730,
+      "y": 340
+    },
+    "D-Components.dc.html": {
+      "h": 1020,
+      "title": "ד · ספריית רכיבים",
+      "w": 1180,
+      "x": 2350,
+      "y": 340
+    },
+    "D-DataExport.dc.html": {
+      "h": 844,
+      "title": "ד · הורדת נתונים",
+      "w": 390,
+      "x": 23670,
+      "y": 340
+    },
+    "D-DeleteAccount.dc.html": {
+      "h": 900,
+      "title": "ד · מחיקת חשבון",
+      "w": 390,
+      "x": 24140,
+      "y": 340
+    },
+    "D-Join.dc.html": {
+      "h": 844,
+      "title": "ד · כנס+פסטיבל · הצטרפות",
+      "w": 390,
+      "x": 940,
+      "y": 340
+    },
+    "D-JoinRequest.dc.html": {
+      "h": 844,
+      "title": "ד · בקשת הצטרפות",
+      "w": 390,
+      "x": 12860,
+      "y": 340
+    },
+    "D-JoinSent.dc.html": {
+      "h": 844,
+      "title": "ד · בקשה נשלחה",
+      "w": 390,
+      "x": 13330,
+      "y": 340
+    },
+    "D-Labels.dc.html": {
+      "h": 1000,
+      "title": "ד · תוויות · אפשרויות",
+      "w": 1180,
+      "x": 11600,
+      "y": 340
+    },
+    "D-LoginMethods.dc.html": {
+      "h": 844,
+      "title": "ד · אמצעי התחברות",
+      "w": 390,
+      "x": 21790,
+      "y": 340
+    },
+    "D-LostPhone.dc.html": {
+      "h": 844,
+      "title": "ד · אין גישה לטלפון",
+      "w": 390,
+      "x": 23200,
+      "y": 340
+    },
+    "D-MemberFinance.dc.html": {
+      "h": 844,
+      "title": "ד · כספים בארגון",
+      "w": 390,
+      "x": 20380,
+      "y": 340
+    },
+    "D-ModGymAccess.dc.html": {
+      "h": 900,
+      "title": "ד · מודול חדר כושר · כניסות ובקרת כניסה",
+      "w": 1440,
+      "x": 41040,
+      "y": 3720
+    },
+    "D-ModGymClasses.dc.html": {
+      "h": 900,
+      "title": "ד · מודול חדר כושר · שיעורים והזמנות",
+      "w": 1440,
+      "x": 42560,
+      "y": 3720
+    },
+    "D-ModGymFreeze.dc.html": {
+      "h": 900,
+      "title": "ד · מודול חדר כושר · הקפאות מנוי",
+      "w": 1440,
+      "x": 44080,
+      "y": 3720
+    },
+    "D-ModHoaExpenses.dc.html": {
+      "h": 900,
+      "title": "ד · מודול ועד בית · הוצאות ותקציב",
+      "w": 1440,
+      "x": 36480,
+      "y": 3720
+    },
+    "D-ModHoaIssues.dc.html": {
+      "h": 900,
+      "title": "ד · מודול ועד בית · תקלות ותחזוקה",
+      "w": 1440,
+      "x": 38000,
+      "y": 3720
+    },
+    "D-ModHoaMeetings.dc.html": {
+      "h": 900,
+      "title": "ד · מודול ועד בית · אסיפות והצבעות",
+      "w": 1440,
+      "x": 39520,
+      "y": 3720
+    },
+    "D-ModSynDonations.dc.html": {
+      "h": 900,
+      "title": "ד · מודול בית כנסת · תרומות ונדרים",
+      "w": 1440,
+      "x": 33440,
+      "y": 3720
+    },
+    "D-ModSynSchedule.dc.html": {
+      "h": 900,
+      "title": "ד · מודול בית כנסת · תפילות ולוח זמנים",
+      "w": 1440,
+      "x": 31920,
+      "y": 3720
+    },
+    "D-ModSynYahrzeit.dc.html": {
+      "h": 900,
+      "title": "ד · מודול בית כנסת · יארצייט",
+      "w": 1440,
+      "x": 34960,
+      "y": 3720
+    },
+    "D-MyMembership.dc.html": {
+      "h": 900,
+      "title": "ד · המנוי שלי",
+      "w": 390,
+      "x": 20850,
+      "y": 340
+    },
+    "D-MySettings.dc.html": {
+      "h": 3040,
+      "title": "ד · ההגדרות שלי (מסך אחד נגלל)",
+      "w": 390,
+      "x": 4080,
+      "y": 340
+    },
+    "D-NotifOrg.dc.html": {
+      "h": 900,
+      "title": "ד · הודעות מארגון",
+      "w": 390,
+      "x": 21320,
+      "y": 340
+    },
+    "D-Notifications.dc.html": {
+      "h": 844,
+      "title": "ד · הודעות",
+      "w": 390,
+      "x": 4550,
+      "y": 340
+    },
+    "D-NotificationsDone.dc.html": {
+      "h": 844,
+      "title": "ד · הודעות · הושלמו",
+      "w": 390,
+      "x": 5020,
+      "y": 340
+    },
+    "D-OrgPage.dc.html": {
+      "h": 1180,
+      "title": "ד · עמוד ארגון ציבורי",
+      "w": 390,
+      "x": 8780,
+      "y": 340
+    },
+    "D-PayAddCard.dc.html": {
+      "h": 844,
+      "title": "ד · הוספת כרטיס",
+      "w": 390,
+      "x": 15210,
+      "y": 340
+    },
+    "D-PayCharge.dc.html": {
+      "h": 844,
+      "title": "ד · תשלום חיוב",
+      "w": 390,
+      "x": 15680,
+      "y": 340
+    },
+    "D-PayFailed.dc.html": {
+      "h": 844,
+      "title": "ד · תשלום נכשל",
+      "w": 390,
+      "x": 16620,
+      "y": 340
+    },
+    "D-PayHistory.dc.html": {
+      "h": 1000,
+      "title": "ד · היסטוריית תשלומים וקבלות",
+      "w": 390,
+      "x": 17090,
+      "y": 340
+    },
+    "D-PayManual.dc.html": {
+      "h": 844,
+      "title": "ד · דיווח על תשלום",
+      "w": 390,
+      "x": 18500,
+      "y": 340
+    },
+    "D-PayManualSent.dc.html": {
+      "h": 844,
+      "title": "ד · דיווח נשלח",
+      "w": 390,
+      "x": 18970,
+      "y": 340
+    },
+    "D-PayMethods.dc.html": {
+      "h": 1010,
+      "title": "ד · אמצעי תשלום",
+      "w": 390,
+      "x": 14270,
+      "y": 340
+    },
+    "D-PayOrgSheet.dc.html": {
+      "h": 844,
+      "title": "ד · אמצעי תשלום · בחירה לארגון",
+      "w": 390,
+      "x": 14740,
+      "y": 340
+    },
+    "D-PaySuccess.dc.html": {
+      "h": 844,
+      "title": "ד · תשלום הצליח",
+      "w": 390,
+      "x": 16150,
+      "y": 340
+    },
+    "D-PlanChange.dc.html": {
+      "h": 844,
+      "title": "ד · שינוי מסלול",
+      "w": 390,
+      "x": 19440,
+      "y": 340
+    },
+    "D-Profile.dc.html": {
+      "h": 844,
+      "title": "ד · פרטים ראשונים",
+      "w": 390,
+      "x": 11130,
+      "y": 340
+    },
+    "D-Search.dc.html": {
+      "h": 844,
+      "title": "ד · חיפוש",
+      "w": 390,
+      "x": 7370,
+      "y": 340
+    },
+    "D-SearchDiscover.dc.html": {
+      "h": 844,
+      "title": "ד · חיפוש · גילוי ארגונים",
+      "w": 390,
+      "x": 8310,
+      "y": 340
+    },
+    "D-SearchEmpty.dc.html": {
+      "h": 844,
+      "title": "ד · חיפוש · אין תוצאות",
+      "w": 390,
+      "x": 9250,
+      "y": 340
+    },
+    "D-SearchResults.dc.html": {
+      "h": 1000,
+      "title": "ד · חיפוש · תוצאות",
+      "w": 390,
+      "x": 7840,
+      "y": 340
+    },
+    "D-Section.dc.html": {
+      "h": 844,
+      "title": "ד · מסך משנה · תפילות ואירועים",
+      "w": 390,
+      "x": 1880,
+      "y": 340
+    },
+    "D-Settings.dc.html": {
+      "h": 900,
+      "title": "ד · הגדרות הארגון",
+      "w": 1440,
+      "x": 1520,
+      "y": 3720
+    },
+    "D-Verify.dc.html": {
+      "h": 844,
+      "title": "ד · אימות קוד",
+      "w": 390,
+      "x": 10190,
+      "y": 340
+    },
+    "D-VerifyError.dc.html": {
+      "h": 844,
+      "title": "ד · אימות קוד · שגיאה",
+      "w": 390,
+      "x": 10660,
+      "y": 340
+    },
+    "D-Wallet.dc.html": {
+      "h": 844,
+      "title": "ד · כנס+פסטיבל · ארנק",
+      "w": 390,
+      "x": 0,
+      "y": 340
+    },
+    "D-WalletArchive.dc.html": {
+      "h": 1100,
+      "title": "ד · ארנק · ארכיון",
+      "w": 390,
+      "x": 6430,
+      "y": 340
+    },
+    "D-WalletDelete.dc.html": {
+      "h": 844,
+      "title": "ד · ארנק · אישור מחיקה",
+      "w": 390,
+      "x": 6900,
+      "y": 340
+    },
+    "D-WalletEdit.dc.html": {
+      "h": 1000,
+      "title": "ד · ארנק · עריכת סדר",
+      "w": 390,
+      "x": 5490,
+      "y": 340
+    },
+    "D-WalletEmpty.dc.html": {
+      "h": 844,
+      "title": "ד · ארנק ריק",
+      "w": 390,
+      "x": 13800,
+      "y": 340
+    },
+    "D-WalletMove.dc.html": {
+      "h": 844,
+      "title": "ד · ארנק · העברת כרטיס",
+      "w": 390,
+      "x": 5960,
+      "y": 340
+    },
+    "D-Welcome.dc.html": {
+      "h": 844,
+      "title": "ד · כניסה והרשמה",
+      "w": 390,
+      "x": 9720,
+      "y": 340
+    },
+    "Main.dc.html": {
+      "h": 900,
+      "title": "סבב ראשון · א · מסך ניהול",
+      "w": 1440,
+      "x": 0,
+      "y": 8340
+    },
+    "D-ModClubTiers.dc.html": {
+      "h": 900,
+      "title": "ד · מודול מועדון · רמות חברות",
+      "w": 1440,
+      "x": 45600,
+      "y": 3720
+    },
+    "D-ModClubEvents.dc.html": {
+      "h": 900,
+      "title": "ד · מודול מועדון · אירועים והרשמה",
+      "w": 1440,
+      "x": 47120,
+      "y": 3720
+    },
+    "D-ModClubPerks.dc.html": {
+      "h": 900,
+      "title": "ד · מודול מועדון · הטבות",
+      "w": 1440,
+      "x": 48640,
+      "y": 3720
+    },
+    "D-MAdmHome.dc.html": {
+      "h": 844,
+      "title": "ד · ניהול במובייל · סקירה",
+      "w": 390,
+      "x": 24610,
+      "y": 340
+    },
+    "D-MAdmRequests.dc.html": {
+      "h": 844,
+      "title": "ד · ניהול במובייל · בקשות הצטרפות",
+      "w": 390,
+      "x": 25080,
+      "y": 340
+    },
+    "D-MAdmMember.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול במובייל · חבר",
+      "w": 390,
+      "x": 25550,
+      "y": 340
+    },
+    "D-MAdmPayRecord.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול במובייל · רישום תשלום",
+      "w": 390,
+      "x": 26020,
+      "y": 340
+    },
+    "D-MAdmMessage.dc.html": {
+      "h": 900,
+      "title": "ד · ניהול במובייל · הודעה מהירה",
+      "w": 390,
+      "x": 26490,
+      "y": 340
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-07T14:48:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "title-a": {
+      "kind": "title1",
+      "maxW": 860,
+      "text": "סבב קודם · כיוון א · כנס",
+      "w": 240,
+      "x": 0,
+      "y": 4780
+    },
+    "title-b": {
+      "kind": "title1",
+      "maxW": 860,
+      "text": "סבב קודם · כיוון ב · VIP",
+      "w": 240,
+      "x": 0,
+      "y": 5880
+    },
+    "title-c": {
+      "kind": "title1",
+      "maxW": 860,
+      "text": "סבב קודם · כיוון ג · פסטיבל",
+      "w": 240,
+      "x": 0,
+      "y": 6980
+    },
+    "title-d": {
+      "kind": "title1",
+      "maxW": 26900,
+      "text": "כיוון ד · כנס + פסטיבל (הנבחר)",
+      "w": 240,
+      "x": 0,
+      "y": 80
+    },
+    "title-d-admin": {
+      "kind": "title1",
+      "maxW": 50000,
+      "text": "כיוון ד · מסכי ניהול (דסקטופ 1440x900) · בשורה מתחת למסכי המובייל",
+      "w": 240,
+      "x": 0,
+      "y": 3620
+    },
+    "title-old": {
+      "kind": "title1",
+      "maxW": 1910,
+      "text": "סבב ראשון (הפניה בלבד) · מסכי ניהול וחבר ללא ארנק",
+      "w": 240,
+      "x": 0,
+      "y": 8080
+    }
+  },
+  "order": [
+    "D-Wallet.dc.html",
+    "D-Badge.dc.html",
+    "D-Join.dc.html",
+    "D-BadgeGym.dc.html",
+    "D-Section.dc.html",
+    "D-Admin.dc.html",
+    "D-Components.dc.html",
+    "D-Settings.dc.html",
+    "D-Access.dc.html",
+    "D-MySettings.dc.html",
+    "D-WalletMove.dc.html",
+    "D-WalletEdit.dc.html",
+    "D-NotificationsDone.dc.html",
+    "A-Wallet.dc.html",
+    "A-Badge.dc.html",
+    "B-Wallet.dc.html",
+    "B-Badge.dc.html",
+    "C-Wallet.dc.html",
+    "C-Badge.dc.html",
+    "A-Mobile.dc.html",
+    "B-Desktop.dc.html",
+    "B-Mobile.dc.html",
+    "C-Desktop.dc.html",
+    "C-Mobile.dc.html",
+    "Main.dc.html",
+    "D-Notifications.dc.html",
+    "D-WalletArchive.dc.html",
+    "D-WalletDelete.dc.html",
+    "D-Search.dc.html",
+    "D-SearchResults.dc.html",
+    "D-SearchDiscover.dc.html",
+    "D-OrgPage.dc.html",
+    "D-SearchEmpty.dc.html",
+    "D-Welcome.dc.html",
+    "D-Verify.dc.html",
+    "D-VerifyError.dc.html",
+    "D-Profile.dc.html",
+    "D-Labels.dc.html",
+    "D-JoinRequest.dc.html",
+    "D-JoinSent.dc.html",
+    "D-WalletEmpty.dc.html",
+    "D-PayMethods.dc.html",
+    "D-PayOrgSheet.dc.html",
+    "D-PayAddCard.dc.html",
+    "D-PayCharge.dc.html",
+    "D-PaySuccess.dc.html",
+    "D-PayFailed.dc.html",
+    "D-PayHistory.dc.html",
+    "D-AutoPay.dc.html",
+    "D-AutoPayList.dc.html",
+    "D-PayManual.dc.html",
+    "D-PayManualSent.dc.html",
+    "D-PlanChange.dc.html",
+    "D-CancelMember.dc.html",
+    "D-MemberFinance.dc.html",
+    "D-MyMembership.dc.html",
+    "D-NotifOrg.dc.html",
+    "D-LoginMethods.dc.html",
+    "D-ChangePhone.dc.html",
+    "D-ChangePhone2.dc.html",
+    "D-LostPhone.dc.html",
+    "D-DataExport.dc.html",
+    "D-DeleteAccount.dc.html",
+    "D-AdmOrgSettings.dc.html",
+    "D-AdmWizard3.dc.html",
+    "D-AdmWizard4.dc.html",
+    "D-AdmKupa.dc.html",
+    "D-AdmCharge.dc.html",
+    "D-AdmLabels.dc.html",
+    "D-AdmRoles.dc.html",
+    "D-AdmRequests.dc.html",
+    "D-AdmMember.dc.html",
+    "D-AdmMessage.dc.html",
+    "D-AdmReports.dc.html",
+    "D-AdmPublicPage.dc.html",
+    "D-AdmTypes.dc.html",
+    "D-AdmModules.dc.html",
+    "D-AdmOverview.dc.html",
+    "D-AdmInquiries.dc.html",
+    "D-AdmActivities.dc.html",
+    "D-AdmAppearance.dc.html",
+    "D-AdmAccount.dc.html",
+    "D-ModSynSchedule.dc.html",
+    "D-ModSynDonations.dc.html",
+    "D-ModSynYahrzeit.dc.html",
+    "D-ModHoaExpenses.dc.html",
+    "D-ModHoaIssues.dc.html",
+    "D-ModHoaMeetings.dc.html",
+    "D-ModGymAccess.dc.html",
+    "D-ModGymClasses.dc.html",
+    "D-ModGymFreeze.dc.html",
+    "D-ModClubTiers.dc.html",
+    "D-ModClubEvents.dc.html",
+    "D-ModClubPerks.dc.html",
+    "D-MAdmHome.dc.html",
+    "D-MAdmRequests.dc.html",
+    "D-MAdmMember.dc.html",
+    "D-MAdmPayRecord.dc.html",
+    "D-MAdmMessage.dc.html"
+  ],
+  "pages": [],
+  "title": "MemberHub – ארנק חברויות"
+}

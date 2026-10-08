@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>ד · תפילות ואירועים</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+</style>
+</helmet>
+<div dir="rtl" style="--accent: {{accent}}; --org: {{org}}; --on: {{onOrg}}; width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: {{accent}}; color: #1E1633; font-family: 'Assistant', system-ui, sans-serif; font-size: 16px; font-variant-numeric: tabular-nums; overflow: hidden;">
+
+<div style="flex: 1; min-height: 0; box-sizing: border-box; padding: 18px 16px 0; display: flex; flex-direction: column; gap: 14px;">
+
+<header style="display: flex; align-items: center; gap: 12px;">
+<button type="button" aria-label="חזרה לכרטיס" style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; border: 2px solid #1E1633; background: #FFFFFF; color: #1E1633; box-shadow: 0 3px 0 #1E1633; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+</button>
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<h1 style="margin: 0; font-family: 'Secular One', sans-serif; font-size: 30px; line-height: 1.05; font-weight: 400;">תפילות ואירועים</h1>
+<div style="display: flex; align-items: center; gap: 6px;">
+<span style="width: 20px; height: 20px; box-sizing: border-box; border-radius: 50%; background: var(--org); color: var(--on); border: 2px solid #1E1633; display: flex; align-items: center; justify-content: center; font-family: 'Secular One', sans-serif; font-size: 11px;">א</span>
+<span style="font-size: 13px; font-weight: 700;">בית הכנסת אור חדש</span>
+</div>
+</div>
+</header>
+
+<section style="position: relative; overflow: hidden; background: var(--org); color: var(--on); border: 2.5px solid #1E1633; border-radius: 24px; box-shadow: 0 4px 0 #1E1633; padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 4px;">
+<span style="position: absolute; top: -60px; left: -40px; width: 170px; height: 170px; border-radius: 50%; background: rgba(255,255,255,0.15);"></span>
+<span style="position: relative; font-size: 13px; font-weight: 800;">השבת הקרובה</span>
+<span style="position: relative; font-family: 'Secular One', sans-serif; font-size: 28px; line-height: 1.1;">שבת פרשת בראשית</span>
+<div style="position: relative; margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+<span style="padding: 3px 12px; border-radius: 999px; background: #FFD84A; color: #1E1633; border: 2px solid #1E1633; font-size: 14px; font-weight: 800;">ההפטרה פנויה</span>
+<button type="button" style="height: 48px; padding: 0 22px; border-radius: 24px; border: 2.5px solid #1E1633; background: #FFFFFF; color: #1E1633; font: inherit; font-size: 16px; font-weight: 800; box-shadow: 0 3px 0 #1E1633; cursor: pointer;">שריון הפטרה</button>
+</div>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+<sc-for list="{{stats}}" as="s" hint-placeholder-count="3">
+<div style="box-sizing: border-box; padding: 10px 8px; background: #FFFFFF; border: 2px solid #1E1633; border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 0;">
+<span style="font-family: 'Secular One', sans-serif; font-size: 28px; line-height: 1.1;">{{s.value}}</span>
+<span style="font-size: 12px; font-weight: 700; color: #5A4E70;">{{s.label}}</span>
+</div>
+</sc-for>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 8px;">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="4">
+<a href="#" style="min-height: 64px; box-sizing: border-box; padding: 8px 12px; background: #FFFFFF; border: 2px solid #1E1633; border-radius: 18px; box-shadow: 0 3px 0 #1E1633; display: flex; align-items: center; gap: 12px;">
+<span style="width: 42px; height: 42px; flex-shrink: 0; box-sizing: border-box; border-radius: 13px; background: {{r.tint}}; border: 2px solid #1E1633; display: flex; align-items: center; justify-content: center;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E1633" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{r.icon}}"></path></svg>
+</span>
+<div style="flex: 1; display: flex; flex-direction: column;">
+<span style="font-size: 17px; font-weight: 800; line-height: 1.15;">{{r.label}}</span>
+<span style="font-size: 13px; font-weight: 600; color: #5A4E70;">{{r.sub}}</span>
+</div>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E1633" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+</a>
+</sc-for>
+</section>
+</div>
+<nav aria-label="ניווט ראשי" style="flex-shrink: 0; height: 64px; box-sizing: border-box; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; background: #FFFFFF; border-top: 2px solid #1E1633; padding: 7px 14px 7px;">
+<a href="#" aria-label="הודעות" style="display: flex; align-items: center; justify-content: center; position: relative; min-height: 48px; box-sizing: border-box; border-radius: 24px; border: 2px solid transparent; color: #1E1633;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+<span style="position: absolute; top: 2px; inset-inline-end: calc(50% - 26px); min-width: 18px; height: 18px; box-sizing: border-box; padding: 0 4px; border-radius: 9px; background: #FF5A36; color: #1E1633; border: 2px solid #1E1633; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center;">2</span>
+</a>
+<a href="#" aria-label="ארנק" aria-current="page" style="display: flex; align-items: center; justify-content: center; min-height: 48px; box-sizing: border-box; border-radius: 24px; border: 2px solid #1E1633; background: {{accent}}; color: #1E1633;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h18v12H3zM3 7l2-3h14l2 3M16 13h2"></path></svg>
+<span style="font-weight: 800; font-size: 14px; margin-inline-start: 6px;">ארנק</span></a>
+<a href="#" aria-label="חיפוש" style="display: flex; align-items: center; justify-content: center; min-height: 48px; box-sizing: border-box; border-radius: 24px; border: 2px solid transparent; color: #1E1633;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3"></path></svg>
+</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"org":{"editor":"color","default":"#5B3DF5","options":["#5B3DF5","#FF5A36","#00B67A","#FF5C9E"]},"accent":{"editor":"color","default":"#FFD84A","options":["#FFD84A","#5EE0C0","#FF9B6B","#B9A4FF"]},"$preview":{"width":390,"height":844}}'>
+function pickOn(hex) {
+  const f = (h) => { const n = parseInt(h.slice(1), 16); return [16, 8, 0].map(s => { const c = ((n >> s) & 255) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }); };
+  const L = (h) => { const [r, g, b] = f(h); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const cr = (a, b) => (Math.max(L(a), L(b)) + 0.05) / (Math.min(L(a), L(b)) + 0.05);
+  return cr('#1E1633', hex) >= cr('#FFFFFF', hex) ? '#1E1633' : '#FFFFFF';
+}
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#FFD84A';
+    const org = this.props.org ?? '#5B3DF5';
+    const n = parseInt(org.slice(1), 16);
+    const lum = 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+    const stats = [
+      { value: '4', label: 'עליות השנה' },
+      { value: '2', label: 'הפטרות' },
+      { value: '1', label: 'אזכרה קרובה' }
+    ];
+    const rows = [
+      { label: 'בקשת עלייה לתורה', sub: 'הבקשה האחרונה אושרה', icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z', tint: '#E3DDFF' },
+      { label: 'האזכרות שלי', sub: 'הקרובה בעוד 12 יום', icon: 'M12 2c3 4 6 6 6 10a6 6 0 0 1-12 0c0-4 3-6 6-10z', tint: '#FFDCD3' },
+      { label: 'אירועי משפחה', sub: 'הוספת שמחה והזמנת הקהילה', icon: 'M12 21s-7-4.4-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.6-9 9-9 9z', tint: '#FFD9E8' },
+      { label: 'שיעורים ואירועים', sub: '5 אירועים בשבועות הקרובים', icon: 'M3 5h18v16H3zM3 10h18M8 3v4M16 3v4', tint: '#CFF0FC' }
+    ];
+    return { accent, org, onOrg: pickOn(org) /*contrast-based*/, stats, rows };
+  }
+}
+</script>
+</body>
+</html>

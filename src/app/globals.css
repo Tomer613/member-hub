@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+body {
+  font-family: var(--font-body), var(--mh-font-body);
+  background: var(--mh-bg);
+  color: var(--mh-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display), var(--mh-font-display);
+  font-weight: 400;
+}

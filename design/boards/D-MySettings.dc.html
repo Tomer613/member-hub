@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>ד · ההגדרות שלי</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 3040px; box-sizing: border-box; display: flex; flex-direction: column; background: {{accent}}; color: #1E1633; font-family: 'Assistant', system-ui, sans-serif; font-size: 16px; overflow: hidden;">
+
+<header style="flex-shrink: 0; box-sizing: border-box; padding: 18px 16px 12px; display: flex; align-items: center; gap: 12px;">
+<button type="button" aria-label="חזרה לארנק" style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; border: 2px solid #1E1633; background: #FFFFFF; color: #1E1633; box-shadow: 0 3px 0 #1E1633; display: flex; align-items: center; justify-content: center;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+</button>
+<h1 style="margin: 0; font-family: 'Secular One', sans-serif; font-size: 30px; line-height: 1.05; font-weight: 400;">ההגדרות שלי</h1>
+</header>
+
+<div style="flex: 1; min-height: 0; box-sizing: border-box; padding: 0 16px; display: flex; flex-direction: column; gap: 10px; overflow: hidden;">
+<sc-for list="{{sections}}" as="s" hint-placeholder-count="9">
+<section aria-label="{{s.title}}" style="display: flex; flex-direction: column; gap: 10px;">
+
+<div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+<span style="height: 40px; box-sizing: border-box; padding: 0 16px 0 14px; border-radius: 20px; border: 2.5px solid #1E1633; background: {{s.color}}; box-shadow: 0 3px 0 #1E1633; display: flex; align-items: center; gap: 8px; transform: rotate(-1deg);">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E1633" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{s.icon}}"></path></svg>
+<h2 style="margin: 0; font-family: 'Secular One', sans-serif; font-size: 20px; font-weight: 400; line-height: 1;">{{s.title}}</h2>
+</span>
+<span aria-hidden="true" style="flex: 1; height: 0; border-top: 2.5px dashed #1E1633; opacity: .55;"></span>
+</div>
+
+<div style="background: #FFFFFF; border: 2px solid #1E1633; border-radius: 18px; box-shadow: 0 3px 0 #1E1633; overflow: hidden; display: flex; flex-direction: column;">
+<sc-for list="{{s.rows}}" as="r" hint-placeholder-count="3">
+<div style="min-height: 56px; box-sizing: border-box; padding: 8px 14px; display: flex; align-items: center; gap: 12px; border-bottom: {{r.line}}; background: {{r.bg}};">
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px;">
+<span style="font-weight: 800; font-size: 16px; line-height: 1.2; color: {{r.fg}};">{{r.label}}</span>
+<span style="display: {{r.dSub}}; font-size: 13px; font-weight: 600; color: #5A4E70; line-height: 1.3;">{{r.sub}}</span>
+<div style="display: {{r.dChips}}; flex-wrap: wrap; gap: 6px;">
+<sc-for list="{{r.chips}}" as="c" hint-placeholder-count="3">
+<span style="height: 34px; box-sizing: border-box; padding: 0 14px; border-radius: 17px; border: 2px solid #1E1633; background: {{c.bg}}; color: {{c.fg}}; font-size: 14px; font-weight: 800; display: flex; align-items: center;">{{c.t}}</span>
+</sc-for>
+</div>
+</div>
+<span style="display: {{r.dValue}}; font-size: 14px; font-weight: 700; color: #5A4E70; white-space: nowrap;">{{r.value}}</span>
+<span role="switch" aria-checked="{{r.on}}" style="display: {{r.dToggle}}; width: 52px; height: 30px; flex-shrink: 0; box-sizing: border-box; border-radius: 15px; border: 2px solid #1E1633; background: {{r.tg}}; position: relative;"><span style="position: absolute; top: 2px; {{r.pos}} width: 22px; height: 22px; border-radius: 50%; background: #FFFFFF; border: 2px solid #1E1633; box-sizing: border-box;"></span></span>
+<svg style="display: {{r.dArrow}}; flex-shrink: 0;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E1633" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+<p style="margin: 6px 0 12px; text-align: center; font-size: 13px; font-weight: 700;">MemberHub · גרסה 0.1</p>
+</div>
+
+<nav aria-label="ניווט ראשי" style="flex-shrink: 0; height: 64px; box-sizing: border-box; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; background: #FFFFFF; border-top: 2px solid #1E1633; padding: 7px 14px 7px;">
+<a href="#" aria-label="הודעות" style="display: flex; align-items: center; justify-content: center; position: relative; min-height: 48px; box-sizing: border-box; border-radius: 24px; border: 2px solid transparent; color: #1E1633;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+</a>
+<a href="#" aria-label="ארנק" aria-current="page" style="display: flex; align-items: center; justify-content: center; min-height: 48px; box-sizing: border-box; border-radius: 24px; border: 2px solid #1E1633; background: {{accent}}; color: #1E1633;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h18v12H3zM3 7l2-3h14l2 3M16 13h2"></path></svg>
+<span style="font-weight: 800; font-size: 14px; margin-inline-start: 6px;">ארנק</span></a>
+<a href="#" aria-label="חיפוש" style="display: flex; align-items: center; justify-content: center; min-height: 48px; box-sizing: border-box; border-radius: 24px; border: 2px solid transparent; color: #1E1633;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3"></path></svg>
+</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#FFD84A","options":["#FFD84A","#5EE0C0","#FF9B6B","#B9A4FF"]},"$preview":{"width":390,"height":3040}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#FFD84A';
+    const INK = '#1E1633';
+    // row kinds: v = value + arrow, t = toggle, c = chips, n = plain
+    const R = (label, o = {}) => ({ label, sub: o.sub || '', value: o.v || '', on: !!o.on, chips: o.chips || [], kind: o.k || 'v', danger: !!o.danger });
+    const chips = (arr, i) => arr.map((t, j) => ({ t, bg: j === i ? INK : '#FFFFFF', fg: j === i ? '#FFFFFF' : INK }));
+    const S = (title, color, icon, rows) => ({ title, color, icon, rows });
+    const raw = [
+      S('הפרופיל שלי', '#FFD84A', 'M16 11a4 4 0 1 0-8 0M4 21a8 8 0 0 1 16 0', [
+        R('שם', { v: 'דנה כהן' }),
+        R('טלפון', { v: '050-1234567', sub: 'מאומת' }),
+        R('מייל', { v: 'dana@example.com', sub: 'מאומת' }),
+        R('מין', { k: 'c', sub: 'משמש לפנייה בלשון הנכונה. ארגון שצריך את המידע יבקש אותו בהצטרפות, ותוכלו לאשר או לסרב', chips: chips(['זכר', 'נקבה', 'מעדיף לא לשתף'], 1) })
+      ]),
+      S('החברויות שלי', '#FFD9E8', 'M3 7h18v12H3zM3 7l2-3h14l2 3', [
+        R('סידור הארנק', { sub: 'נעיצה, סדר ידני והעברה בין מקומות' }),
+        R('צבע כרטיס לכל חברות', { sub: 'ברירת המחדל היא צבע הארגון' }),
+        R('ארכיון הארנק', { v: '4', sub: 'חברויות שהסתיימו, שעזבתם או שהסתרתם' }),
+        R('הקמת ארגון חדש', { sub: 'קהילה, ועד, מועדון או אירוע. אתם תנהלו אותו' })
+      ]),
+      S('תשלומים', '#FFE9A8', 'M3 6h18v12H3zM3 10h18M7 15h4', [
+        R('אמצעי תשלום', { v: '3', sub: 'Visa ••4242 כברירת מחדל, ואפשר אמצעי שונה לכל ארגון' }),
+        R('היסטוריית תשלומים וקבלות'),
+        R('חיוב אוטומטי', { v: '2', sub: 'מנויים שמחויבים לבד, וביטול בכל עת' })
+      ]),
+      S('הודעות והתראות', '#CFF0FC', 'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0', [
+        R('תשלומים ותזכורות', { k: 't', on: true, sub: 'חיובים, תזכורות חוב וקבלות' }),
+        R('אירועים ושמחות', { k: 't', on: true, sub: 'מזל טוב, אזכרות והזמנות' }),
+        R('הודעות מהארגונים', { k: 't', on: true }),
+        R('הודעות מהאפליקציה', { k: 't', on: false, sub: 'חידושים וטיפים' }),
+        R('שעות שקט', { v: '22:00 עד 07:00' }),
+        R('הגדרה לכל ארגון בנפרד')
+      ]),
+      S('פרטיות ומידע', '#E3DDFF', 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z', [
+        R('מה כל ארגון רואה עליי', { sub: 'להסתיר או להציג כל פרט, חוץ מפרטי חובה' }),
+        R('שיתוף נתונים בין ארגונים', { v: 'כבוי' }),
+        R('הורדת הנתונים שלי'),
+        R('היסטוריית הסכמות')
+      ]),
+      S('שפה ותצוגה', '#D7F5E8', 'M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0zM3 12h18', [
+        R('שפת האפליקציה', { v: 'עברית' }),
+        R('כיוון ציר הזמן בגרפים', { k: 'c', sub: 'ברירת מחדל: משמאל לימין', chips: chips(['משמאל לימין', 'מימין לשמאל'], 0) }),
+        R('לוח שנה', { v: 'עברי ולועזי' }),
+        R('אזור זמן', { v: 'ירושלים' })
+      ]),
+      S('נגישות', '#FFDCD3', 'M12 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5 8l7 1 7-1M12 9v5l-3 7M12 14l3 7', [
+        R('גודל טקסט', { k: 'c', chips: chips(['רגיל', 'גדול', 'גדול מאוד'], 1) }),
+        R('ניגודיות גבוהה', { k: 't', on: true }),
+        R('הפחתת תנועה', { k: 't', on: false }),
+        R('כל הגדרות הנגישות', { sub: 'הדגשת מיקוד, הצהרת נגישות ופנייה לרכז' })
+      ]),
+      S('אבטחה והתחברות', '#FFD84A', 'M5 11h14v10H5zM8 11V7a4 4 0 1 1 8 0v4', [
+        R('אמצעי התחברות', { v: '2', sub: 'טלפון ומייל מאומתים' }),
+        R('מכשירים מחוברים', { v: '3' }),
+        R('התנתקות מכל המכשירים')
+      ]),
+      S('עזרה ומידע', '#CFF0FC', 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01', [
+        R('מרכז עזרה'),
+        R('פנייה לתמיכה'),
+        R('תנאי שימוש ומדיניות פרטיות'),
+        R('הצהרת נגישות')
+      ]),
+      S('אזור רגיש', '#FFDCD3', 'M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z', [
+        R('התנתקות'),
+        R('מחיקת החשבון שלי', { danger: true, sub: 'חברויות עם חוב פתוח יישארו רשומות בארגון' })
+      ])
+    ];
+    const sections = raw.map(s => ({
+      ...s,
+      rows: s.rows.map((r, i) => ({
+        ...r,
+        line: i === s.rows.length - 1 ? 'none' : '1.5px solid #EDE6D6',
+        bg: '#FFFFFF',
+        fg: r.danger ? '#C4223B' : INK,
+        dSub: r.sub && r.kind !== 'c' ? 'block' : (r.sub ? 'block' : 'none'),
+        dChips: r.kind === 'c' ? 'flex' : 'none',
+        dValue: r.kind === 'v' && r.value ? 'block' : 'none',
+        dToggle: r.kind === 't' ? 'block' : 'none',
+        dArrow: r.kind === 'v' ? 'block' : 'none',
+        tg: r.on ? '#00B67A' : '#B8AFC7',
+        pos: r.on ? 'inset-inline-end: 2px;' : 'inset-inline-start: 2px;'
+      }))
+    }));
+    return { accent, sections };
+  }
+}
+</script>
+</body>
+</html>

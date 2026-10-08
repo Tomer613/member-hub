@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>ד · ניהול</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+</style>
+</helmet>
+<div dir="rtl" style="--org: {{org}}; --on: {{onOrg}}; width: 1440px; height: 900px; box-sizing: border-box; display: flex; background: #FFD84A; color: #1E1633; font-family: 'Assistant', system-ui, sans-serif; font-size: 14px; font-variant-numeric: tabular-nums; overflow: hidden;">
+
+<aside style="width: 232px; flex-shrink: 0; box-sizing: border-box; background: var(--org); color: var(--on); border-inline-end: 2.5px solid #1E1633; padding: 16px 12px; display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden;">
+<span style="position: absolute; top: -70px; left: -60px; width: 190px; height: 190px; border-radius: 50%; background: rgba(255,255,255,0.14);"></span>
+<div style="position: relative; display: flex; align-items: center; gap: 10px;">
+<span style="width: 40px; height: 40px; border-radius: 50%; background: #FFFFFF; color: #1E1633; border: 2px solid #1E1633; display: flex; align-items: center; justify-content: center; font-family: 'Secular One', sans-serif; font-size: 20px;">א</span>
+<div style="display: flex; flex-direction: column; line-height: 1.1;">
+<span style="font-family: 'Secular One', sans-serif; font-size: 17px;">אור חדש</span>
+<span style="font-size: 12px; font-weight: 700; opacity: .85;">ניהול · גבאי ראשי</span>
+</div>
+</div>
+<nav style="position: relative; display: flex; flex-direction: column; gap: 4px;">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="14">
+<a href="#" style="height: 38px; box-sizing: border-box; padding: 0 10px; border-radius: 12px; display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 14px; background: {{n.bg}}; color: {{n.fg}}; border: {{n.bd}};">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg>
+<span style="flex: 1;">{{n.label}}</span>
+<span style="font-size: 12px; padding: 0 7px; border-radius: 999px; background: #FFD84A; color: #1E1633; display: {{n.badgeDisplay}};">{{n.badge}}</span>
+</a>
+</sc-for>
+</nav>
+<div style="position: relative; margin-top: auto; padding: 10px; border-radius: 14px; background: rgba(255,255,255,0.18); font-size: 12px; font-weight: 700;">למעבר לתצוגת חבר: "החברויות שלי"</div>
+</aside>
+
+<main style="flex: 1; min-width: 0; box-sizing: border-box; padding: 18px 24px; display: flex; flex-direction: column; gap: 14px;">
+
+<header style="display: flex; align-items: center; gap: 12px;">
+<h1 style="margin: 0; font-family: 'Secular One', sans-serif; font-size: 28px; font-weight: 400;">חברים</h1>
+<span style="padding: 2px 12px; border-radius: 999px; background: #FFD84A; border: 2px solid #1E1633; font-weight: 800;">312</span>
+<div style="flex: 1; max-width: 420px; height: 38px; box-sizing: border-box; border: 2px solid #1E1633; border-radius: 19px; background: #FFFFFF; padding: 0 14px; display: flex; align-items: center; gap: 8px; color: #5A4E70; font-weight: 600;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E1633" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+חיפוש לפי שם, טלפון, מייל, משק בית
+</div>
+<span style="flex: 1;"></span>
+<button type="button" style="height: 38px; padding: 0 16px; border-radius: 19px; border: 2px solid #1E1633; background: #FFFFFF; font: inherit; font-weight: 800; box-shadow: 0 2px 0 #1E1633; cursor: pointer;">ייצוא</button>
+<button type="button" style="height: 38px; padding: 0 16px; border-radius: 19px; border: 2px solid #1E1633; background: #FFFFFF; font: inherit; font-weight: 800; box-shadow: 0 2px 0 #1E1633; cursor: pointer;">הזמנה בצובר</button>
+<button type="button" style="height: 38px; padding: 0 18px; border-radius: 19px; border: 2px solid #1E1633; background: var(--org); color: var(--on); font: inherit; font-weight: 800; box-shadow: 0 2px 0 #1E1633; cursor: pointer;">+ הזמנת חבר</button>
+</header>
+
+<section style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px;">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div style="box-sizing: border-box; padding: 10px 14px; background: #FFFFFF; border: 2px solid #1E1633; border-radius: 16px; box-shadow: 0 2px 0 #1E1633; display: flex; align-items: center; gap: 12px;">
+<span style="width: 8px; align-self: stretch; border-radius: 4px; background: {{k.color}};"></span>
+<div style="display: flex; flex-direction: column;">
+<span style="font-family: 'Secular One', sans-serif; font-size: 26px; line-height: 1.05;">{{k.value}}</span>
+<span style="font-size: 12px; font-weight: 700; color: #5A4E70;">{{k.label}}</span>
+</div>
+</div>
+</sc-for>
+</section>
+
+<section style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="6">
+<span style="height: 30px; box-sizing: border-box; padding: 0 12px; border-radius: 15px; border: 2px solid #1E1633; background: {{f.bg}}; font-weight: 800; display: flex; align-items: center; gap: 6px;">{{f.label}}</span>
+</sc-for>
+<span style="flex: 1;"></span>
+<span style="font-weight: 700; color: #5A4E70;">3 נבחרו</span>
+<span style="height: 30px; padding: 0 12px; border-radius: 15px; border: 2px solid #1E1633; background: #FFD84A; font-weight: 800; display: flex; align-items: center;">שליחת תזכורת חוב</span>
+<span style="height: 30px; padding: 0 12px; border-radius: 15px; border: 2px solid #1E1633; background: #FFFFFF; font-weight: 800; display: flex; align-items: center;">הודעה</span>
+<span style="height: 30px; padding: 0 12px; border-radius: 15px; border: 2px solid #1E1633; background: #FFFFFF; font-weight: 800; display: flex; align-items: center;">תגית</span>
+</section>
+
+<section style="flex: 1; min-height: 0; display: flex; gap: 14px;">
+
+<div style="flex: 1; min-width: 0; background: #FFFFFF; border: 2.5px solid #1E1633; border-radius: 20px; box-shadow: 0 3px 0 #1E1633; overflow: hidden; display: flex; flex-direction: column;">
+<div style="height: 36px; flex-shrink: 0; box-sizing: border-box; padding: 0 14px; background: #1E1633; color: #FFFFFF; display: grid; grid-template-columns: 28px 2.2fr 1.1fr 1fr 1fr 1.2fr 70px; align-items: center; gap: 10px; font-size: 12px; font-weight: 800;">
+<span></span><span>שם / משק בית</span><span>סטטוס</span><span>יתרה</span><span>חבר מאז</span><span>תגיות</span><span></span>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="10">
+<div style="height: 46px; flex-shrink: 0; box-sizing: border-box; padding: 0 14px; display: grid; grid-template-columns: 28px 2.2fr 1.1fr 1fr 1fr 1.2fr 70px; align-items: center; gap: 10px; border-bottom: 1.5px solid #EDE6D6; background: {{r.bg}}; font-weight: 600;">
+<span style="width: 18px; height: 18px; box-sizing: border-box; border-radius: 5px; border: 2px solid #1E1633; background: {{r.check}};"></span>
+<div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+<span style="width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%; border: 2px solid #1E1633; background: {{r.tint}}; display: flex; align-items: center; justify-content: center; font-family: 'Secular One', sans-serif; font-size: 13px;">{{r.initial}}</span>
+<div style="display: flex; flex-direction: column; line-height: 1.15; min-width: 0;">
+<span style="font-weight: 800;">{{r.name}}</span>
+<span style="font-size: 12px; color: #5A4E70;">{{r.house}}</span>
+</div>
+</div>
+<span style="justify-self: start; padding: 1px 10px; border-radius: 999px; border: 2px solid #1E1633; background: {{r.stColor}}; font-size: 12px; font-weight: 800;">{{r.status}}</span>
+<span style="font-weight: 800; color: {{r.balColor}};">{{r.balance}}</span>
+<span style="color: #5A4E70;">{{r.since}}</span>
+<span style="font-size: 12px; font-weight: 700; color: #5A4E70;">{{r.tags}}</span>
+<span style="justify-self: end; color: #5A4E70; font-weight: 800; letter-spacing: 2px;">···</span>
+</div>
+</sc-for>
+</div>
+
+<aside style="width: 340px; flex-shrink: 0; box-sizing: border-box; background: #FFFFFF; border: 2.5px solid #1E1633; border-radius: 20px; box-shadow: 0 3px 0 #1E1633; overflow: hidden; display: flex; flex-direction: column;">
+<div style="position: relative; overflow: hidden; background: var(--org); color: var(--on); padding: 14px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 2.5px solid #1E1633;">
+<span style="position: absolute; top: -50px; left: -30px; width: 130px; height: 130px; border-radius: 50%; background: rgba(255,255,255,0.15);"></span>
+<span style="position: relative; width: 52px; height: 52px; border-radius: 50%; border: 2.5px solid #1E1633; background: #FFFFFF; color: #1E1633; display: flex; align-items: center; justify-content: center; font-family: 'Secular One', sans-serif; font-size: 24px;">ד</span>
+<div style="position: relative; display: flex; flex-direction: column; line-height: 1.15;">
+<span style="font-family: 'Secular One', sans-serif; font-size: 20px;">דוד כהן</span>
+<span style="font-size: 12px; font-weight: 700;">משפחת כהן · ראש משק בית</span>
+</div>
+</div>
+<div style="box-sizing: border-box; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; overflow: hidden;">
+<div style="display: flex; gap: 8px;">
+<span style="padding: 2px 10px; border-radius: 999px; border: 2px solid #1E1633; background: #FFD84A; font-size: 12px; font-weight: 800;">חוב פתוח</span>
+<span style="padding: 2px 10px; border-radius: 999px; border: 2px solid #1E1633; background: #CFF0FC; font-size: 12px; font-weight: 800;">מחלוקת על חיוב</span>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+<div style="padding: 8px 10px; border-radius: 14px; background: #FFF9EC; border: 2px solid #1E1633;"><div style="font-size: 12px; font-weight: 700; color: #5A4E70;">יתרה</div><div style="font-family: 'Secular One', sans-serif; font-size: 22px; color: #C4223B;">₪600</div></div>
+<div style="padding: 8px 10px; border-radius: 14px; background: #FFF9EC; border: 2px solid #1E1633;"><div style="font-size: 12px; font-weight: 700; color: #5A4E70;">שולם השנה</div><div style="font-family: 'Secular One', sans-serif; font-size: 22px;">₪1,800</div></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 12px; font-weight: 800; color: #5A4E70;">פרטים (לפי מה שהחבר אישר לארגון)</span>
+<sc-for list="{{fields}}" as="f" hint-placeholder-count="5">
+<div style="display: flex; justify-content: space-between; gap: 8px; padding-bottom: 5px; border-bottom: 1.5px solid #EDE6D6;"><span style="color: #5A4E70; font-weight: 700;">{{f.k}}</span><span style="font-weight: 800;">{{f.v}}</span></div>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 12px; font-weight: 800; color: #5A4E70;">פעולות</span>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+<sc-for list="{{actions}}" as="a" hint-placeholder-count="4">
+<span style="height: 34px; box-sizing: border-box; border-radius: 17px; border: 2px solid #1E1633; background: {{a.bg}}; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 0 #1E1633;">{{a.label}}</span>
+</sc-for>
+</div>
+</div>
+</div>
+</aside>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"org":{"editor":"color","default":"#5B3DF5","options":["#5B3DF5","#FF5A36","#00B67A","#FF5C9E"]},"$preview":{"width":1440,"height":900}}'>
+function pickOn(hex) {
+  const f = (h) => { const n = parseInt(h.slice(1), 16); return [16, 8, 0].map(s => { const c = ((n >> s) & 255) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }); };
+  const L = (h) => { const [r, g, b] = f(h); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const cr = (a, b) => (Math.max(L(a), L(b)) + 0.05) / (Math.min(L(a), L(b)) + 0.05);
+  return cr('#1E1633', hex) >= cr('#FFFFFF', hex) ? '#1E1633' : '#FFFFFF';
+}
+class Component extends DCLogic {
+  renderVals() {
+    const org = this.props.org ?? '#5B3DF5';
+    const n = parseInt(org.slice(1), 16);
+    const lum = 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+    const onOrg = pickOn(org) /*contrast-based*/;
+    const navDefs = [
+      ['סקירה', 'M3 12l9-8 9 8v8H3z', 0], ['חברים', 'M16 11a4 4 0 1 0-8 0M4 21a8 8 0 0 1 16 0', 0, 1],
+      ['כספים וחיובים', 'M3 6h18v12H3zM3 10h18', '7'], ['פעילויות ואירועים', 'M3 5h18v16H3zM3 10h18', 0],
+      ['פניות', 'M4 5h16v11H8l-4 4z', '4'], ['הודעות', 'M4 6h16v12H4zM4 7l8 6 8-6', 0],
+      ['דוחות', 'M5 20V10M12 20V4M19 20v-7', 0],
+      ['מודולי בית כנסת', '', 0, 0, 1],
+      ['תפילות ולוח זמנים', 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2', 0], ['תרומות ונדרים', 'M12 20s-7-4.4-7-9.6A4 4 0 0 1 12 8a4 4 0 0 1 7 2.4C19 15.6 12 20 12 20z', 0], ['יארצייט', 'M12 3c3 4 5 6 5 9a5 5 0 0 1-10 0c0-3 2-5 5-9z', 0],
+      ['ארגון', '', 0, 0, 1],
+      ['הגדרות הארגון', 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z', 0],
+      ['מראה וצבע', 'M12 3a9 9 0 1 0 0 18c1.5 0 2-1 1.5-2s0-2 1.5-2h2a3 3 0 0 0 3-3A9 9 0 0 0 12 3z', 0]
+    ];
+    const nav = navDefs.map(d => ({
+      label: d[0], icon: d[1], badge: d[2] || '', badgeDisplay: d[2] ? 'block' : 'none',
+      bg: d[3] ? '#FFFFFF' : 'transparent', fg: d[3] ? '#1E1633' : (d[4] ? onOrg + ';opacity:.75;font-size:12px' : onOrg), bd: d[3] ? '2px solid #1E1633' : '2px solid transparent'
+    }));
+    const kpis = [
+      { value: '312', label: 'חברים פעילים', color: org },
+      { value: '₪18,420', label: 'נגבה החודש', color: '#00B67A' },
+      { value: '₪7,900', label: 'חובות פתוחים', color: '#C4223B' },
+      { value: '4', label: 'פניות פתוחות', color: '#18B8F0' },
+      { value: '9', label: 'בקשות הצטרפות', color: '#FFB020' }
+    ];
+    const filters = [
+      { label: 'הכל', bg: '#1E1633;color:#fff' }, { label: 'פעילים', bg: '#FFFFFF' }, { label: 'בחוב · 23', bg: '#FFD84A' },
+      { label: 'במחלוקת · 2', bg: '#FFFFFF' }, { label: 'ממתינים לאישור · 9', bg: '#FFFFFF' }, { label: 'עזבו עם חוב · 1', bg: '#FFFFFF' }, { label: '+ סינון נוסף', bg: '#FFF9EC' }
+    ];
+    const tints = ['#E3DDFF', '#FFDCD3', '#FFD9E8', '#CFF0FC', '#D7F5E8'];
+    const base = [
+      ['דוד כהן', 'משפחת כהן · ראש', 'חוב', '₪600-', '2019', 'גבאי, כהן'],
+      ['שרה כהן', 'משפחת כהן · משלמת', 'פעיל', '₪0', '2019', 'נשים'],
+      ['יוסי לוי', 'משפחת לוי · ראש', 'פעיל', '₪0', '2016', 'לוי'],
+      ['מיכל אברהמי', 'יחיד', 'פעיל', '₪0', '2022', 'מתנדבת'],
+      ['אורי פרידמן', 'משפחת פרידמן · ראש', 'חוב', '₪1,200-', '2020', 'ישראל'],
+      ['רחל מזרחי', 'משפחת מזרחי · ראש', 'פעיל', '₪0', '2018', ''],
+      ['אבי שמעוני', 'יחיד', 'ממתין', '—', 'השבוע', 'חדש'],
+      ['נועה ברק', 'משפחת ברק · משלמת', 'פעיל', '₪0', '2021', 'נוער'],
+      ['משה דהאן', 'משפחת דהאן · ראש', 'מחלוקת', '₪350-', '2017', 'לוי'],
+      ['חנה גולד', 'יחיד', 'פעיל', '₪0', '2015', 'נשים, ותיקה']
+    ];
+    const stC = { 'חוב': '#FFD84A', 'פעיל': '#D7F5E8', 'ממתין': '#E3DDFF', 'מחלוקת': '#CFF0FC' };
+    const rows = base.map((b, i) => ({
+      name: b[0], house: b[1], status: b[2], stColor: stC[b[2]], balance: b[3], balColor: b[3].includes('-') ? '#C4223B' : '#1E1633',
+      since: b[4], tags: b[5], initial: b[0][0], tint: tints[i % 5],
+      bg: i < 3 ? '#FFF6D1' : (i === 0 ? '#FFF6D1' : '#FFFFFF'), check: i < 3 ? '#1E1633' : '#FFFFFF'
+    }));
+    const fields = [
+      { k: 'טלפון', v: '050-1234567' }, { k: 'מייל', v: 'david@example.com' }, { k: 'כתובת', v: 'הרצל 12, רעננה' },
+      { k: 'בני משפחה', v: '5 (שניים משלמים)' }, { k: 'תאריך עברי', v: 'כ״ג תשרי' }
+    ];
+    const actions = [
+      { label: 'שליחת תזכורת', bg: '#FFD84A' }, { label: 'רישום תשלום', bg: '#FFFFFF' },
+      { label: 'מחלוקת על חיוב', bg: '#FFFFFF' }, { label: 'הודעה', bg: '#FFFFFF' }
+    ];
+    return { org, onOrg, nav, kpis, filters, rows, fields, actions };
+  }
+}
+</script>
+</body>
+</html>

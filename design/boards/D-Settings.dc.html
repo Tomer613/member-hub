@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>ד · הגדרות ארגון</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+.h{font-family:'Secular One',sans-serif;font-weight:400}
+</style>
+</helmet>
+<div dir="rtl" style="--org: {{org}}; --on: {{onOrg}}; width: 1440px; height: 900px; box-sizing: border-box; display: flex; background: #FFD84A; color: #1E1633; font-family: 'Assistant', system-ui, sans-serif; font-size: 14px; overflow: hidden;">
+
+<aside style="width: 232px; flex-shrink: 0; box-sizing: border-box; background: var(--org); color: var(--on); border-inline-end: 2.5px solid #1E1633; padding: 16px 12px; display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden;">
+<span style="position: absolute; top: -70px; left: -60px; width: 190px; height: 190px; border-radius: 50%; background: rgba(255,255,255,0.14);"></span>
+<div style="position: relative; display: flex; align-items: center; gap: 10px;">
+<span class="h" style="width: 40px; height: 40px; border-radius: 50%; background: #fff; color: #1E1633; border: 2px solid #1E1633; display: flex; align-items: center; justify-content: center; font-size: 20px;">א</span>
+<div style="display: flex; flex-direction: column; line-height: 1.1;"><span class="h" style="font-size: 17px;">אור חדש</span><span style="font-size: 12px; font-weight: 700; opacity: .85;">ניהול · גבאי ראשי</span></div>
+</div>
+<nav style="position: relative; display: flex; flex-direction: column; gap: 4px;">
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="9">
+<a href="#" style="height: 38px; box-sizing: border-box; padding: 0 10px; border-radius: 12px; display: flex; align-items: center; font-weight: 800; background: {{n.bg}}; color: {{n.fg}}; border: {{n.bd}};">{{n.label}}</a>
+</sc-for>
+</nav>
+</aside>
+
+<main style="flex: 1; min-width: 0; box-sizing: border-box; padding: 18px 24px; display: flex; flex-direction: column; gap: 14px;">
+<header style="display: flex; align-items: center; gap: 12px;">
+<h1 class="h" style="margin: 0; font-size: 28px;">הגדרות הארגון</h1>
+<span style="flex: 1;"></span>
+<span style="font-weight: 700; color: #5A4E70;">שינויים שלא נשמרו: 2</span>
+<button type="button" style="height: 38px; padding: 0 16px; border-radius: 19px; border: 2px solid #1E1633; background: #fff; font: inherit; font-weight: 800; box-shadow: 0 2px 0 #1E1633;">ביטול</button>
+<button type="button" style="height: 38px; padding: 0 18px; border-radius: 19px; border: 2px solid #1E1633; background: var(--org); color: var(--on); font: inherit; font-weight: 800; box-shadow: 0 2px 0 #1E1633;">שמירה</button>
+</header>
+
+<section style="flex: 1; min-height: 0; display: flex; gap: 14px;">
+
+<div style="width: 230px; flex-shrink: 0; background: #fff; border: 2.5px solid #1E1633; border-radius: 20px; box-shadow: 0 3px 0 #1E1633; padding: 10px; display: flex; flex-direction: column; gap: 4px; align-self: flex-start;">
+<sc-for list="{{sections}}" as="s" hint-placeholder-count="9">
+<div style="min-height: 40px; box-sizing: border-box; padding: 4px 10px; border-radius: 12px; display: flex; align-items: center; gap: 8px; border: 2px solid {{s.bd}}; background: {{s.bg}}; font-weight: 800;">
+<span style="width: 12px; height: 12px; border-radius: 4px; border: 2px solid #1E1633; background: {{s.dot}};"></span>
+<span style="flex: 1;">{{s.label}}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; overflow: hidden;">
+
+<div style="background: #fff; border: 2.5px solid #1E1633; border-radius: 20px; box-shadow: 0 3px 0 #1E1633; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px;">
+<div style="display: flex; align-items: baseline; gap: 10px;">
+<h2 class="h" style="margin: 0; font-size: 22px;">שדות ופרטיות</h2>
+<span style="font-weight: 700; color: #5A4E70;">מה הארגון מבקש מכל חבר, ולמה</span>
+</div>
+<div style="padding: 8px 12px; border-radius: 14px; background: #FFD84A; border: 2px solid #1E1633; font-weight: 800; display: flex; gap: 8px; align-items: center;">
+שינוי בשדות חובה נכנס לתוקף אחרי 30 יום, והחברים הקיימים יקבלו הודעה ויוכלו לאשר או לעזוב.
+</div>
+<div style="border: 2px solid #1E1633; border-radius: 14px; overflow: hidden;">
+<div style="height: 32px; background: #1E1633; color: #fff; font-size: 12px; font-weight: 800; display: grid; grid-template-columns: 1.2fr 1.6fr 100px 90px 120px; gap: 10px; align-items: center; padding: 0 14px;"><span>שדה</span><span>הסבר לחבר: למה אנחנו מבקשים</span><span>חובה</span><span>יוצג לחברים</span><span>סטטוס</span></div>
+<sc-for list="{{fields}}" as="f" hint-placeholder-count="7">
+<div style="height: 46px; box-sizing: border-box; padding: 0 14px; display: grid; grid-template-columns: 1.2fr 1.6fr 100px 90px 120px; gap: 10px; align-items: center; border-bottom: 1.5px solid #EDE6D6; font-weight: 700;">
+<span style="font-weight: 800;">{{f.name}}</span>
+<span style="color: #5A4E70; font-size: 13px;">{{f.reason}}</span>
+<span style="width: 46px; height: 26px; border-radius: 13px; border: 2px solid #1E1633; background: {{f.reqBg}}; position: relative; box-sizing: border-box;"><span style="position: absolute; top: 1px; {{f.reqPos}} width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 2px solid #1E1633; box-sizing: border-box;"></span></span>
+<span style="width: 46px; height: 26px; border-radius: 13px; border: 2px solid #1E1633; background: {{f.visBg}}; position: relative; box-sizing: border-box;"><span style="position: absolute; top: 1px; {{f.visPos}} width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 2px solid #1E1633; box-sizing: border-box;"></span></span>
+<span style="justify-self: start; padding: 1px 10px; border-radius: 999px; border: 2px solid #1E1633; background: {{f.stBg}}; font-size: 12px; font-weight: 800;">{{f.st}}</span>
+</div>
+</sc-for>
+<div style="height: 40px; display: flex; align-items: center; padding: 0 14px; font-weight: 800; color: var(--org);">+ הוספת שדה (מותאם לסוג הארגון)</div>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
+<sc-for list="{{cards}}" as="c" hint-placeholder-count="3">
+<div style="background: #fff; border: 2px solid #1E1633; border-radius: 18px; box-shadow: 0 3px 0 #1E1633; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; align-items: center; gap: 8px;"><span style="width: 14px; height: 14px; border-radius: 5px; border: 2px solid #1E1633; background: {{c.dot}};"></span><span class="h" style="font-size: 17px;">{{c.title}}</span></div>
+<sc-for list="{{c.lines}}" as="l" hint-placeholder-count="4">
+<div style="display: flex; justify-content: space-between; gap: 8px; padding-bottom: 5px; border-bottom: 1.5px solid #EDE6D6;"><span style="color: #5A4E70; font-weight: 700;">{{l.k}}</span><span style="font-weight: 800;">{{l.v}}</span></div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"org":{"editor":"color","default":"#5B3DF5","options":["#5B3DF5","#FF5A36","#00B67A","#FF5C9E"]},"$preview":{"width":1440,"height":900}}'>
+function pickOn(hex) {
+  const f = (h) => { const n = parseInt(h.slice(1), 16); return [16, 8, 0].map(s => { const c = ((n >> s) & 255) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }); };
+  const L = (h) => { const [r, g, b] = f(h); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const cr = (a, b) => (Math.max(L(a), L(b)) + 0.05) / (Math.min(L(a), L(b)) + 0.05);
+  return cr('#1E1633', hex) >= cr('#FFFFFF', hex) ? '#1E1633' : '#FFFFFF';
+}
+class Component extends DCLogic {
+  renderVals() {
+    const org = this.props.org ?? '#5B3DF5';
+    const n = parseInt(org.slice(1), 16);
+    const lum = 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+    const onOrg = pickOn(org) /*contrast-based*/;
+    const navL = ['סקירה', 'חברים', 'כספים וחיובים', 'פעילויות ואירועים', 'פניות', 'הודעות', 'דוחות', 'מודולי בית כנסת', 'תפילות ולוח זמנים', 'תרומות ונדרים', 'יארצייט', 'ארגון', 'הגדרות הארגון', 'מראה וצבע'];
+    const nav = navL.map(l => ({ label: l, bg: l === 'הגדרות הארגון' ? '#FFFFFF' : 'transparent', fg: l === 'הגדרות הארגון' ? '#1E1633' : ((l === 'מודולי בית כנסת' || l === 'ארגון') ? onOrg + ';opacity:.75;font-size:12px' : onOrg), bd: l === 'הגדרות הארגון' ? '2px solid #1E1633' : '2px solid transparent' }));
+    const secL = [['פרטי הארגון', '#FFD84A'], ['שדות ופרטיות', '#CFF0FC'], ['מה החברים רואים בכרטיס', '#FFD9E8'], ['סוגי חברות וחיובים', '#D7F5E8'], ['תשלומים ותזכורות', '#FFDCD3'], ['פניות ובקשות', '#E3DDFF'], ['צוות והרשאות', '#CFF0FC'], ['הזמנות והצטרפות', '#FFD84A'], ['חשבון והסכם', '#FFFFFF']];
+    const sections = secL.map((s, i) => ({ label: s[0], dot: s[1], bg: i === 1 ? '#FFF6D1' : '#FFFFFF', bd: i === 1 ? '#1E1633' : 'transparent' }));
+    const on = '#00B67A', off = '#B8AFC7';
+    const F = (name, reason, req, vis, st, stBg) => ({ name, reason, reqBg: req ? on : off, reqPos: req ? 'right:1px;' : 'left:1px;', visBg: vis ? on : off, visPos: vis ? 'right:1px;' : 'left:1px;', st, stBg });
+    const fields = [
+      F('שם מלא', 'לזיהוי בספר החברים', true, true, 'פעיל', '#D7F5E8'),
+      F('טלפון', 'ליצירת קשר ולשליחת קוד אימות', true, false, 'פעיל', '#D7F5E8'),
+      F('כתובת', 'לשיוך לרחוב וחלוקת אזורים', true, false, 'ייכנס ב-8.11', '#FFD84A'),
+      F('תאריך לידה', 'לברכות ולאזכרות', false, false, 'פעיל', '#D7F5E8'),
+      F('שם האב (לעלייה לתורה)', 'להקראה בתפילה', false, true, 'פעיל', '#D7F5E8'),
+      F('בני משפחה', 'לחיוב משק בית ולהזמנות', false, false, 'פעיל', '#D7F5E8')
+    ];
+    const cards = [
+      { title: 'מה החברים רואים בכרטיס', dot: '#FFD9E8', lines: [{ k: 'כספים', v: 'פעיל' }, { k: 'תפילות ואירועים', v: 'פעיל' }, { k: 'פניות והודעות', v: 'פעיל' }, { k: 'החברות שלי', v: 'תמיד' }] },
+      { title: 'תשלומים ותזכורות', dot: '#FFDCD3', lines: [{ k: 'ספק סליקה', v: 'לא מחובר' }, { k: 'תזכורת חוב', v: 'פעם בשבוע' }, { k: 'עמלת פלטפורמה', v: '1.5% + קבוע' }, { k: 'מחלוקת על חיוב', v: 'מותרת' }] },
+      { title: 'הזמנות והצטרפות', dot: '#FFD84A', lines: [{ k: 'נראות הארגון', v: 'פרטי' }, { k: 'בקשות הצטרפות', v: 'באישור גבאי' }, { k: 'הזמנה בטלפון / מייל', v: 'פעיל' }, { k: 'עזיבה עם חוב', v: 'נשמר חוב' }] }
+    ];
+    return { org, onOrg, nav, sections, fields, cards };
+  }
+}
+</script>
+</body>
+</html>

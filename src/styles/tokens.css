@@ -1,0 +1,85 @@
+/* Design tokens, direction D ("conference + festival").
+   Source of truth for colors, type, spacing, radius, shadow.
+   Tailwind v4: these are mapped in globals.css via @theme. Do not hardcode hex in components. */
+
+:root {
+  /* Surfaces */
+  --mh-bg: #FFD84A;            /* flat yellow app background (member side). Tweakable per user/theme. */
+  --mh-surface: #FFFFFF;       /* tiles, list rows */
+  --mh-ticket: #FFF9EC;        /* cream ticket body on the card screen */
+  --mh-ink: #1E1633;           /* text and all outlines */
+  --mh-ink-soft: #5A4E70;      /* secondary text: 7.6:1 on white, 5.5:1 on the yellow background */
+
+  /* Org colors: saturated palette offered to orgs (curated). Org may pick one or suggest from logo. */
+  --mh-org-violet: #5B3DF5;
+  --mh-org-orange: #FF5A36;
+  --mh-org-green: #00B67A;
+  --mh-org-pink: #FF5C9E;
+  --mh-org-sky: #18B8F0;
+
+  /* Per-org at runtime (set on the card/screen root) */
+  --org: var(--mh-org-violet);
+  --on-org: #FFFFFF;           /* set per org with onColor() from src/lib/color.ts (WCAG contrast, not a luminance guess) */
+
+  /* Tints for icon chips (light version of each category color) */
+  --mh-tint-violet: #E3DDFF;
+  --mh-tint-coral: #FFDCD3;
+  --mh-tint-pink: #FFD9E8;
+  --mh-tint-sky: #CFF0FC;
+
+  /* Status */
+  --mh-ok: #00B67A;
+  --mh-warn: #FFB020;
+  --mh-danger: #C4223B;        /* 5.8:1 on white, white text on it 5.8:1 */
+
+  /* Type */
+  --mh-font-display: 'Secular One', sans-serif;   /* headings, big numbers */
+  --mh-font-body: 'Assistant', system-ui, sans-serif;
+  --mh-text-xs: 12px;
+  --mh-text-sm: 13px;
+  --mh-text-base: 16px;
+  --mh-text-lg: 17px;
+  --mh-text-h2: 22px;
+  --mh-text-h1: 30px;
+  --mh-text-hero: 40px;
+
+  /* Spacing (4px base) */
+  --mh-space-1: 4px;
+  --mh-space-2: 8px;
+  --mh-space-3: 12px;
+  --mh-space-4: 16px;
+  --mh-space-5: 24px;
+  --mh-space-6: 32px;
+
+  /* Radius */
+  --mh-radius-chip: 999px;
+  --mh-radius-sm: 13px;
+  --mh-radius-md: 18px;
+  --mh-radius-lg: 24px;
+
+  /* Outline and shadow: flat, one hard bottom edge only */
+  --mh-line: 2px solid var(--mh-ink);
+  --mh-line-strong: 2.5px solid var(--mh-ink);
+  --mh-shadow: 0 3px 0 var(--mh-ink);
+
+  /* Touch targets */
+  --mh-hit: 48px;
+}
+
+/* Admin (desktop, dense): same language, calmer surface so many controls stay readable. */
+[data-surface="admin"] {
+  --mh-bg: #FFF9EC;
+  --mh-text-base: 14px;
+  --mh-hit: 36px;
+  --mh-shadow: 0 2px 0 var(--mh-ink);
+}
+
+/* Focus: one ring for everything. Ink on the yellow background is 12:1; org colors are not safe for focus (orange on yellow is 2.2:1). */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--mh-ink);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
