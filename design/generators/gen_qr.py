@@ -153,7 +153,7 @@ inv=(hdr('קוד פרופיל ארגון')
  +f'<div dir="ltr" style="font-weight:800;font-size:15px;background:{CREAM};border:2px solid {INK};border-radius:12px;padding:6px 12px;">app.example/j/AOR-2931</div></section>'
  +share_btns
  +box(f'<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;"><div style="flex:1;display:flex;flex-direction:column;"><span style="font-weight:800;font-size:15.5px;">לציין שאני הזמנתי</span><span style="font-size:13px;font-weight:600;color:{SOFT};">הארגון יראה "הוזמן על ידי דנה" בבקשת ההצטרפות.</span></div>{tg(True)}</div>')
- +P('קוד פרופיל הארגון פותח את עמוד הארגון גם למי שעוד אין לו את האפליקציה. כל בקשת הצטרפות עוברת את המצב שהארגון קבע: באישור, פתוח או בהזמנה בלבד.',13.5,SOFT))
+ +P('קוד פרופיל הארגון פותח את עמוד הארגון גם למי שעוד אין לו את האפליקציה. כל בקשת הצטרפות עוברת את המצב שהארגון קבע: בבקשה או פתוח.',13.5,SOFT))
 out3['D-QrInviteFriend']=page('ד · קוד פרופיל ארגון (שיתוף בין חברים)',844,inv,'')
 # ------------------------------------------------ admin mobile: scanned a member
 OA='#5B3DF5'
@@ -162,8 +162,8 @@ admsheet=(f'<div style="position:absolute;inset:0;background:rgba(30,22,51,.6);z
  +f'<div style="display:flex;align-items:center;gap:12px;">{logo("ד",52,"#FFD9E8")}<div style="display:flex;flex-direction:column;flex:1;"><span style="font-family:\'Secular One\',sans-serif;font-size:23px;line-height:1.1;">דנה לוי</span><span style="font-size:14px;font-weight:700;color:{SOFT};"><bdi>050-123-4567</bdi> · מצטרפת לראשונה</span></div></div>'
  +f'<div style="font-weight:800;font-size:15.5px;">מסלול</div><div role="radiogroup" style="display:flex;flex-wrap:wrap;gap:8px;">{chip("חבר/ת קהילה",True)}{chip("משפחה",False)}{chip("תומך/ת",False)}</div>'
  +f'<div style="font-weight:800;font-size:15.5px;">תוויות (לא חובה)</div><div style="display:flex;flex-wrap:wrap;gap:8px;">{chip("גבאי",False)}{chip("מתנדב/ת",False)}</div>'
- +f'<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid {INK};border-radius:14px;background:#FFF6D1;font-weight:600;font-size:13.5px;line-height:1.45;">{ico("M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4",20,2.2)}<span>דנה תקבל בקשה לאשר את ההצטרפות בטלפון שלה. עד שתאשר, היא לא תופיע ברשימת החברים.</span></div>'
- +pbtn('שליחת בקשת הצטרפות')+sbtn('סריקה מחדש')+'</section>')
+ +f'<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid {INK};border-radius:14px;background:#FFF6D1;font-weight:600;font-size:13.5px;line-height:1.45;">{ico("M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4",20,2.2)}<span>דנה תקבל בקשת צירוף ותאשר אותה בטלפון שלה. עד שתאשר, היא לא תופיע ברשימת החברים.</span></div>'
+ +pbtn('שליחת בקשת צירוף')+sbtn('סריקה מחדש')+'</section>')
 scan_feed=f'<div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#2B2144 0 14px,#251B3B 14px 28px);"></div>'
 adm_scan=page('ד · ניהול במובייל · סריקת חבר חדש',844,f'<div style="display:flex;align-items:center;gap:12px;flex-shrink:0;position:relative;z-index:2;color:#fff;">{back}<h1 style="margin:0;font-family:\'Secular One\',sans-serif;font-size:22px;font-weight:400;">סריקת קוד פרופיל משתמש</h1></div>',
    '',extra=admsheet)
@@ -186,8 +186,7 @@ left=panel(h2('קוד פרופיל הארגון','קוד קבוע, אפשר לש
   +f'<div style="display:flex;gap:10px;flex-wrap:wrap;">{btn("הורדה כ-PDF",True)}{btn("הורדת התמונה")}{btn("העתקת קישור")}{btn("הדפסה")}</div>',extra='width:430px;flex-shrink:0;')
 right=(panel(h2('מצב הצטרפות בסריקה','הסריקה מציגה רק את עמוד הארגון')
    +opt('בבקשה','כל סורק שולח בקשה, ומנהל מאשר.',True,'ברירת מחדל')
-   +opt('פתוח','כל מי שסורק מצטרף מיד.',False)
-   +opt('בהזמנה בלבד','מצטרפים רק עם הזמנה אישית חד-פעמית.',False))
+   +opt('פתוח','כל מי שסורק מצטרף מיד.',False))
   +panel(h2('ארגון שלא מופיע בחיפוש')
    +swrow('להציג את הארגון בחיפוש','כבוי: הקוד ממשיך לעבוד למי שקיבל אותו.',False,True))
   +panel(h2('הצטרפות בפגישה')

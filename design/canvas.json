@@ -925,6 +925,13 @@
    "x": 59280,
    "y": 3720,
    "title": "ד · ניהול · ייבוא · בדיקה ושליחה"
+  },
+  "D-AdmImport3.dc.html": {
+   "h": 900,
+   "w": 1440,
+   "x": 60800,
+   "y": 3720,
+   "title": "ד · ניהול · ייבוא · שליחה"
   }
  },
  "createdOnFiles": {
@@ -978,7 +985,7 @@
   },
   "title-d-admin": {
    "kind": "title1",
-   "maxW": 61000,
+   "maxW": 63000,
    "text": "כיוון ד · מסכי ניהול (דסקטופ 1440x900) · בשורה מתחת למסכי המובייל",
    "w": 240,
    "x": 0,
@@ -1133,7 +1140,8 @@
   "D-InviteAccept.dc.html",
   "D-AdmAddMember.dc.html",
   "D-AdmImport1.dc.html",
-  "D-AdmImport2.dc.html"
+  "D-AdmImport2.dc.html",
+  "D-AdmImport3.dc.html"
  ],
  "pages": [],
  "title": "MemberHub – ארנק חברויות"
