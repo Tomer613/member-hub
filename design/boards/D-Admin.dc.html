@@ -164,7 +164,7 @@ class Component extends DCLogic {
     ];
     const nav = navDefs.map(d => ({
       label: d[0], icon: d[1], badge: d[2] || '', badgeDisplay: d[2] ? 'block' : 'none',
-      bg: d[3] ? '#FFFFFF' : 'transparent', fg: d[3] ? '#1E1633' : (d[4] ? onOrg + ';opacity:.75;font-size:12px' : onOrg), bd: d[3] ? '2px solid #1E1633' : '2px solid transparent'
+      bg: d[3] ? '#FFFFFF' : 'transparent', fg: d[3] ? '#1E1633' : (d[4] ? onOrg + ';font-size:12.5px' : onOrg), bd: d[3] ? '2px solid #1E1633' : '2px solid transparent'
     }));
     const kpis = [
       { value: '312', label: 'חברים פעילים', color: org },

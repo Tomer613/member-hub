@@ -104,7 +104,7 @@ class Component extends DCLogic {
     const lum = 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
     const onOrg = pickOn(org) /*contrast-based*/;
     const navL = ['סקירה', 'חברים', 'כספים וחיובים', 'פעילויות ואירועים', 'פניות', 'הודעות', 'דוחות', 'מודולי בית כנסת', 'תפילות ולוח זמנים', 'תרומות ונדרים', 'יארצייט', 'ארגון', 'הגדרות הארגון', 'מראה וצבע'];
-    const nav = navL.map(l => ({ label: l, bg: l === 'הגדרות הארגון' ? '#FFFFFF' : 'transparent', fg: l === 'הגדרות הארגון' ? '#1E1633' : ((l === 'מודולי בית כנסת' || l === 'ארגון') ? onOrg + ';opacity:.75;font-size:12px' : onOrg), bd: l === 'הגדרות הארגון' ? '2px solid #1E1633' : '2px solid transparent' }));
+    const nav = navL.map(l => ({ label: l, bg: l === 'הגדרות הארגון' ? '#FFFFFF' : 'transparent', fg: l === 'הגדרות הארגון' ? '#1E1633' : ((l === 'מודולי בית כנסת' || l === 'ארגון') ? onOrg + ';font-size:12.5px' : onOrg), bd: l === 'הגדרות הארגון' ? '2px solid #1E1633' : '2px solid transparent' }));
     const secL = [['פרטי הארגון', '#FFD84A'], ['שדות ופרטיות', '#CFF0FC'], ['מה החברים רואים בכרטיס', '#FFD9E8'], ['סוגי חברות וחיובים', '#D7F5E8'], ['תשלומים ותזכורות', '#FFDCD3'], ['פניות ובקשות', '#E3DDFF'], ['צוות והרשאות', '#CFF0FC'], ['הזמנות והצטרפות', '#FFD84A'], ['חשבון והסכם', '#FFFFFF']];
     const sections = secL.map((s, i) => ({ label: s[0], dot: s[1], bg: i === 1 ? '#FFF6D1' : '#FFFFFF', bd: i === 1 ? '#1E1633' : 'transparent' }));
     const on = '#00B67A', off = '#B8AFC7';

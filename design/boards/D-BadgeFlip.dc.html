@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>ד · כרטיס חברות · הפיכה (אנימציה בלולאה)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+body{margin:0}
+a{color:inherit;text-decoration:none}
+.fl{position:relative;margin-top:84px;width:308px;height:340px;perspective:1100px;flex-shrink:0}
+.fl-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;animation:flip 9s infinite}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.face.bk{transform:rotateY(180deg)}
+.strap{transform-origin:195px 0;animation:sway 9s infinite}
+@keyframes flip{
+ 0%,26%{transform:rotateY(0deg);animation-timing-function:cubic-bezier(.35,.05,.25,1)}
+ 38%,76%{transform:rotateY(180deg);animation-timing-function:cubic-bezier(.35,.05,.25,1)}
+ 88%,100%{transform:rotateY(360deg)}}
+@keyframes sway{
+ 0%,26%{transform:rotate(0deg)} 29%{transform:rotate(5deg)} 32%{transform:rotate(-3.5deg)} 35%{transform:rotate(2.2deg)} 38%{transform:rotate(-1.2deg)} 42%,76%{transform:rotate(0deg)}
+ 79%{transform:rotate(-5deg)} 82%{transform:rotate(3.5deg)} 85%{transform:rotate(-2deg)} 88%{transform:rotate(1deg)} 92%,100%{transform:rotate(0deg)}}
+@media (prefers-reduced-motion: reduce){.fl-in,.strap{animation:none}.face.bk{display:none}}
+
+</style>
+</helmet>
+<div dir="rtl" style="--accent: {{accent}}; --org: {{org}}; --on: {{onOrg}}; position: relative; width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; background: {{accent}}; color: #1E1633; font-family: 'Assistant', system-ui, sans-serif; font-size: 16px; font-variant-numeric: tabular-nums; overflow: hidden;">
+
+<svg width="390" height="844" viewBox="0 0 390 844" style="position: absolute; top: 0; left: 0;" fill="none" stroke="#1E1633" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.22" aria-hidden="true">
+<g transform="translate(10 150) rotate(-14) scale(1.7)"><path d="M12 2l3 7 7 .6-5.3 4.7 1.7 7.2L12 17.8 5.6 21.5l1.7-7.2L2 9.6 9 9z"></path></g>
+<g transform="translate(336 200) rotate(16) scale(1.9)"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10" stroke-dasharray="2 2.4"></path></g>
+<g transform="translate(6 330) rotate(8) scale(1.6)"><circle cx="12" cy="9" r="6"></circle><path d="M8.5 14L7 22l5-3 5 3-1.5-8"></path></g>
+<g transform="translate(344 372) rotate(-10) scale(1.4)"><path d="M12 2l3 7 7 .6-5.3 4.7 1.7 7.2L12 17.8 5.6 21.5l1.7-7.2L2 9.6 9 9z"></path></g>
+<g transform="translate(340 66) rotate(20)"><rect width="14" height="6" rx="2"></rect></g>
+<g transform="translate(26 84) rotate(-24)"><rect width="14" height="6" rx="2"></rect></g>
+<g transform="translate(364 130)"><path d="M0 -7v14M-7 0h14"></path></g>
+<g transform="translate(30 270)"><path d="M0 -6v12M-6 0h12"></path></g>
+<g transform="translate(18 760) rotate(-12) scale(1.6)"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z"></path></g>
+<g transform="translate(346 770) rotate(10) scale(1.5)"><circle cx="12" cy="9" r="6"></circle><path d="M8.5 14L7 22l5-3 5 3-1.5-8"></path></g>
+</svg>
+
+<svg class="strap" width="390" height="110" viewBox="0 0 390 110" style="position: absolute; top: 0; left: 0;" aria-hidden="true">
+<polygon points="78,-2 122,-2 211,88 181,98" fill="var(--org)" stroke="#1E1633" stroke-width="2.5" stroke-linejoin="round"></polygon>
+<line x1="100" y1="0" x2="196" y2="92" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-dasharray="5 5"></line>
+<polygon points="268,-2 312,-2 209,98 179,88" fill="var(--org)" stroke="#1E1633" stroke-width="2.5" stroke-linejoin="round"></polygon>
+<line x1="290" y1="0" x2="194" y2="92" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-dasharray="5 5"></line>
+<rect x="175" y="78" width="40" height="28" rx="9" fill="#FFFFFF" stroke="#1E1633" stroke-width="2.5"></rect>
+</svg>
+
+<button type="button" aria-label="חזרה לארנק" style="position: absolute; top: 14px; inset-inline-start: 14px; width: 48px; height: 48px; border-radius: 50%; border: 2px solid #1E1633; background: #FFFFFF; color: #1E1633; box-shadow: 0 3px 0 #1E1633; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+</button>
+
+<div class="fl"><div class="fl-in"><div class="face"><article style="position: relative; margin-top: 0; width: 308px; height: 340px; box-sizing: border-box; border: 2.5px solid #1E1633; border-radius: 28px; background: #FFF9EC; overflow: hidden; box-shadow: 0 4px 0 #1E1633;">
+
+<div style="position: relative; height: 150px; box-sizing: border-box; padding: 22px 20px 0; background: var(--org); color: var(--on); border-bottom: 2.5px solid #1E1633; display: flex; flex-direction: column; align-items: center; overflow: hidden;">
+<span style="position: absolute; top: -70px; right: -50px; width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,0.16);"></span>
+<span style="position: absolute; bottom: -60px; left: -40px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.12);"></span>
+<div style="position: relative; margin-top: 10px; width: 62px; height: 62px; box-sizing: border-box; border-radius: 50%; background: #FFFFFF; color: #1E1633; border: 2.5px solid #1E1633; display: flex; align-items: center; justify-content: center; font-family: 'Secular One', sans-serif; font-size: 32px;">{{letter}}</div>
+<h1 style="position: relative; margin: 8px 0 0; font-family: 'Secular One', sans-serif; font-size: 22px; line-height: 1.1; font-weight: 400; text-align: center;">{{orgName}}</h1>
+<span style="position: relative; margin-top: 6px; transform: rotate(-2deg); padding: 1px 14px; background: #FFD84A; color: #1E1633; border: 2px solid #1E1633; border-radius: 10px; font-size: 14px; font-weight: 800;">{{role}}</span>
+<button type="button" aria-label="הפוך את הכרטיס לקוד כניסה" style="position: absolute; top: 10px; inset-inline-end: 12px; width: 44px; height: 44px; box-sizing: border-box; border-radius: 50%; border: 2px solid #1E1633; background: #FFFFFF; color: #1E1633; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h3v3h-3zM20 14v7h-3"></path></svg>
+</button>
+</div>
+
+<div style="position: absolute; top: 120px; inset-inline-end: 14px; width: 66px; height: 66px; box-sizing: border-box; border-radius: 50%; background: #FF5A36; color: #1E1633; border: 2.5px solid #1E1633; box-shadow: 0 3px 0 #1E1633; transform: rotate(10deg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2;">
+<span style="font-size: 11px; font-weight: 800;">{{sinceWord}}</span>
+<span style="font-family: 'Secular One', sans-serif; font-size: 23px; line-height: 1;">{{sinceYear}}</span>
+</div>
+
+<div style="box-sizing: border-box; padding: 20px 20px 0; text-align: center;">
+<div style="font-family: 'Secular One', sans-serif; font-size: 34px; line-height: 1.05;">{{memberName}}</div>
+<div style="margin-top: 2px; font-size: 13px; color: #5A4E70; font-weight: 700;">{{joined}}</div>
+</div>
+
+<div style="margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+<div style="display: flex;">
+<sc-for list="{{crowd}}" as="p" hint-placeholder-count="4">
+<span style="width: 24px; height: 24px; box-sizing: border-box; margin-inline-start: -7px; border-radius: 50%; background: {{p.c}}; border: 2px solid #1E1633;"></span>
+</sc-for>
+</div>
+<span style="font-size: 13px; font-weight: 800;">{{crowdText}}</span>
+</div>
+
+<div style="position: absolute; left: 22px; right: 22px; bottom: 14px; display: flex; align-items: flex-end; justify-content: space-between;">
+<div style="display: flex; flex-direction: column;">
+<span style="font-size: 11px; color: #5A4E70; font-weight: 700;">מספר חבר</span>
+<span style="font-family: 'Secular One', sans-serif; font-size: 26px; line-height: 1;">{{number}}</span>
+</div>
+<div style="display: flex; flex-direction: column; text-align: end;">
+<span style="font-size: 11px; color: #5A4E70; font-weight: 700;">{{nextLabel}}</span>
+<span style="font-family: 'Secular One', sans-serif; font-size: 26px; line-height: 1;">{{nextValue}}</span>
+</div>
+</div>
+</article></div><div class="face bk"><article style="position: relative; margin-top: 0; width: 308px; height: 340px; box-sizing: border-box; border: 2.5px solid #1E1633; border-radius: 28px; background: #FFF9EC; overflow: hidden; box-shadow: 0 4px 0 #1E1633;">
+<div style="position: relative; height: 56px; box-sizing: border-box; padding: 0 14px; background: var(--org); color: var(--on); border-bottom: 2.5px solid #1E1633; display: flex; align-items: center; gap: 10px; overflow: hidden;">
+<span style="position: absolute; top: -50px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.16);"></span>
+<span style="position: relative; width: 34px; height: 34px; flex-shrink: 0; box-sizing: border-box; border-radius: 50%; background: #FFFFFF; color: #1E1633; border: 2px solid #1E1633; display: flex; align-items: center; justify-content: center; font-family: 'Secular One', sans-serif; font-size: 18px;">{{letter}}</span>
+<span style="position: relative; flex: 1; min-width: 0; font-family: 'Secular One', sans-serif; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{orgName}}</span>
+<span style="position: relative; padding: 1px 10px; background: #FFD84A; color: #1E1633; border: 2px solid #1E1633; border-radius: 10px; font-size: 12.5px; font-weight: 800; white-space: nowrap;">{{role}}</span>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 0 0;">
+<div style="background: #FFFFFF; border: 2px solid #1E1633; border-radius: 16px; padding: 8px; display: flex;"><svg width="164" height="164" viewBox="0 0 37 37" shape-rendering="crispEdges" role="img" aria-label="קוד QR" style="display:block;"><path d="M0 0h7v1h-7zM10 0h1v1h-1zM13 0h1v1h-1zM15 0h4v1h-4zM22 0h3v1h-3zM28 0h1v1h-1zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h1v1h-1zM15 1h1v1h-1zM22 1h3v1h-3zM26 1h1v1h-1zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h6v1h-6zM21 2h2v1h-2zM25 2h2v1h-2zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM13 3h4v1h-4zM19 3h1v1h-1zM21 3h2v1h-2zM25 3h1v1h-1zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM11 4h1v1h-1zM14 4h1v1h-1zM16 4h1v1h-1zM19 4h1v1h-1zM23 4h3v1h-3zM27 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h4v1h-4zM16 5h2v1h-2zM19 5h1v1h-1zM22 5h1v1h-1zM26 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM8 7h1v1h-1zM10 7h1v1h-1zM12 7h2v1h-2zM16 7h1v1h-1zM18 7h2v1h-2zM22 7h1v1h-1zM25 7h4v1h-4zM2 8h2v1h-2zM6 8h4v1h-4zM12 8h2v1h-2zM15 8h1v1h-1zM19 8h1v1h-1zM23 8h5v1h-5zM29 8h2v1h-2zM32 8h1v1h-1zM1 9h1v1h-1zM3 9h3v1h-3zM9 9h1v1h-1zM14 9h2v1h-2zM17 9h1v1h-1zM20 9h3v1h-3zM25 9h1v1h-1zM27 9h1v1h-1zM30 9h4v1h-4zM36 9h1v1h-1zM0 10h3v1h-3zM5 10h4v1h-4zM10 10h3v1h-3zM18 10h3v1h-3zM23 10h1v1h-1zM25 10h1v1h-1zM28 10h2v1h-2zM34 10h1v1h-1zM0 11h1v1h-1zM3 11h2v1h-2zM7 11h1v1h-1zM9 11h1v1h-1zM12 11h3v1h-3zM21 11h2v1h-2zM24 11h3v1h-3zM28 11h1v1h-1zM32 11h5v1h-5zM0 12h1v1h-1zM3 12h4v1h-4zM10 12h1v1h-1zM14 12h1v1h-1zM17 12h2v1h-2zM22 12h2v1h-2zM25 12h6v1h-6zM32 12h2v1h-2zM35 12h1v1h-1zM0 13h1v1h-1zM7 13h1v1h-1zM12 13h1v1h-1zM14 13h4v1h-4zM19 13h2v1h-2zM22 13h1v1h-1zM26 13h2v1h-2zM30 13h1v1h-1zM32 13h1v1h-1zM34 13h3v1h-3zM1 14h2v1h-2zM4 14h1v1h-1zM6 14h2v1h-2zM9 14h1v1h-1zM11 14h1v1h-1zM16 14h2v1h-2zM19 14h1v1h-1zM21 14h2v1h-2zM25 14h2v1h-2zM28 14h1v1h-1zM31 14h2v1h-2zM34 14h1v1h-1zM0 15h2v1h-2zM3 15h3v1h-3zM9 15h1v1h-1zM13 15h1v1h-1zM15 15h1v1h-1zM17 15h1v1h-1zM20 15h1v1h-1zM22 15h1v1h-1zM24 15h1v1h-1zM26 15h5v1h-5zM36 15h1v1h-1zM1 16h4v1h-4zM6 16h2v1h-2zM9 16h5v1h-5zM16 16h1v1h-1zM18 16h2v1h-2zM22 16h1v1h-1zM24 16h3v1h-3zM33 16h3v1h-3zM1 17h1v1h-1zM3 17h1v1h-1zM8 17h1v1h-1zM11 17h1v1h-1zM13 17h2v1h-2zM16 17h2v1h-2zM20 17h1v1h-1zM27 17h1v1h-1zM30 17h1v1h-1zM33 17h1v1h-1zM36 17h1v1h-1zM1 18h2v1h-2zM4 18h1v1h-1zM6 18h1v1h-1zM8 18h1v1h-1zM10 18h1v1h-1zM12 18h4v1h-4zM17 18h1v1h-1zM22 18h3v1h-3zM27 18h1v1h-1zM29 18h1v1h-1zM33 18h4v1h-4zM0 19h1v1h-1zM2 19h1v1h-1zM7 19h1v1h-1zM9 19h4v1h-4zM17 19h1v1h-1zM19 19h4v1h-4zM24 19h1v1h-1zM26 19h1v1h-1zM33 19h1v1h-1zM36 19h1v1h-1zM1 20h2v1h-2zM5 20h3v1h-3zM9 20h1v1h-1zM11 20h2v1h-2zM15 20h2v1h-2zM19 20h1v1h-1zM21 20h3v1h-3zM28 20h1v1h-1zM32 20h1v1h-1zM0 21h2v1h-2zM3 21h2v1h-2zM8 21h3v1h-3zM14 21h4v1h-4zM19 21h2v1h-2zM22 21h1v1h-1zM29 21h1v1h-1zM31 21h1v1h-1zM33 21h1v1h-1zM35 21h1v1h-1zM0 22h1v1h-1zM6 22h1v1h-1zM11 22h1v1h-1zM14 22h3v1h-3zM18 22h1v1h-1zM20 22h2v1h-2zM23 22h1v1h-1zM26 22h1v1h-1zM29 22h1v1h-1zM32 22h2v1h-2zM35 22h1v1h-1zM0 23h3v1h-3zM4 23h2v1h-2zM8 23h1v1h-1zM11 23h2v1h-2zM14 23h2v1h-2zM21 23h2v1h-2zM25 23h5v1h-5zM33 23h3v1h-3zM3 24h2v1h-2zM6 24h2v1h-2zM9 24h1v1h-1zM11 24h2v1h-2zM14 24h4v1h-4zM19 24h2v1h-2zM22 24h1v1h-1zM30 24h1v1h-1zM33 24h1v1h-1zM36 24h1v1h-1zM2 25h1v1h-1zM4 25h2v1h-2zM7 25h1v1h-1zM10 25h5v1h-5zM16 25h3v1h-3zM21 25h3v1h-3zM28 25h1v1h-1zM32 25h1v1h-1zM34 25h3v1h-3zM1 26h2v1h-2zM4 26h1v1h-1zM6 26h3v1h-3zM11 26h6v1h-6zM19 26h2v1h-2zM24 26h2v1h-2zM27 26h2v1h-2zM31 26h1v1h-1zM33 26h1v1h-1zM0 27h1v1h-1zM2 27h1v1h-1zM4 27h2v1h-2zM7 27h1v1h-1zM9 27h2v1h-2zM13 27h2v1h-2zM16 27h3v1h-3zM24 27h1v1h-1zM26 27h1v1h-1zM28 27h2v1h-2zM33 27h1v1h-1zM35 27h2v1h-2zM3 28h2v1h-2zM6 28h2v1h-2zM11 28h3v1h-3zM15 28h1v1h-1zM23 28h3v1h-3zM27 28h6v1h-6zM36 28h1v1h-1zM8 29h2v1h-2zM13 29h1v1h-1zM16 29h1v1h-1zM20 29h3v1h-3zM24 29h1v1h-1zM26 29h3v1h-3zM32 29h5v1h-5zM0 30h7v1h-7zM8 30h1v1h-1zM12 30h2v1h-2zM16 30h2v1h-2zM19 30h2v1h-2zM25 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h2v1h-2zM35 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM10 31h1v1h-1zM12 31h1v1h-1zM15 31h1v1h-1zM18 31h1v1h-1zM20 31h2v1h-2zM24 31h1v1h-1zM28 31h1v1h-1zM32 31h2v1h-2zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM10 32h2v1h-2zM13 32h4v1h-4zM19 32h1v1h-1zM22 32h1v1h-1zM26 32h1v1h-1zM28 32h6v1h-6zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h3v1h-3zM13 33h2v1h-2zM18 33h3v1h-3zM25 33h1v1h-1zM27 33h1v1h-1zM30 33h2v1h-2zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM8 34h1v1h-1zM11 34h1v1h-1zM14 34h1v1h-1zM17 34h2v1h-2zM22 34h1v1h-1zM30 34h4v1h-4zM35 34h1v1h-1zM0 35h1v1h-1zM6 35h1v1h-1zM9 35h5v1h-5zM16 35h2v1h-2zM19 35h3v1h-3zM23 35h5v1h-5zM29 35h2v1h-2zM32 35h3v1h-3zM0 36h7v1h-7zM10 36h1v1h-1zM12 36h3v1h-3zM16 36h1v1h-1zM18 36h2v1h-2zM21 36h3v1h-3zM25 36h1v1h-1zM29 36h4v1h-4zM34 36h3v1h-3z" fill="#1E1633"/><rect x="13.50" y="13.50" width="9.99" height="9.99" rx="2.80" fill="#fff"/><circle cx="18.5" cy="18.5" r="3.60" fill="#5B3DF5" stroke="#1E1633" stroke-width=".5"/><path d="M16.80 18.60l1.30 1.30 2.20-2.60" fill="none" stroke="#fff" stroke-width="1.00" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div style="text-align: center; line-height: 1.1;"><div style="font-family: 'Secular One', sans-serif; font-size: 22px;">{{memberName}}</div><div style="margin-top: 2px; font-size: 13px; font-weight: 700; color: #5A4E70;">מספר חבר <bdi>{{number}}</bdi></div></div>
+</div>
+<div style="position: absolute; left: 14px; right: 14px; bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12.5px; font-weight: 800; color: #5A4E70;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"></path></svg><span>מתחדש בעוד <bdi>0:42</bdi></span></div>
+</article></div></div></div>
+
+<div style="position: relative; margin-top: 12px; width: 358px; box-sizing: border-box; min-height: 48px; padding: 6px 12px; display: flex; align-items: center; gap: 10px; background: #FFFFFF; border: 2px solid #1E1633; border-radius: 16px; box-shadow: 0 3px 0 #1E1633;">
+<span style="position: relative; width: 34px; height: 34px; box-sizing: border-box; border-radius: 50%; background: #FF5A36; color: #1E1633; border: 2px solid #1E1633; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+</span>
+<span style="flex: 1; font-size: 15px; font-weight: 800; line-height: 1.2;">{{notice}}</span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E1633" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+</div>
+
+<section style="position: relative; margin-top: 12px; width: 358px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+<sc-for list="{{tiles}}" as="t" hint-placeholder-count="4">
+<a href="#" style="min-height: 76px; box-sizing: border-box; padding: 9px 12px; background: #FFFFFF; border: 2px solid #1E1633; border-radius: 18px; box-shadow: 0 3px 0 #1E1633; display: flex; flex-direction: column; justify-content: space-between; gap: 6px;">
+<div style="display: flex; align-items: center; justify-content: space-between;">
+<span style="width: 34px; height: 34px; box-sizing: border-box; border-radius: 11px; background: {{t.tint}}; border: 2px solid #1E1633; display: flex; align-items: center; justify-content: center;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E1633" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.icon}}"></path></svg>
+</span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E1633" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+</div>
+<div style="display: flex; flex-direction: column;">
+<span style="font-size: 17px; font-weight: 800; line-height: 1.15;">{{t.label}}</span>
+<span style="font-size: 13px; font-weight: 600; color: #5A4E70;">{{t.sub}}</span>
+</div>
+</a>
+</sc-for>
+</section>
+
+<div style="position: absolute; left: 16px; right: 16px; bottom: 72px;">
+<button type="button" style="width: 100%; height: 52px; border-radius: 26px; border: 2.5px solid #1E1633; background: #1E1633; color: #FFFFFF; font: inherit; font-size: 18px; font-weight: 800; box-shadow: 0 3px 0 rgba(30,22,51,0.35); cursor: pointer;">{{cta}}</button>
+</div>
+<nav aria-label="ניווט ראשי" style="position: absolute; inset-inline: 0; bottom: 0; flex-shrink: 0; height: 64px; box-sizing: border-box; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; background: #FFFFFF; border-top: 2px solid #1E1633; padding: 7px 14px 7px;">
+<a href="#" aria-label="הודעות" style="display: flex; align-items: center; justify-content: center; position: relative; min-height: 48px; box-sizing: border-box; border-radius: 24px; border: 2px solid transparent; color: #1E1633;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+<span style="position: absolute; top: 2px; inset-inline-end: calc(50% - 26px); min-width: 18px; height: 18px; box-sizing: border-box; padding: 0 4px; border-radius: 9px; background: #FF5A36; color: #1E1633; border: 2px solid #1E1633; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center;">2</span>
+</a>
+<a href="#" aria-label="ארנק" aria-current="page" style="display: flex; align-items: center; justify-content: center; min-height: 48px; box-sizing: border-box; border-radius: 24px; border: 2px solid #1E1633; background: {{accent}}; color: #1E1633;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h18v12H3zM3 7l2-3h14l2 3M16 13h2"></path></svg>
+<span style="font-weight: 800; font-size: 14px; margin-inline-start: 6px;">ארנק</span></a>
+<a href="#" aria-label="חיפוש" style="display: flex; align-items: center; justify-content: center; min-height: 48px; box-sizing: border-box; border-radius: 24px; border: 2px solid transparent; color: #1E1633;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3"></path></svg>
+</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"org":{"editor":"color","default":"#5B3DF5","options":["#5B3DF5","#FF5A36","#00B67A","#FF5C9E"]},"accent":{"editor":"color","default":"#FFD84A","options":["#FFD84A","#5EE0C0","#FF9B6B","#B9A4FF"]},"$preview":{"width":390,"height":844}}'>
+function pickOn(hex) {
+  const f = (h) => { const n = parseInt(h.slice(1), 16); return [16, 8, 0].map(s => { const c = ((n >> s) & 255) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }); };
+  const L = (h) => { const [r, g, b] = f(h); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+  const cr = (a, b) => (Math.max(L(a), L(b)) + 0.05) / (Math.min(L(a), L(b)) + 0.05);
+  return cr('#1E1633', hex) >= cr('#FFFFFF', hex) ? '#1E1633' : '#FFFFFF';
+}
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#FFD84A';
+    const org = this.props.org ?? '#5B3DF5';
+    const n = parseInt(org.slice(1), 16);
+    const lum = 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+    const tiles = [
+      { label: 'כספים', sub: '₪600 לתשלום', icon: 'M3 7h18v12H3zM3 7l2-3h14l2 3M16 13h2', tint: '#FFD84A' },
+      { label: 'תפילות ואירועים', sub: 'הפטרה פנויה לשבת', icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z', tint: '#E3DDFF' },
+      { label: 'פניות והודעות', sub: '2 הודעות חדשות', icon: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z', tint: '#FFD9E8' },
+      { label: 'החברות שלי', sub: 'פרטים, הרשאות ופרטיות', icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', tint: '#D5F5E8' }
+    ];
+    const crowd = ['#FF5A36', '#00B67A', '#FF5C9E', '#18B8F0'].map(c => ({ c }));
+    return {
+      accent, org, onOrg: pickOn(org) /*contrast-based*/, crowd, tiles,
+      letter: 'א', orgName: 'בית הכנסת אור חדש', role: 'חברת קהילה', memberName: 'דנה לוי',
+      sinceWord: 'חברות מאז', sinceYear: '2019', joined: 'הצטרפות ב-12.03.2019',
+      crowdText: 'אחת מ-312 חברים', number: '0418', nextLabel: 'התשלום הבא', nextValue: '15.11',
+      cta: 'לתשלום ₪600',
+      notice: 'חיוב אוקטובר ממתין · ₪600'
+    };
+  }
+}
+</script>
+</body>
+</html>

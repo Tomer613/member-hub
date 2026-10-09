@@ -30,7 +30,8 @@ a{color:inherit;text-decoration:none}
 
 <div style="display: flex; align-items: center; gap: 12px;">
 <h1 style="margin: 0; font-family: 'Secular One', sans-serif; font-size: 30px; line-height: 1.05; font-weight: 400;">החברויות שלי</h1>
-<a href="#" aria-label="סידור הארנק" style="width: 44px; height: 44px; flex-shrink: 0; margin-inline-start: auto; box-sizing: border-box; border-radius: 50%; border: 2px solid #1E1633; background: #1E1633; color: {{accent}}; box-shadow: 0 3px 0 #1E1633; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4v16M4 8l4-4 4 4M16 20V4M12 16l4 4 4-4"></path></svg></a>
+<a href="#" aria-label="סריקת קוד" style="width: 44px; height: 44px; flex-shrink: 0; margin-inline-start: auto; box-sizing: border-box; border-radius: 50%; border: 2px solid #1E1633; background: #FFFFFF; color: #1E1633; box-shadow: 0 3px 0 #1E1633; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16"></path></svg></a>
+<a href="#" aria-label="סידור הארנק" style="width: 44px; height: 44px; flex-shrink: 0; box-sizing: border-box; border-radius: 50%; border: 2px solid #1E1633; background: #1E1633; color: {{accent}}; box-shadow: 0 3px 0 #1E1633; display: flex; align-items: center; justify-content: center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4v16M4 8l4-4 4 4M16 20V4M12 16l4 4 4-4"></path></svg></a>
 <div style="position: relative; width: 50px; height: 50px; flex-shrink: 0; border-radius: 50%; background: #FF5A36; border: 2px solid #1E1633; box-shadow: 0 3px 0 #1E1633; transform: rotate(-8deg); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #1E1633; box-sizing: border-box;">
 <span style="font-family: 'Secular One', sans-serif; font-size: 22px; line-height: 1;">5</span>
 <span style="font-size: 9px; font-weight: 800;">כרטיסים</span>
@@ -45,18 +46,17 @@ a{color:inherit;text-decoration:none}
 
 <section style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; padding: 2px 0 0;">
 <sc-for list="{{cards}}" as="b" hint-placeholder-count="5">
-<a href="#" style="position: relative; flex-shrink: 0; height: 132px; box-sizing: border-box; margin-top: {{b.mt}}px; border: 2px solid #1E1633; border-radius: 22px; background: #FFF9EC; box-shadow: 0 3px 0 #1E1633; transform: rotate({{b.tilt}}deg);">
-<span aria-hidden="true" style="position: absolute; left: -2px; top: 61px; width: 12px; height: 22px; box-sizing: border-box; background: {{accent}}; border: 2px solid #1E1633; border-left: none; border-radius: 0 11px 11px 0; z-index: 2;"></span>
-<span aria-hidden="true" style="position: absolute; right: -2px; top: 61px; width: 12px; height: 22px; box-sizing: border-box; background: {{accent}}; border: 2px solid #1E1633; border-right: none; border-radius: 11px 0 0 11px; z-index: 2;"></span>
+<a href="#" style="position: relative; flex-shrink: 0; height: 144px; box-sizing: border-box; margin-top: {{b.mt}}px; border: 2px solid #1E1633; border-radius: 22px; background: #FFF9EC; box-shadow: 0 3px 0 #1E1633; transform: rotate({{b.tilt}}deg);">
 <div style="height: 100%; border-radius: 20px; overflow: hidden;">
-<div style="height: 72px; box-sizing: border-box; padding: 0 14px; background: {{b.bg}}; color: {{b.fg}}; border-bottom: 2px solid #1E1633; display: flex; align-items: center; gap: 10px;">
+<div style="height: 84px; box-sizing: border-box; padding: 0 14px; background: {{b.bg}}; color: {{b.fg}}; border-bottom: 2px solid #1E1633; display: flex; align-items: center; gap: 10px;">
 <span style="width: 44px; height: 44px; border-radius: 50%; background: #FFFFFF; color: #1E1633; border: 2px solid #1E1633; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-family: 'Secular One', sans-serif; font-size: 22px; flex-shrink: 0;">{{b.letter}}</span>
 <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
 <span style="font-family: 'Secular One', sans-serif; font-size: 18px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{b.name}}</span>
 <div style="display: flex; align-items: center; gap: 8px;">
-<span style="font-size: 13px; font-weight: 700;">{{b.role}}</span>
+<span style="font-size: 13px; font-weight: 700; white-space: nowrap;">{{b.role}}</span>
 <span style="padding: 1px 10px; border-radius: 999px; background: {{b.chipBg}}; color: #1E1633; border: 2px solid #1E1633; font-size: 12px; font-weight: 800; white-space: nowrap;">{{b.status}}</span>
 </div>
+<span style="align-self: flex-start; display: {{b.labelDisplay}}; align-items: center; gap: 4px; padding: 1px 8px; border-radius: 999px; background: #FFFFFF; color: #1E1633; border: 2px solid #1E1633; font-size: 12px; font-weight: 800; white-space: nowrap;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01"></path></svg>{{b.label}}</span>
 </div>
 <span style="position: relative; display: {{b.bellDisplay}}; width: 44px; height: 44px; box-sizing: border-box; border-radius: 50%; background: #FFFFFF; color: #1E1633; border: 2px solid #1E1633; align-items: center; justify-content: center; flex-shrink: 0;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
@@ -99,13 +99,13 @@ class Component extends DCLogic {
     const accent = this.props.accent ?? '#FFD84A';
     const fgOn = (hex) => pickOn(hex);
     const raw = [
-      { name: 'בית הכנסת אור חדש', role: 'חברת קהילה', letter: 'א', bg: '#5B3DF5', status: 'פעיל', chipBg: '#E3DDFF', serial: 'מס׳ חבר 0418', since: 'מאז 2019', bell: 1 },
-      { name: 'FitZone', role: 'מנוי שנתי', letter: 'F', bg: '#FF5A36', status: 'מתחדש 1.11', chipBg: '#FFDCD3', serial: 'מס׳ חבר 2207', since: 'מאז 2022', bell: 1 },
-      { name: 'ועד בית · בניין לדוגמה', role: 'דירה 4', letter: 'ו', bg: '#00B67A', status: 'יתרה ₪275', chipBg: '#FFD84A', serial: 'דירה 4', since: 'מאז 2020', bell: 0 },
+      { name: 'בית הכנסת אור חדש', role: 'חברת קהילה', letter: 'א', bg: '#5B3DF5', status: 'פעיל', chipBg: '#E3DDFF', serial: 'מס׳ חבר 0418', since: 'מאז 2019', bell: 1, label: 'גבאי' },
+      { name: 'FitZone', role: 'מנוי שנתי', letter: 'F', bg: '#FF5A36', status: 'מתחדש 1.11', chipBg: '#FFDCD3', serial: 'מס׳ חבר 2207', since: 'מאז 2022', bell: 1, label: 'מתקדמים' },
+      { name: 'ועד בית · בניין לדוגמה', role: 'דירה 4', letter: 'ו', bg: '#00B67A', status: 'יתרה ₪275', chipBg: '#FFD84A', serial: 'דירה 4', since: 'מאז 2020', bell: 0, label: 'ועד' },
       { name: 'חתולי השכונה', role: 'מתנדבת', letter: 'ח', bg: '#FF5C9E', status: 'פעיל', chipBg: '#FFD9E8', serial: 'מס׳ חבר 0091', since: 'מאז 2023', bell: 0 },
       { name: 'עזרה לקשיש', role: 'מתנדבת', letter: 'ע', bg: '#18B8F0', status: 'פעיל', chipBg: '#CFF0FC', serial: 'מס׳ חבר 0063', since: 'מאז 2024', bell: 0 }
     ];
-    const cards = raw.map((c, i) => ({ ...c, fg: fgOn(c.bg), mt: i === 0 ? 0 : -48, tilt: [-0.3, 0.25, -0.2, 0.3, -0.25][i], bellDisplay: c.bell ? 'flex' : 'none', accent }));
+    const cards = raw.map((c, i) => ({ ...c, fg: fgOn(c.bg), mt: i === 0 ? 0 : -48, tilt: [-0.3, 0.25, -0.2, 0.3, -0.25][i], bellDisplay: c.bell ? 'flex' : 'none', labelDisplay: c.label ? 'inline-flex' : 'none', label: c.label || '', accent }));
     const chips = [
       { label: 'הכול', active: true },
       { label: 'בית' },

@@ -10,10 +10,10 @@ def mini(pack):
     name,mods=PACKS[pack]
     r=''.join(f'<div style="height:26px;border-radius:8px;border:2px solid {INK};background:#fff;display:flex;align-items:center;padding:0 8px;font-weight:700;font-size:12.5px;gap:6px;opacity:.85;">{l}</div>' for l,_ in CORE_NAV)
     m=''.join(f'<div style="height:26px;border-radius:8px;border:2px dashed {INK};background:{PK};display:flex;align-items:center;padding:0 8px;font-weight:800;font-size:12.5px;">{l}</div>' for l,_ in mods)
-    return f'<div style="display:flex;flex-direction:column;gap:4px;padding:10px;border:2.5px solid {INK};border-radius:14px;background:{ORG};">{r}<span style="color:#fff;font-size:11px;font-weight:800;padding:3px 4px 0;">מודולי {name}</span>{m}</div>'
+    return f'<div style="display:flex;flex-direction:column;gap:4px;padding:10px;border:2.5px solid {INK};border-radius:14px;background:{ORG};">{r}<span style="color:#fff;font-size:12px;font-weight:800;padding:3px 4px 0;">מודולי {name}</span>{m}</div>'
 def terms(rows): return ''.join(f'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1.5px solid {LINE};"><span style="color:{SOFT};font-weight:700;">{a}</span><b>{b}</b></div>' for a,b in rows)
-cols_=[('synagogue','בית כנסת',[('חבר','מתפלל'),('מנהל','גבאי'),('חיוב','תרומה / נדר'),('שדה ייחודי','תאריך יארצייט')]),('hoa','ועד בית',[('חבר','דייר'),('מנהל','ועד'),('חיוב','דמי ועד'),('שדה ייחודי','מספר דירה')]),('gym','חדר כושר',[('חבר','מתאמן'),('מנהל','מאמן'),('חיוב','מנוי / כרטיסייה'),('שדה ייחודי','תאריך סיום מנוי')])]
-cards=''.join(panel(h2(n,'חבילה (pack)')+mini(p)+f'<span style="font-weight:800;">מונחים ושדות</span>'+terms(t),pad=14,gap=8,extra='flex:1;') for p,n,t in cols_)
+cols_=[('synagogue','בית כנסת',[('חבר','מתפלל'),('מנהל','גבאי'),('חיוב','תרומה / נדר'),('שדה ייחודי','תאריך יארצייט')]),('hoa','ועד בית',[('חבר','דייר'),('מנהל','ועד'),('חיוב','דמי ועד'),('שדה ייחודי','מספר דירה')]),('gym','חדר כושר',[('חבר','מתאמן'),('מנהל','מאמן'),('חיוב','מנוי / כרטיסייה'),('שדה ייחודי','תאריך סיום מנוי')]),('club','מועדון',[('חבר','חבר מועדון'),('מנהל','יו״ר'),('חיוב','דמי חבר לפי רמה'),('שדה ייחודי','רמת חברות')])]
+cards=''.join(panel(h2(n,'חבילה (pack)')+mini(p)+f'<span style="font-weight:800;">מונחים ושדות</span>'+terms(t),pad=14,gap=8,extra='width:262px;flex-shrink:0;') for p,n,t in cols_)
 core=panel(h2('הליבה, זהה לכל ארגון','כל מי שנרשם מקבל את זה, בלי קשר לסוג')+''.join(f'<div style="display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1.5px solid {LINE};">{ico(d,18)}<b>{l}</b></div>' for l,d in CORE_NAV)+note('כלל ברזל: מודול נכנס לליבה רק אם לפחות שני סוגי ארגון צריכים אותו (product-spec).'),pad=14,gap=4,extra='width:330px;flex-shrink:0;')
 page=f'''<!doctype html>
 <html lang="he" dir="rtl">
@@ -30,12 +30,13 @@ page=f'''<!doctype html>
 body{{margin:0}}
 a{{color:inherit;text-decoration:none}}
 .h{{font-family:'Secular One',sans-serif;font-weight:400}}
+.sc::-webkit-scrollbar{{height:12px}}.sc::-webkit-scrollbar-thumb{{background:#1E1633;border-radius:6px}}.sc::-webkit-scrollbar-track{{background:rgba(30,22,51,.15);border-radius:6px}}
 </style>
 </helmet>
 <div dir="rtl" style="width:1440px;height:900px;box-sizing:border-box;padding:24px;background:{Y};color:{INK};font-family:'Assistant',system-ui,sans-serif;font-size:15px;overflow:hidden;display:flex;flex-direction:column;gap:14px;">
 {head('ליבה אחת, חבילה לכל סוג ארגון','כך בנוי הניהול: כל מסך בנוי מליבה גנרית, והחבילה מוסיפה מונחים, שדות ומודולים')}
-<section style="flex:1;min-height:0;display:flex;gap:14px;">{core}{cards}</section>
-<div style="display:flex;gap:16px;align-items:center;font-weight:700;">{pk('מסומן כך = ייעודי לחבילה')}{CORE}<span>= ליבה</span><span style="flex:1;"></span><span style="color:{INK};">אותו מבנה מסך, אותם רכיבים. רק התוכן והתפריט משתנים.</span></div>
+<section style="flex:1;min-height:0;display:flex;gap:14px;">{core}<div class="sc" style="flex:1;min-width:0;display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;padding:0 0 12px;">{cards}</div></section>
+<div style="display:flex;gap:16px;align-items:center;font-weight:700;">{pk('מסומן כך = ייעודי לחבילה')}{CORE}<span>= ליבה</span><span style="flex:1;"></span><span style="color:{INK};">אותו מבנה מסך, אותם רכיבים. רק התוכן והתפריט משתנים. סוגי ארגון נוספים יתווספו בגלילה.</span></div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{{"$preview":{{"width":1440,"height":900}}}}'>
