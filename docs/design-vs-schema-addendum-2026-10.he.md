@@ -48,3 +48,20 @@
 | notification | notification_id, recipient_type (member/admin), recipient_id, org_id, kind (inquiry_reply, ...), ref_id, needs_action (bool), created_at, read_at | הפריט בהודעות של החבר עם "דורש טיפול". נוצר בכל תגובה בפנייה לצד השני. needs_action נסגר כשהנמען קורא או מגיב |
 | notification_delivery | notification_id, channel (bell/push/email), sent_at | פעמון תמיד. דחיפה ברירת מחדל לחבר, כבוי לפי הגדרות החברות (notify_inquiries). ערוצי ההנהלה פתוחים לשאלה |
 | מונה פניות בניהול | נגזר: פניות פתוחות שהתגובה האחרונה בהן של חבר או שהן חדשות | מוצג על "פניות" בתפריט ובשורת המשימות של אפליקציית הניהול |
+
+### תחומי אחריות והתראות למנהלים (אוקטובר 2026)
+| ישות | שדות עיקריים | כללים |
+|---|---|---|
+| הרשאת מנהל בתחום | membership_id (המנהל), area (members, join_requests, inquiries, messages, finance, treasury, activities, reports, module:<key>), can_read, can_write, can_notify | can_write ו-can_notify דורשים can_read. נאכף בשרת, לא רק בממשק. מנהל ראשי: כל התחומים, לא ניתן לצמצם. הגדרות הארגון וצוות והרשאות נשארות לתפקיד מנהל ראשי |
+| תבנית תפקיד | key (treasurer, spokesperson, gabbai, secretary, empty), permissions | נקודת פתיחה בלבד. אין קשר חי אחרי יצירה |
+| העדפת התראה של מנהל | membership_id, push, email, daily_digest, muted_until, hidden_areas | חלה על התחומים שבהם can_notify. הסתרת תחום מסתירה גם מתפריט וממונים |
+| ניתוב התראה | נגזר: נמענים = מנהלים עם can_notify בתחום. ריק: המנהל הראשי | כל התראה נרשמת ב-notification (ראו פניות) |
+
+## זהות מנהלים (9.10.2026)
+
+- תפקיד מנהל דורש `membership` פעיל וגם `user`. אי אפשר ליצור מנהל בלי שניהם.
+- שדה `color` (hex) על שיוך המנהל לארגון, ייחודי בתוך הארגון. שדה `avatar_mode`: letter או photo. תמונה מוצגת רק עם הסכמה.
+- הזמנת מנהל: שני צדדים. הבקשה נשלחת לחבר, התפקיד פעיל רק אחרי אישורו. הוספה דורשת גם אישור מנהל ראשי נוסף.
+- כל תשובה, הערה ופעולה נשמרות עם `actor_manager_id`. לפנייה שדה `handler_manager_id` (ריק: המנהל הראשי).
+- יומן הפעולות כולל אירועי הרשאות: מי, למי, תחום, הרשאה, ערך קודם וחדש.
+
