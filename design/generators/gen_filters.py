@@ -12,11 +12,11 @@ def mchip(t,on=False,dd=False,cnt=None):
     c=f'<span style="min-width:20px;height:20px;box-sizing:border-box;padding:0 5px;border-radius:10px;background:#FF5A36;color:{INK};border:2px solid {INK};font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;margin-inline-start:5px;">{cnt}</span>' if cnt else ''
     d=ico(CHEV,14,2.6) if dd else ''
     return f'<span style="min-height:38px;box-sizing:border-box;padding:0 12px;border-radius:19px;border:2px solid {INK};background:{bg};color:{fg};font-weight:800;font-size:14px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;">{t}{c}{d}</span>'
-fbtn=lambda n: f'<a href="#" style="min-height:38px;box-sizing:border-box;padding:0 14px;border-radius:19px;border:2px solid {INK};background:{Y};box-shadow:0 2px 0 {INK};font-weight:800;font-size:14px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">{ico(FIL,16,2.4)}מסננים{(" · "+str(n)) if n else ""}</a>'
+fbtn=lambda n: f'<a href="#" style="min-height:44px;box-sizing:border-box;padding:0 14px;border-radius:19px;border:2px solid {INK};background:{Y};box-shadow:0 2px 0 {INK};font-weight:800;font-size:14px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">{ico(FIL,16,2.4)}מסננים{(" · "+str(n)) if n else ""}</a>'
 def sheet_wrap(title,inner,cta,clear):
     return (f'<div style="position:absolute;inset:0;background:rgba(30,22,51,.55);z-index:5;"></div><section role="dialog" aria-label="{title}" style="position:absolute;inset-inline:0;bottom:0;z-index:6;box-sizing:border-box;background:#fff;border-top:2.5px solid {INK};border-radius:24px 24px 0 0;padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px;">'
      f'<div style="align-self:center;width:44px;height:5px;border-radius:3px;background:{INK};opacity:.25;"></div>'
-     f'<div style="display:flex;align-items:center;"><span style="font-family:\'Secular One\',sans-serif;font-size:24px;flex:1;">{title}</span><a href="#" style="font-weight:800;font-size:15px;text-decoration:underline;">{clear}</a></div>'
+     f'<div style="display:flex;align-items:center;"><span style="font-family:\'Secular One\',sans-serif;font-size:24px;flex:1;">{title}</span><a href="#" style="min-height:44px;padding:0 6px;display:inline-flex;align-items:center;font-weight:800;font-size:15px;text-decoration:underline;">{clear}</a></div>'
      +inner+pbtn(cta)+'</section>')
 def sec(t,items): return f'<div style="display:flex;flex-direction:column;gap:6px;"><span style="font-weight:800;font-size:15px;">{t}</span><div style="display:flex;flex-wrap:wrap;gap:6px;">{items}</div></div>'
 def trow(t,sub,on):
@@ -54,13 +54,13 @@ inv=(hdr('בקשות צירוף')
  +org_card('כ','#18B8F0','כושר פלוס','חדר כושר · בית שמש',tagp('ארגון באנשי הקשר שלך','#D7F5E8',CONT)+tShared+tVer)
  +org_card('ח','#FF5C9E','מועדון הקריאה','מועדון · ירושלים',tVer)
  +org_card('ב','#00B67A','ועד בית שדרות הגפן','ועד בית · בית שמש',tShared))
-out4['D-Invites']=page('ד · בקשות צירוף מארגונים',844,inv,nav('wallet'))
+out4['D-Invites']=page('ד · בקשות צירוף מארגונים',844,inv,'')
 msheet=sheet_wrap('סינון בקשות צירוף',
   sec('סוג ארגון',mchip('ועד בית')+mchip('בית כנסת')+mchip('חדר כושר',True)+mchip('חוגים')+mchip('מועדונים',True))
   +sec('אזור או מדינה',mchip('ישראל',True)+mchip('באזור שלי')+mchip('חו״ל'))
   +f'<div style="border:2px solid {INK};border-radius:14px;padding:2px 12px;background:#FFF9EC;">{trow("ארגונים באנשי הקשר שלי","ההתאמה מתבצעת בטלפון שלך בלבד",True)}<div style="height:1.5px;background:#EDE6D6;"></div>{trow("חברים שלי חברים בהם","רק אנשי הקשר שלך שחברים בארגון",True)}<div style="height:1.5px;background:#EDE6D6;"></div>{trow("ארגונים מאומתים בלבד","אומת על ידי הפלטפורמה",False)}<div style="height:1.5px;background:#EDE6D6;"></div>{trow("להסתיר ארגונים שדחיתי","ארגון שדחיתי לא יציק שוב",True)}</div>',
   'הצגת 2 בקשות','ניקוי')
-out4['D-InvitesFilter']=page('ד · סינון בקשות צירוף',844,hdr('בקשות צירוף')+org_card('כ','#18B8F0','כושר פלוס','חדר כושר · בית שמש',tVer),nav('wallet'),extra=msheet)
+out4['D-InvitesFilter']=page('ד · סינון בקשות צירוף',844,hdr('בקשות צירוף')+org_card('כ','#18B8F0','כושר פלוס','חדר כושר · בית שמש',tVer),'',extra=msheet)
 for k,v in {**mo4,**out4}.items(): open(P_+k+'.dc.html','w',encoding='utf-8').write(v)
 # ---- admin desktop
 asrc=open('/home/claude/gen/gen_admin.py',encoding='utf-8').read().split("for k,v in out.items()")[0]

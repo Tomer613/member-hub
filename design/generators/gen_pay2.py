@@ -24,7 +24,7 @@ ms=f'<div style="height:100%;display:flex;align-items:center;gap:12px;padding:0 
 mb=kv('מתחדש ב','01.11.2026')+kv('מחיר','₪2,200 לשנה')+kv('תוויות','מייסד · חבר ותיק')
 out2['D-MyMembership']=page('ד · המנוי שלי',900,orgbar('המנוי שלי','FitZone')+ticket(ms,mb,60,'#FFF9EC')
  +H2('המסלול')+box(linkrow('שינוי מסלול','חודשי, רבעוני או שנתי',icon=SWAP)+linkrow('הקפאת מנוי','עד חודשיים בשנה, בלי חיוב בזמן ההקפאה',icon=PAUSE,last=True))
- +H2('פרטיות והרשאות')+box(linkrow('מה FitZone רואה עליי','שם, טלפון, מגדר ושפה',icon=SHIELD)+linkrow('הודעות מ-FitZone','בחירת סוגים וערוצים',icon=BELL,last=True))
+ +H2('פרטיות והרשאות')+box(linkrow('מה FitZone רואה עליי','שם, טלפון, מגדר ושפה',icon=SHIELD)+linkrow('הודעות מ-FitZone','בחירת סוגים וערוצים',icon=BELL)+linkrow('הפניות שלי','שאלות ובקשות להנהלה',icon='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',last=True))
  +box(linkrow('ביטול חברות','החברות נשארת עד סוף התקופה ששולמה',danger=True,last=True)),nav('wallet'))
 # C. notifications per org
 def tgr(t,sub,on,locked=False):
@@ -77,7 +77,7 @@ def cons2(t,kind):
     return f'<div style="display:flex;align-items:flex-start;gap:10px;font-size:15px;font-weight:700;line-height:1.35;color:{col};"><span style="flex-shrink:0;margin-top:1px;">{ic}</span><span>{t}</span></div>'
 dis=f'<a href="#" role="button" aria-disabled="true" style="min-height:52px;box-sizing:border-box;border-radius:26px;border:2px solid {INK};background:#DDD6EA;color:{INK};font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;">מחיקת החשבון</a>'
 out2['D-DeleteAccount']=page('ד · מחיקת חשבון',900,hdr('מחיקת החשבון')
- +box(f'<div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px;"><span style="font-weight:800;font-size:16px;">מה יקרה</span>{cons2("3 חברויות פעילות יסתיימו, והחיוב האוטומטי יופסק","ok")}{cons2("הפרטים האישיים יימחקו תוך 30 יום","ok")}{cons2("קבלות וחשבוניות נשמרות אצל הארגונים כנדרש בחוק","ok")}</div>')
+ +box(f'<div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px;"><span style="font-weight:800;font-size:16px;">מה יקרה</span>{cons2("3 חברויות פעילות יסתיימו, והחיוב האוטומטי יופסק","ok")}{cons2("הפרטים האישיים יימחקו תוך 30 יום","ok")}{cons2("קבלות וחשבוניות נשמרות אצל הארגונים עד 7 שנים, כנדרש בחוק","ok")}</div>')
  +f'<section style="flex-shrink:0;background:#FFFFFF;border:2px solid {DANGER};border-radius:18px;box-shadow:0 3px 0 {DANGER};padding:12px 14px;display:flex;flex-direction:column;gap:8px;"><span style="font-weight:800;font-size:16px;color:{DANGER};">יש להסדיר לפני המחיקה</span>{cons2("חוב פתוח: ועד בית · דמי ועד · ₪120","no")}<div style="display:flex;gap:8px;">{btnsm("לתשלום החוב",True)}</div></section>'
  +fld('כדי לאשר, כתבו "מחיקה"','',False,'מחיקה')
  +'<div style="flex:1;min-height:6px;"></div>'+dis+sbtn('ביטול')+'<div style="height:6px;flex-shrink:0;"></div>','')

@@ -56,7 +56,7 @@ mo['D-MAdmMember']=page('ד · ניהול במובייל · חבר',900,
  +f'<section style="flex-shrink:0;background:#FFFFFF;border:2px solid {DANGER};border-radius:18px;box-shadow:0 3px 0 {DANGER};padding:12px 14px;display:flex;flex-direction:column;gap:8px;"><span style="font-weight:800;font-size:16px;color:{DANGER};">חוב פתוח · ₪350</span><span style="font-size:13.5px;font-weight:600;">אירוע גאלה שנתית · באיחור 12 ימים</span><div style="display:flex;gap:8px;">{btnsm("רישום תשלום ידני",True)}{btnsm("תזכורת")}</div></section>'
  +f'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;flex-shrink:0;">{qa(MAIL,"שליחת הודעה")}{qa(COIN,"יצירת חיוב")}</div>'
  +P('היסטוריה מלאה, שינוי רמה וביטול חברות — בתיק החבר בדסקטופ.',13,SOFT)
- ,anav('mem'))
+ ,'')
 # 4 manual payment
 mo['D-MAdmPayRecord']=page('ד · ניהול במובייל · רישום תשלום',900,
  abar('רישום תשלום ידני','דנה כהן · חוב ₪350')
@@ -67,15 +67,15 @@ mo['D-MAdmPayRecord']=page('ד · ניהול במובייל · רישום תשל
  +box(f'<div style="padding:10px 14px;">{chk("שליחת קבלה לחברה",True,"נשלחת אוטומטית בהודעה ובדוא״ל")}</div>')
  +P('הרישום נכנס לקופה ומתועד בשם המנהל שביצע אותו.',13,SOFT)
  +'<div style="flex:1;min-height:6px;"></div>'+pbtn('רישום התשלום')+'<div style="height:6px;flex-shrink:0;"></div>'
- ,anav('fin'))
+ ,'')
 # 5 quick message
 mo['D-MAdmMessage']=page('ד · ניהול במובייל · הודעה מהירה',900,
  abar('הודעה מהירה','לחברי המועדון')
  +f'<div style="display:flex;flex-direction:column;gap:6px;"><span style="font-weight:800;font-size:15px;">למי</span><div style="display:flex;gap:8px;flex-wrap:wrap;">{chip("כולם",True,"310")}{chip("רמת זהב",False)}{chip("חייבים",False,"23")}{chip("חבר בודד",False)}</div></div>'
  +fld('נושא','',False,'לדוגמה: אירוע ביום חמישי',True)
- +f'<div style="display:flex;flex-direction:column;gap:6px;"><span style="font-weight:800;font-size:15px;">ההודעה</span><div style="min-height:130px;box-sizing:border-box;padding:12px 14px;background:#FFFFFF;border:2px solid {INK};border-radius:14px;font-size:16px;font-weight:600;color:{SOFT};line-height:1.45;">כתבו כאן את ההודעה…</div></div>'
+ +f'<div style="display:flex;flex-direction:column;gap:6px;"><span style="font-weight:800;font-size:15px;">ההודעה</span><div style="min-height:130px;box-sizing:border-box;padding:12px 14px;background:#FFFFFF;border:2px solid {INK};border-radius:14px;font-size:16px;font-weight:600;color:{SOFT};line-height:1.45;">כתבו כאן את ההודעה…</div><span style="font-size:12.5px;font-weight:600;color:#5A4E70;">אל תכתבו כאן מידע רפואי או מזהה רגיש.</span></div>'
  +P('ההודעה תישלח כהתראה באפליקציה. הודעות מעוצבות, קבצים ותזמון — בדסקטופ.',13,SOFT)
  +'<div style="flex:1;min-height:6px;"></div>'+pbtn('שליחה ל-310 חברים')+'<div style="height:6px;flex-shrink:0;"></div>'
- ,anav('more'))
+ ,'')
 for k,v in mo.items(): open(f'/home/claude/project/{k}.dc.html','w',encoding='utf-8').write(v)
 print(list(mo))

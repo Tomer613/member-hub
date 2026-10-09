@@ -18,7 +18,7 @@ out5['D-MAdmAddMember']=page('ד · ניהול במובייל · הוספת חב
  +way(QRI,'שיתוף קוד פרופיל ארגון','כל מי שמעוניין שולח בקשה, ואתם מאשרים.','#E3DDFF')
  +'<div style="flex:1;min-height:6px;"></div>'
  +f'<div style="flex-shrink:0;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid {INK};border-radius:14px;background:#FFF6D1;font-weight:600;font-size:13.5px;line-height:1.45;">{ico(XL,22,2.2)}<span>הרבה חברים בבת אחת? ייבוא מקובץ אקסל זמין במערכת בדסקטופ.</span></div><div style="height:8px;flex-shrink:0;"></div>'
- ,anav('mem'))
+ ,'')
 # invitation form
 def segm(items,sel):
     return '<div role="tablist" style="flex-shrink:0;display:flex;gap:4px;padding:4px;border-radius:30px;background:#fff;border:2px solid '+INK+';">'+''.join(f'<span role="tab" aria-selected="{str(i==sel).lower()}" style="flex:1;min-height:44px;box-sizing:border-box;border-radius:22px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;{"background:"+Y+";border:2px solid "+INK+";box-shadow:0 2px 0 "+INK+";" if i==sel else "border:2px solid transparent;"}">{t}</span>' for i,t in enumerate(items))+'</div>'
@@ -32,7 +32,7 @@ out5['D-MAdmInvite']=page('ד · ניהול במובייל · שליחת הזמ�
  +f'<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">{lab("איך לשלוח")}{segm(["WhatsApp","SMS","קישור"],0)}</div>'
  +msg
  +'<div style="flex:1;min-height:4px;"></div>'+pbtn('שליחת הזמנה')+P('ההזמנה מיועדת למספר הזה בלבד ותקפה 14 ימים. אחרי שהאדם מאשר, הוא נכנס מיד.',13,SOFT)
- ,anav('mem'))
+ ,'')
 # invitee side
 out5['D-InviteAccept']=page('ד · הזמנה להצטרף',844,
  f'<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding-top:14px;">{logo("א",84,ORGC)}<span style="font-family:\'Secular One\',sans-serif;font-size:28px;line-height:1.1;">בית הכנסת אור חדש</span><span style="font-size:16px;font-weight:700;line-height:1.4;">יוסף, הגבאי, מזמין אתכם להצטרף<br>כחברת קהילה</span></div>'

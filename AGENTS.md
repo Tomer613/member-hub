@@ -35,6 +35,8 @@ Implementation order is in `docs/NEXT-STEPS.md`.
 - Visual language: `docs/design-direction-d.he.md`; tokens in `src/styles/tokens.css`; components in `src/components/ui`. No hardcoded colors in components.
 - RTL and LTR: `docs/rtl-ltr.he.md`. Use logical properties only (start/end, `ms-*`/`me-*`, `text-start`), never left/right.
 - Accessibility is a requirement (`docs/accessibility.he.md`): any color or token change must pass `npm test` (`src/styles/contrast.test.ts`); text on org colors uses `onColor()`.
+- Terminology is binding: `docs/glossary.he.md`. Never invent or reword a term, and never use the phrases it lists as avoided. UI copy follows the voice rules in `docs/brand-voice.he.md`.
+- Data handling: retention periods in `docs/retention-policy.he.md`, sensitive information in `docs/sensitive-info-policy.he.md` (no medical data is stored at all). Anything legal goes to `docs/legal/questions-for-experts.he.md`, never decided in code.
 - Open questions live in one place: `docs/open-questions.he.md`. Add new ones there (with an ID and a recommendation), and update the status when decided. Do not decide VERIFY items without checking a current source.
 - Design comes first for the UI: build screens only from the design system (`docs/NEXT-STEPS.md`, phase 2), and only after the screen's design is approved.
 - `docs/NEXT-STEPS.md` is the task list. Read it at the start of every session, work in its order, tick items only when they run and are tested.

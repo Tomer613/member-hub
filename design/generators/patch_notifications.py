@@ -1,0 +1,11 @@
+# Adds the "new reply in inquiry" notification to D-Notifications (run after gen.py).
+import re
+f='/home/claude/project/D-Notifications.dc.html';s=open(f,encoding='utf-8').read()
+if 'פנייה #1042' not in s:
+    item=('<article style="flex-shrink:0;display:flex;background:#FFFFFF;border:2px solid #1E1633;border-radius:18px;box-shadow:0 3px 0 #1E1633;overflow:hidden;"><div style="width:60px;flex-shrink:0;background:#FF9B6B;border-inline-end:2px solid #1E1633;display:flex;justify-content:center;padding-top:12px;box-sizing:border-box;"><span style="width:40px;height:40px;flex-shrink:0;box-sizing:border-box;border-radius:50%;border:2px solid #1E1633;background:#FFFFFF;color:#1E1633;display:inline-flex;align-items:center;justify-content:center;" aria-hidden="true"><span style="font-family:\'Secular One\',sans-serif;font-size:17px;line-height:1;">ו</span></span></div><div style="flex:1;min-width:0;padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px;">'
+     '<div style="display:flex;align-items:baseline;gap:8px;"><span style="font-weight:800;font-size:14px;color:#5A4E70;flex:1;">ועד בית · שדרות האמורים 62</span><span style="font-size:13px;font-weight:700;color:#5A4E70;white-space:nowrap;"><bdi>10:02</bdi></span></div>'
+     '<p style="margin:0;font-size:16px;font-weight:700;line-height:1.35;">תגובה חדשה בפנייה <bdi>#1042</bdi> שלכם.</p><div style="display:flex;align-items:center;gap:8px;"><a href="#" style="min-height:44px;box-sizing:border-box;padding:0 22px;border-radius:22px;border:2px solid #1E1633;background:#FFD84A;color:#1E1633;box-shadow:0 3px 0 #1E1633;font-weight:800;font-size:16px;display:inline-flex;align-items:center;margin-bottom:3px;">לפנייה</a><span style="margin-inline-start:auto;padding:3px 10px;border-radius:12px;background:#1E1633;color:#FFFFFF;font-size:12px;font-weight:800;white-space:nowrap;">דורש טיפול</span></div></div></article>')
+    i=s.index('<article'); s=s[:i]+item+s[i:]
+    s=s.replace('margin-inline-start:5px;">2</span>','margin-inline-start:5px;">3</span>',1)
+    s=s.replace('justify-content:center;">2</span></a>','justify-content:center;">3</span></a>')
+    open(f,'w',encoding='utf-8').write(s);print('patched notifications')

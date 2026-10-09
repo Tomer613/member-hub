@@ -7,931 +7,1113 @@
    "title": "א · כנס · תג פתוח",
    "w": 390,
    "x": 470,
-   "y": 5040
+   "y": 22878
   },
   "A-Mobile.dc.html": {
    "h": 844,
    "title": "סבב ראשון · א · מסך חבר",
    "w": 390,
-   "x": 1520,
-   "y": 8340
+   "x": 940,
+   "y": 22878
   },
   "A-Wallet.dc.html": {
    "h": 844,
    "title": "א · כנס · ארנק",
    "w": 390,
    "x": 0,
-   "y": 5040
+   "y": 22878
   },
   "B-Badge.dc.html": {
    "h": 844,
    "title": "ב · VIP · תג פתוח",
    "w": 390,
    "x": 470,
-   "y": 6140
+   "y": 24138
   },
   "B-Desktop.dc.html": {
    "h": 900,
    "title": "סבב ראשון · ב · מסך ניהול",
    "w": 1440,
-   "x": 0,
-   "y": 9440
+   "x": 1410,
+   "y": 24138
   },
   "B-Mobile.dc.html": {
    "h": 844,
    "title": "סבב ראשון · ב · מסך חבר",
    "w": 390,
-   "x": 1520,
-   "y": 9440
+   "x": 940,
+   "y": 24138
   },
   "B-Wallet.dc.html": {
    "h": 844,
    "title": "ב · VIP · ארנק",
    "w": 390,
    "x": 0,
-   "y": 6140
+   "y": 24138
   },
   "C-Badge.dc.html": {
    "h": 844,
    "title": "ג · פסטיבל · תג פתוח",
    "w": 390,
    "x": 470,
-   "y": 7240
+   "y": 25398
   },
   "C-Desktop.dc.html": {
    "h": 900,
    "title": "סבב ראשון · ג · מסך ניהול",
    "w": 1440,
-   "x": 0,
-   "y": 10540
+   "x": 1410,
+   "y": 25398
   },
   "C-Mobile.dc.html": {
    "h": 844,
    "title": "סבב ראשון · ג · מסך חבר",
    "w": 390,
-   "x": 1520,
-   "y": 10540
+   "x": 940,
+   "y": 25398
   },
   "C-Wallet.dc.html": {
    "h": 844,
    "title": "ג · פסטיבל · ארנק",
    "w": 390,
    "x": 0,
-   "y": 7240
+   "y": 25398
   },
   "D-Access.dc.html": {
    "h": 844,
    "title": "ד · הגדרות חבר · נגישות",
    "w": 390,
-   "x": 3610,
-   "y": 340
+   "x": 470,
+   "y": 8168
   },
   "D-AdmAccount.dc.html": {
    "h": 900,
    "title": "ד · ניהול · חשבון והסכם",
    "w": 1440,
-   "x": 30400,
-   "y": 3720
+   "x": 13680,
+   "y": 16748
   },
   "D-AdmActivities.dc.html": {
    "h": 900,
    "title": "ד · ניהול · פעילויות ואירועים",
    "w": 1440,
-   "x": 27360,
-   "y": 3720
+   "x": 10640,
+   "y": 12968
   },
   "D-AdmAppearance.dc.html": {
    "h": 900,
    "title": "ד · ניהול · מראה וצבע",
    "w": 1440,
-   "x": 28880,
-   "y": 3720
+   "x": 12160,
+   "y": 16748
   },
   "D-AdmCharge.dc.html": {
    "h": 900,
    "title": "ד · ניהול · יצירת חיוב",
    "w": 1440,
-   "x": 9120,
-   "y": 3720
+   "x": 1520,
+   "y": 15488
   },
   "D-AdmInquiries.dc.html": {
    "h": 900,
    "title": "ד · ניהול · פניות",
    "w": 1440,
-   "x": 25840,
-   "y": 3720
+   "x": 9120,
+   "y": 12968
   },
   "D-AdmKupa.dc.html": {
    "h": 900,
    "title": "ד · ניהול · קופה",
    "w": 1440,
-   "x": 7600,
-   "y": 3720
+   "x": 0,
+   "y": 15488
   },
   "D-AdmLabels.dc.html": {
    "h": 900,
    "title": "ד · ניהול · תוויות",
    "w": 1440,
-   "x": 10640,
-   "y": 3720
+   "x": 9120,
+   "y": 14228
   },
   "D-AdmMember.dc.html": {
    "h": 900,
    "title": "ד · ניהול · תיק חבר",
    "w": 1440,
-   "x": 15200,
-   "y": 3720
+   "x": 4560,
+   "y": 12968
   },
   "D-AdmMessage.dc.html": {
    "h": 900,
    "title": "ד · ניהול · הודעה לחברים",
    "w": 1440,
-   "x": 16720,
-   "y": 3720
+   "x": 6080,
+   "y": 12968
   },
   "D-AdmModules.dc.html": {
    "h": 900,
    "title": "ד · ניהול · סוג ארגון ומודולים",
    "w": 1440,
-   "x": 22800,
-   "y": 3720
+   "x": 16720,
+   "y": 16748
   },
   "D-AdmOrgSettings.dc.html": {
    "h": 900,
    "title": "ד · ניהול · הגדרות · נראות והזמנה",
    "w": 1440,
-   "x": 3040,
-   "y": 3720
+   "x": 9120,
+   "y": 16748
   },
   "D-AdmOverview.dc.html": {
    "h": 900,
    "title": "ד · ניהול · סקירה",
    "w": 1440,
-   "x": 24320,
-   "y": 3720
+   "x": 0,
+   "y": 12968
   },
   "D-AdmPublicPage.dc.html": {
    "h": 900,
    "title": "ד · ניהול · עמוד ציבורי",
    "w": 1440,
-   "x": 19760,
-   "y": 3720
+   "x": 10640,
+   "y": 16748
   },
   "D-AdmReports.dc.html": {
    "h": 900,
    "title": "ד · ניהול · דוחות",
    "w": 1440,
-   "x": 18240,
-   "y": 3720
+   "x": 12160,
+   "y": 12968
   },
   "D-AdmRequests.dc.html": {
    "h": 900,
    "title": "ד · ניהול · בקשות הצטרפות",
    "w": 1440,
-   "x": 13680,
-   "y": 3720
+   "x": 3040,
+   "y": 12968
   },
   "D-AdmRoles.dc.html": {
    "h": 900,
    "title": "ד · ניהול · צוות והרשאות",
    "w": 1440,
-   "x": 12160,
-   "y": 3720
+   "x": 10640,
+   "y": 14228
   },
   "D-AdmTypes.dc.html": {
    "h": 900,
    "title": "ד · ניהול · ליבה וחבילות",
    "w": 1440,
-   "x": 21280,
-   "y": 3720
+   "x": 15200,
+   "y": 16748
   },
   "D-AdmWizard1.dc.html": {
    "h": 900,
    "title": "ד · ניהול · הקמה · פרטי הארגון",
    "w": 1440,
-   "x": 50160,
-   "y": 3720
+   "x": 0,
+   "y": 16748
   },
   "D-AdmWizard2.dc.html": {
    "h": 900,
    "title": "ד · ניהול · הקמה · סוג וחברים",
    "w": 1440,
-   "x": 51680,
-   "y": 3720
+   "x": 1520,
+   "y": 16748
   },
   "D-AdmWizard3.dc.html": {
    "h": 900,
    "title": "ד · ניהול · הקמה · אופן הגבייה",
    "w": 1440,
-   "x": 4560,
-   "y": 3720
+   "x": 3040,
+   "y": 16748
   },
   "D-AdmWizard4.dc.html": {
    "h": 900,
    "title": "ד · ניהול · הקמה · חשבון לקבלת כסף",
    "w": 1440,
-   "x": 6080,
-   "y": 3720
+   "x": 4560,
+   "y": 16748
   },
   "D-AdmWizard5.dc.html": {
    "h": 900,
    "title": "ד · ניהול · הקמה · הזמנת חברים",
    "w": 1440,
-   "x": 53200,
-   "y": 3720
+   "x": 6080,
+   "y": 16748
   },
   "D-Admin.dc.html": {
    "h": 900,
    "title": "ד · מסך ניהול · חברים",
    "w": 1440,
-   "x": 0,
-   "y": 3720
+   "x": 1520,
+   "y": 12968
   },
   "D-AutoPay.dc.html": {
    "h": 844,
    "title": "ד · חיוב אוטומטי",
    "w": 390,
-   "x": 17560,
-   "y": 340
+   "x": 3760,
+   "y": 6798
   },
   "D-AutoPayList.dc.html": {
    "h": 1040,
    "title": "ד · חיובים אוטומטיים (ניהול)",
    "w": 390,
-   "x": 18030,
-   "y": 340
+   "x": 4230,
+   "y": 11568
   },
   "D-Badge.dc.html": {
    "h": 844,
    "title": "ד · כנס+פסטיבל · תג פתוח",
    "w": 390,
-   "x": 470,
-   "y": 340
+   "x": 940,
+   "y": 1334
   },
   "D-BadgeGym.dc.html": {
    "h": 844,
    "title": "ד · כרטיס חברות · חדר כושר",
    "w": 390,
    "x": 1410,
-   "y": 340
+   "y": 1334
   },
   "D-Brand.dc.html": {
    "h": 1000,
    "title": "ד · מותג · לוגו ודמות (3 כיוונים)",
    "w": 1440,
-   "x": 0,
-   "y": -1200
+   "x": 4040,
+   "y": 20168
   },
   "D-CancelMember.dc.html": {
    "h": 844,
    "title": "ד · ביטול חברות",
    "w": 390,
-   "x": 19910,
-   "y": 340
+   "x": 5640,
+   "y": 6798
   },
   "D-ChangePhone.dc.html": {
    "h": 844,
    "title": "ד · החלפת טלפון · 1",
    "w": 390,
-   "x": 22260,
-   "y": 340
+   "x": 1410,
+   "y": 8168
   },
   "D-ChangePhone2.dc.html": {
    "h": 844,
    "title": "ד · החלפת טלפון · 2",
    "w": 390,
-   "x": 22730,
-   "y": 340
+   "x": 1880,
+   "y": 8168
   },
   "D-Components.dc.html": {
    "h": 1020,
    "title": "ד · ספריית רכיבים",
    "w": 1180,
-   "x": 2350,
-   "y": 340
+   "x": 0,
+   "y": 20168
   },
   "D-DataExport.dc.html": {
    "h": 844,
    "title": "ד · הורדת נתונים",
    "w": 390,
-   "x": 23670,
-   "y": 340
+   "x": 2820,
+   "y": 8168
   },
   "D-DeleteAccount.dc.html": {
    "h": 900,
    "title": "ד · מחיקת חשבון",
    "w": 390,
-   "x": 24140,
-   "y": 340
+   "x": 3290,
+   "y": 8168
   },
   "D-Join.dc.html": {
    "h": 844,
    "title": "ד · כנס+פסטיבל · הצטרפות",
    "w": 390,
-   "x": 940,
-   "y": 340
+   "x": 1880,
+   "y": 130
   },
   "D-JoinRequest.dc.html": {
    "h": 844,
    "title": "ד · בקשת הצטרפות",
    "w": 390,
-   "x": 12860,
-   "y": 340
+   "x": 2350,
+   "y": 130
   },
   "D-JoinSent.dc.html": {
    "h": 844,
    "title": "ד · בקשה נשלחה",
    "w": 390,
-   "x": 13330,
-   "y": 340
+   "x": 2820,
+   "y": 130
   },
   "D-Labels.dc.html": {
    "h": 1000,
    "title": "ד · תוויות · אפשרויות",
    "w": 1180,
-   "x": 11600,
-   "y": 340
+   "x": 1260,
+   "y": 20168
   },
   "D-LoginMethods.dc.html": {
    "h": 844,
    "title": "ד · אמצעי התחברות",
    "w": 390,
-   "x": 21790,
-   "y": 340
+   "x": 940,
+   "y": 8168
   },
   "D-LostPhone.dc.html": {
    "h": 844,
    "title": "ד · אין גישה לטלפון",
    "w": 390,
-   "x": 23200,
-   "y": 340
+   "x": 2350,
+   "y": 8168
   },
   "D-MAdmHome.dc.html": {
    "h": 844,
    "title": "ד · ניהול במובייל · סקירה",
    "w": 390,
-   "x": 24610,
-   "y": 340
+   "x": 0,
+   "y": 11568
   },
   "D-MAdmMember.dc.html": {
    "h": 900,
    "title": "ד · ניהול במובייל · חבר",
    "w": 390,
-   "x": 25550,
-   "y": 340
+   "x": 2820,
+   "y": 11568
   },
   "D-MAdmMessage.dc.html": {
    "h": 900,
    "title": "ד · ניהול במובייל · הודעה מהירה",
    "w": 390,
-   "x": 26490,
-   "y": 340
+   "x": 3760,
+   "y": 11568
   },
   "D-MAdmPayRecord.dc.html": {
    "h": 900,
    "title": "ד · ניהול במובייל · רישום תשלום",
    "w": 390,
-   "x": 26020,
-   "y": 340
+   "x": 3290,
+   "y": 11568
   },
   "D-MAdmRequests.dc.html": {
    "h": 844,
    "title": "ד · ניהול במובייל · בקשות הצטרפות",
    "w": 390,
-   "x": 25080,
-   "y": 340
+   "x": 470,
+   "y": 11568
   },
   "D-MemberFinance.dc.html": {
    "h": 844,
    "title": "ד · כספים בארגון",
    "w": 390,
-   "x": 20380,
-   "y": 340
+   "x": 4700,
+   "y": 5538
   },
   "D-ModClubEvents.dc.html": {
    "h": 900,
    "title": "ד · מודול מועדון · אירועים והרשמה",
    "w": 1440,
-   "x": 47120,
-   "y": 3720
+   "x": 15200,
+   "y": 18008
   },
   "D-ModClubPerks.dc.html": {
    "h": 900,
    "title": "ד · מודול מועדון · הטבות",
    "w": 1440,
-   "x": 48640,
-   "y": 3720
+   "x": 16720,
+   "y": 18008
   },
   "D-ModClubTiers.dc.html": {
    "h": 900,
    "title": "ד · מודול מועדון · רמות חברות",
    "w": 1440,
-   "x": 45600,
-   "y": 3720
+   "x": 13680,
+   "y": 18008
   },
   "D-ModGymAccess.dc.html": {
    "h": 900,
    "title": "ד · מודול חדר כושר · כניסות ובקרת כניסה",
    "w": 1440,
-   "x": 41040,
-   "y": 3720
+   "x": 9120,
+   "y": 18008
   },
   "D-ModGymClasses.dc.html": {
    "h": 900,
    "title": "ד · מודול חדר כושר · שיעורים והזמנות",
    "w": 1440,
-   "x": 42560,
-   "y": 3720
+   "x": 10640,
+   "y": 18008
   },
   "D-ModGymFreeze.dc.html": {
    "h": 900,
    "title": "ד · מודול חדר כושר · הקפאות מנוי",
    "w": 1440,
-   "x": 44080,
-   "y": 3720
+   "x": 12160,
+   "y": 18008
   },
   "D-ModHoaExpenses.dc.html": {
    "h": 900,
    "title": "ד · מודול ועד בית · הוצאות ותקציב",
    "w": 1440,
-   "x": 36480,
-   "y": 3720
+   "x": 4560,
+   "y": 18008
   },
   "D-ModHoaIssues.dc.html": {
    "h": 900,
    "title": "ד · מודול ועד בית · תקלות ותחזוקה",
    "w": 1440,
-   "x": 38000,
-   "y": 3720
+   "x": 6080,
+   "y": 18008
   },
   "D-ModHoaMeetings.dc.html": {
    "h": 900,
    "title": "ד · מודול ועד בית · אסיפות והצבעות",
    "w": 1440,
-   "x": 39520,
-   "y": 3720
+   "x": 7600,
+   "y": 18008
   },
   "D-ModSynDonations.dc.html": {
    "h": 900,
    "title": "ד · מודול בית כנסת · תרומות ונדרים",
    "w": 1440,
-   "x": 33440,
-   "y": 3720
+   "x": 1520,
+   "y": 18008
   },
   "D-ModSynSchedule.dc.html": {
    "h": 900,
    "title": "ד · מודול בית כנסת · תפילות ולוח זמנים",
    "w": 1440,
-   "x": 31920,
-   "y": 3720
+   "x": 0,
+   "y": 18008
   },
   "D-ModSynYahrzeit.dc.html": {
    "h": 900,
    "title": "ד · מודול בית כנסת · יארצייט",
    "w": 1440,
-   "x": 34960,
-   "y": 3720
+   "x": 3040,
+   "y": 18008
   },
   "D-MyMembership.dc.html": {
    "h": 900,
    "title": "ד · המנוי שלי",
    "w": 390,
-   "x": 20850,
-   "y": 340
+   "x": 5170,
+   "y": 5538
   },
   "D-MySettings.dc.html": {
    "h": 3040,
    "title": "ד · ההגדרות שלי (מסך אחד נגלל)",
    "w": 390,
-   "x": 4080,
-   "y": 340
+   "x": 0,
+   "y": 8168
   },
   "D-NotifOrg.dc.html": {
    "h": 900,
    "title": "ד · הודעות מארגון",
    "w": 390,
-   "x": 21320,
-   "y": 340
+   "x": 940,
+   "y": 5538
   },
   "D-Notifications.dc.html": {
    "h": 844,
    "title": "ד · הודעות",
    "w": 390,
-   "x": 4550,
-   "y": 340
+   "x": 0,
+   "y": 5538
   },
   "D-NotificationsDone.dc.html": {
    "h": 844,
    "title": "ד · הודעות · הושלמו",
    "w": 390,
-   "x": 5020,
-   "y": 340
+   "x": 470,
+   "y": 5538
   },
   "D-OrgPage.dc.html": {
    "h": 1180,
    "title": "ד · עמוד ארגון ציבורי",
    "w": 390,
-   "x": 8780,
-   "y": 340
+   "x": 1410,
+   "y": 2794
   },
   "D-PayAddCard.dc.html": {
    "h": 844,
    "title": "ד · הוספת כרטיס",
    "w": 390,
-   "x": 15210,
-   "y": 340
+   "x": 940,
+   "y": 6798
   },
   "D-PayCharge.dc.html": {
    "h": 844,
    "title": "ד · תשלום חיוב",
    "w": 390,
-   "x": 15680,
-   "y": 340
+   "x": 1410,
+   "y": 6798
   },
   "D-PayFailed.dc.html": {
    "h": 844,
    "title": "ד · תשלום נכשל",
    "w": 390,
-   "x": 16620,
-   "y": 340
+   "x": 2350,
+   "y": 6798
   },
   "D-PayHistory.dc.html": {
    "h": 1000,
    "title": "ד · היסטוריית תשלומים וקבלות",
    "w": 390,
-   "x": 17090,
-   "y": 340
+   "x": 3290,
+   "y": 6798
   },
   "D-PayManual.dc.html": {
    "h": 844,
    "title": "ד · דיווח על תשלום",
    "w": 390,
-   "x": 18500,
-   "y": 340
+   "x": 4230,
+   "y": 6798
   },
   "D-PayManualSent.dc.html": {
    "h": 844,
    "title": "ד · דיווח נשלח",
    "w": 390,
-   "x": 18970,
-   "y": 340
+   "x": 4700,
+   "y": 6798
   },
   "D-PayMethods.dc.html": {
    "h": 1010,
    "title": "ד · אמצעי תשלום",
    "w": 390,
-   "x": 14270,
-   "y": 340
+   "x": 0,
+   "y": 6798
   },
   "D-PayOrgSheet.dc.html": {
    "h": 844,
    "title": "ד · אמצעי תשלום · בחירה לארגון",
    "w": 390,
-   "x": 14740,
-   "y": 340
+   "x": 470,
+   "y": 6798
   },
   "D-PayReceipt.dc.html": {
    "h": 900,
    "title": "ד · קבלה",
    "w": 390,
-   "x": 26960,
-   "y": 340
+   "x": 2820,
+   "y": 6798
   },
   "D-PaySuccess.dc.html": {
    "h": 844,
    "title": "ד · תשלום הצליח",
    "w": 390,
-   "x": 16150,
-   "y": 340
+   "x": 1880,
+   "y": 6798
   },
   "D-PlanChange.dc.html": {
    "h": 844,
    "title": "ד · שינוי מסלול",
    "w": 390,
-   "x": 19440,
-   "y": 340
+   "x": 5170,
+   "y": 6798
   },
   "D-Profile.dc.html": {
    "h": 844,
    "title": "ד · פרטים ראשונים",
    "w": 390,
-   "x": 11130,
-   "y": 340
+   "x": 1410,
+   "y": 130
   },
   "D-Search.dc.html": {
    "h": 844,
    "title": "ד · חיפוש",
    "w": 390,
-   "x": 7370,
-   "y": 340
+   "x": 0,
+   "y": 2794
   },
   "D-SearchDiscover.dc.html": {
    "h": 844,
    "title": "ד · חיפוש · גילוי ארגונים",
    "w": 390,
-   "x": 8310,
-   "y": 340
+   "x": 940,
+   "y": 2794
   },
   "D-SearchEmpty.dc.html": {
    "h": 844,
    "title": "ד · חיפוש · אין תוצאות",
    "w": 390,
-   "x": 9250,
-   "y": 340
+   "x": 1880,
+   "y": 2794
   },
   "D-SearchResults.dc.html": {
    "h": 1000,
    "title": "ד · חיפוש · תוצאות",
    "w": 390,
-   "x": 7840,
-   "y": 340
+   "x": 470,
+   "y": 2794
   },
   "D-Section.dc.html": {
    "h": 844,
    "title": "ד · מסך משנה · תפילות ואירועים",
    "w": 390,
-   "x": 1880,
-   "y": 340
+   "x": 4230,
+   "y": 5538
   },
   "D-Settings.dc.html": {
    "h": 900,
    "title": "ד · הגדרות הארגון",
    "w": 1440,
-   "x": 1520,
-   "y": 3720
+   "x": 7600,
+   "y": 16748
   },
   "D-Verify.dc.html": {
    "h": 844,
    "title": "ד · אימות קוד",
    "w": 390,
-   "x": 10190,
-   "y": 340
+   "x": 470,
+   "y": 130
   },
   "D-VerifyError.dc.html": {
    "h": 844,
    "title": "ד · אימות קוד · שגיאה",
    "w": 390,
-   "x": 10660,
-   "y": 340
+   "x": 940,
+   "y": 130
   },
   "D-Wallet.dc.html": {
    "h": 844,
    "title": "ד · כנס+פסטיבל · ארנק",
    "w": 390,
    "x": 0,
-   "y": 340
+   "y": 1334
   },
   "D-WalletArchive.dc.html": {
    "h": 1100,
    "title": "ד · ארנק · ארכיון",
    "w": 390,
-   "x": 6430,
-   "y": 340
+   "x": 3760,
+   "y": 1334
   },
   "D-WalletDelete.dc.html": {
    "h": 844,
    "title": "ד · ארנק · אישור מחיקה",
    "w": 390,
-   "x": 6900,
-   "y": 340
+   "x": 4230,
+   "y": 1334
   },
   "D-WalletEdit.dc.html": {
    "h": 1000,
    "title": "ד · ארנק · עריכת סדר",
    "w": 390,
-   "x": 5490,
-   "y": 340
+   "x": 2820,
+   "y": 1334
   },
   "D-WalletEmpty.dc.html": {
    "h": 844,
    "title": "ד · ארנק ריק",
    "w": 390,
-   "x": 13800,
-   "y": 340
+   "x": 470,
+   "y": 1334
   },
   "D-WalletMove.dc.html": {
    "h": 844,
    "title": "ד · ארנק · העברת כרטיס",
    "w": 390,
-   "x": 5960,
-   "y": 340
+   "x": 3290,
+   "y": 1334
   },
   "D-Welcome.dc.html": {
    "h": 844,
    "title": "ד · כניסה והרשמה",
    "w": 390,
-   "x": 9720,
-   "y": 340
+   "x": 0,
+   "y": 130
   },
   "Main.dc.html": {
    "h": 900,
    "title": "סבב ראשון · א · מסך ניהול",
    "w": 1440,
-   "x": 0,
-   "y": 8340
+   "x": 1410,
+   "y": 22878
   },
   "D-WalletN1.dc.html": {
    "h": 844,
    "title": "ד · ארנק · נקי (ניסוי)",
    "w": 390,
    "x": 0,
-   "y": -2500
+   "y": 21618
   },
   "D-BadgeN1.dc.html": {
    "h": 844,
    "title": "ד · כרטיס חברות · רצועה בלי חריץ וניקוב (ניסוי)",
    "w": 390,
    "x": 470,
-   "y": -2500
+   "y": 21618
   },
   "D-PayChargeN.dc.html": {
    "h": 844,
    "title": "ד · תשלום · נקי (ניסוי)",
    "w": 390,
-   "x": 2820,
-   "y": -2500
+   "x": 2350,
+   "y": 21618
   },
   "D-PaySuccessN.dc.html": {
    "h": 844,
    "title": "ד · שולם · נקי (ניסוי)",
    "w": 390,
-   "x": 3290,
-   "y": -2500
+   "x": 2820,
+   "y": 21618
   },
   "D-PayReceiptN.dc.html": {
    "h": 900,
    "title": "ד · קבלה · נקי (ניסוי)",
    "w": 390,
-   "x": 3760,
-   "y": -2500
+   "x": 3290,
+   "y": 21618
   },
   "D-BrandB.dc.html": {
    "h": 1010,
    "title": "ד · מותג · סיכה, טבעת, כרטיס (להשוואה)",
    "w": 1440,
-   "x": 1520,
-   "y": -1200
+   "x": 5560,
+   "y": 20168
   },
   "D-BadgeN1a.dc.html": {
    "h": 844,
    "w": 390,
    "x": 940,
-   "y": -2500,
+   "y": 21618,
    "title": "ד · כרטיס חברות · הפרדה: לוגו חוצה (ניסוי)"
   },
   "D-BadgeN1b.dc.html": {
    "h": 844,
    "w": 390,
    "x": 1410,
-   "y": -2500,
+   "y": 21618,
    "title": "ד · כרטיס חברות · הפרדה: קו מעוגל (ניסוי)"
   },
   "D-BadgeN1c.dc.html": {
    "h": 844,
    "w": 390,
    "x": 1880,
-   "y": -2500,
+   "y": 21618,
    "title": "ד · כרטיס חברות · הפרדה: שני חלקים (ניסוי)"
   },
   "D-BrandLogo.dc.html": {
    "h": 700,
    "w": 1440,
-   "x": 3040,
-   "y": -1200,
+   "x": 7080,
+   "y": 20168,
    "title": "ד · מותג · לוגו מוצע (כרטיס חבר עם וי)"
   },
   "D-HighContrast.dc.html": {
    "h": 1090,
    "w": 1440,
-   "x": 4560,
-   "y": -1200,
+   "x": 2520,
+   "y": 20168,
    "title": "ד · נגישות · מצב ניגודיות גבוהה"
   },
   "D-BadgeBack.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 27420,
-   "y": 340,
+   "x": 1880,
+   "y": 1334,
    "title": "ד · גב הכרטיס (קוד כניסה)"
   },
   "D-BadgeFlip.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 27880,
-   "y": 340,
+   "x": 2350,
+   "y": 1334,
    "title": "ד · היפוך הכרטיס (אנימציה)"
   },
   "D-QrScan.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 28340,
-   "y": 340,
+   "x": 0,
+   "y": 4334,
    "title": "ד · סריקה"
   },
   "D-QrMyCode.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 28800,
-   "y": 340,
+   "x": 470,
+   "y": 4334,
    "title": "ד · קוד פרופיל משתמש"
   },
   "D-QrConsent.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 29260,
-   "y": 340,
+   "x": 940,
+   "y": 4334,
    "title": "ד · אישור הצטרפות בסריקה"
   },
   "D-QrInviteFriend.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 29720,
-   "y": 340,
+   "x": 1410,
+   "y": 4334,
    "title": "ד · קוד פרופיל ארגון (שיתוף)"
   },
   "D-MAdmScan.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 30180,
-   "y": 340,
+   "x": 1410,
+   "y": 11568,
    "title": "ד · מנהל · סריקת קוד פרופיל משתמש"
   },
   "D-AdmJoinQr.dc.html": {
    "h": 900,
    "w": 1440,
-   "x": 54720,
-   "y": 3720,
+   "x": 0,
+   "y": 14228,
    "title": "ד · ניהול · קוד פרופיל הארגון"
   },
   "D-MAdmRequestsFilter.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 30640,
-   "y": 340,
+   "x": 940,
+   "y": 11568,
    "title": "ד · ניהול במובייל · סינון בקשות"
   },
   "D-Invites.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 31100,
-   "y": 340,
+   "x": 1880,
+   "y": 4334,
    "title": "ד · בקשות צירוף מארגונים"
   },
   "D-InvitesFilter.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 31560,
-   "y": 340,
+   "x": 2350,
+   "y": 4334,
    "title": "ד · סינון בקשות צירוף"
   },
   "D-MAdmAddMember.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 32020,
-   "y": 340,
+   "x": 1880,
+   "y": 11568,
    "title": "ד · ניהול במובייל · הוספת חבר"
   },
   "D-MAdmInvite.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 32480,
-   "y": 340,
+   "x": 2350,
+   "y": 11568,
    "title": "ד · ניהול במובייל · שליחת הזמנה"
   },
   "D-InviteAccept.dc.html": {
    "h": 844,
    "w": 390,
-   "x": 32940,
-   "y": 340,
+   "x": 3290,
+   "y": 130,
    "title": "ד · הזמנה להצטרף (מי שהוזמן)"
   },
   "D-AdmAddMember.dc.html": {
    "h": 900,
    "w": 1440,
-   "x": 56240,
-   "y": 3720,
+   "x": 1520,
+   "y": 14228,
    "title": "ד · ניהול · הוספת חברים"
   },
   "D-AdmImport1.dc.html": {
    "h": 900,
    "w": 1440,
-   "x": 57760,
-   "y": 3720,
+   "x": 3040,
+   "y": 14228,
    "title": "ד · ניהול · ייבוא · התאמת עמודות"
   },
   "D-AdmImport2.dc.html": {
    "h": 900,
    "w": 1440,
-   "x": 59280,
-   "y": 3720,
+   "x": 4560,
+   "y": 14228,
    "title": "ד · ניהול · ייבוא · בדיקה ושליחה"
   },
   "D-AdmImport3.dc.html": {
    "h": 900,
    "w": 1440,
-   "x": 60800,
-   "y": 3720,
+   "x": 6080,
+   "y": 14228,
    "title": "ד · ניהול · ייבוא · שליחה"
+  },
+  "D-DirNotice.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 2350,
+   "y": 5538,
+   "title": "ד · מדריך חברים · הודעה"
+  },
+  "D-DirSetup.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 2820,
+   "y": 5538,
+   "title": "ד · מדריך חברים · ההופעה שלי"
+  },
+  "D-Directory.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 3290,
+   "y": 5538,
+   "title": "ד · מדריך חברים"
+  },
+  "D-DirPerson.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 3760,
+   "y": 5538,
+   "title": "ד · מדריך חברים · חבר"
+  },
+  "D-Channel.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 1410,
+   "y": 5538,
+   "title": "ד · ערוץ הודעות"
+  },
+  "D-ChannelReact.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 1880,
+   "y": 5538,
+   "title": "ד · ערוץ הודעות · תגובה"
+  },
+  "D-AdmDirectory.dc.html": {
+   "h": 900,
+   "w": 1440,
+   "x": 7600,
+   "y": 14228,
+   "title": "ד · ניהול · מדריך חברים"
+  },
+  "D-AdmMessages.dc.html": {
+   "h": 900,
+   "w": 1440,
+   "x": 7600,
+   "y": 12968,
+   "title": "ד · ניהול · הודעות ותגובות"
+  },
+  "D-OrgSettings.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 5640,
+   "y": 5538,
+   "title": "ד · הגדרות החברות בארגון"
+  },
+  "D-ChannelDislike.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 6110,
+   "y": 5538,
+   "title": "ד · ערוץ הודעות · לא אהבתי"
+  },
+  "D-DirEmpty.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 6580,
+   "y": 5538,
+   "title": "ד · מדריך חברים · ריק"
+  },
+  "D-DirClosed.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 7050,
+   "y": 5538,
+   "title": "ד · מדריך חברים · סגור"
+  },
+  "D-InviteExpired.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 7520,
+   "y": 5538,
+   "title": "ד · הזמנה שפג תוקפה"
+  },
+  "D-JoinDeclined.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 7990,
+   "y": 5538,
+   "title": "ד · בקשת הצטרפות לא אושרה"
+  },
+  "D-AdmCompose.dc.html": {
+   "h": 900,
+   "w": 1440,
+   "x": 13680,
+   "y": 12968,
+   "title": "ד · ניהול · הודעה חדשה"
+  },
+  "D-AdmImportErrors.dc.html": {
+   "h": 900,
+   "w": 1440,
+   "x": 12160,
+   "y": 14228,
+   "title": "ד · ניהול · ייבוא · שגיאות"
+  },
+  "D-InquiryNew.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 8460,
+   "y": 5538,
+   "title": "ד · פנייה חדשה"
+  },
+  "D-InquirySent.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 8930,
+   "y": 5538,
+   "title": "ד · פנייה נשלחה"
+  },
+  "D-MAdmNote.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 4700,
+   "y": 11568,
+   "title": "ד · ניהול במובייל · הערה על חבר"
+  },
+  "D-AdmMembersLeft.dc.html": {
+   "h": 900,
+   "w": 1440,
+   "x": 15200,
+   "y": 12968,
+   "title": "ד · ניהול · חברים שעזבו"
+  },
+  "D-AdmOrgClose.dc.html": {
+   "h": 900,
+   "w": 1440,
+   "x": 18240,
+   "y": 16748,
+   "title": "ד · ניהול · סגירת הארגון"
+  },
+  "D-InquiryList.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 9400,
+   "y": 5538,
+   "title": "ד · הפניות שלי"
+  },
+  "D-InquiryEmpty.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 9870,
+   "y": 5538,
+   "title": "ד · הפניות שלי · ריק"
+  },
+  "D-InquiryView.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 10340,
+   "y": 5538,
+   "title": "ד · פנייה"
+  },
+  "D-AdmInquiry.dc.html": {
+   "h": 900,
+   "w": 1440,
+   "x": 16720,
+   "y": 12968,
+   "title": "ד · ניהול · פנייה ותשובה"
+  },
+  "D-InquiryClosed.dc.html": {
+   "h": 844,
+   "w": 390,
+   "x": 10810,
+   "y": 5538,
+   "title": "ד · פנייה סגורה"
   }
  },
  "createdOnFiles": {
@@ -943,98 +1125,176 @@
   "view": "canvas"
  },
  "notes": {
-  "title-a": {
+  "title-u1": {
    "kind": "title1",
-   "maxW": 860,
-   "text": "סבב קודם · כיוון א · כנס",
+   "maxW": 3680,
+   "text": "אפליקציית חבר · 1 · כניסה, הרשמה והצטרפות",
    "w": 240,
    "x": 0,
-   "y": 4780
+   "y": 0
   },
-  "title-b": {
+  "title-u2": {
    "kind": "title1",
-   "maxW": 860,
-   "text": "סבב קודם · כיוון ב · VIP",
+   "maxW": 4620,
+   "text": "אפליקציית חבר · 2 · ארנק וכרטיס חברות",
    "w": 240,
    "x": 0,
-   "y": 5880
+   "y": 1204
   },
-  "title-brand": {
+  "title-u3": {
+   "kind": "title1",
+   "maxW": 2270,
+   "text": "אפליקציית חבר · 3 · חיפוש וגילוי ארגונים",
+   "w": 240,
+   "x": 0,
+   "y": 2664
+  },
+  "title-u4": {
+   "kind": "title1",
+   "maxW": 2740,
+   "text": "אפליקציית חבר · 4 · קודים, סריקה ובקשות צירוף",
+   "w": 240,
+   "x": 0,
+   "y": 4204
+  },
+  "title-u5": {
+   "kind": "title1",
+   "maxW": 5560,
+   "text": "אפליקציית חבר · 5 · בתוך הארגון: הודעות, מדריך חברים ומנוי",
+   "w": 240,
+   "x": 0,
+   "y": 5408
+  },
+  "title-u6": {
+   "kind": "title1",
+   "maxW": 6030,
+   "text": "אפליקציית חבר · 6 · תשלומים",
+   "w": 240,
+   "x": 0,
+   "y": 6668
+  },
+  "title-u7": {
+   "kind": "title1",
+   "maxW": 3680,
+   "text": "אפליקציית חבר · 7 · חשבון, הגדרות ונגישות",
+   "w": 240,
+   "x": 0,
+   "y": 8038
+  },
+  "title-m1": {
+   "kind": "title1",
+   "maxW": 4620,
+   "text": "אפליקציית ניהול (מובייל) · כל המסכים",
+   "w": 240,
+   "x": 0,
+   "y": 11438
+  },
+  "title-d1": {
+   "kind": "title1",
+   "maxW": 13600,
+   "text": "ניהול דסקטופ · 1 · יומיומי: סקירה, חברים, בקשות, הודעות ופניות",
+   "w": 240,
+   "x": 0,
+   "y": 12838
+  },
+  "title-d2": {
+   "kind": "title1",
+   "maxW": 12080,
+   "text": "ניהול דסקטופ · 2 · הצטרפות, ייבוא ומדריך חברים",
+   "w": 240,
+   "x": 0,
+   "y": 14098
+  },
+  "title-d3": {
+   "kind": "title1",
+   "maxW": 2960,
+   "text": "ניהול דסקטופ · 3 · כספים וגבייה",
+   "w": 240,
+   "x": 0,
+   "y": 15358
+  },
+  "title-d4": {
+   "kind": "title1",
+   "maxW": 18160,
+   "text": "ניהול דסקטופ · 4 · הקמת ארגון והגדרות",
+   "w": 240,
+   "x": 0,
+   "y": 16618
+  },
+  "title-d5": {
+   "kind": "title1",
+   "maxW": 18160,
+   "text": "ניהול דסקטופ · 5 · מודולים לפי סוג ארגון",
+   "w": 240,
+   "x": 0,
+   "y": 17878
+  },
+  "title-archive": {
    "kind": "title1",
    "maxW": 4000,
-   "text": "כיוון ד · מותג (לוגו ודמות)",
+   "text": "—— למטה: מה שבצד. סבבים קודמים, ניסויים והשוואות. לא עובדים מכאן ——",
    "w": 240,
    "x": 0,
-   "y": -1300
+   "y": 19838
   },
-  "title-c": {
+  "title-x0": {
    "kind": "title1",
-   "maxW": 860,
-   "text": "סבב קודם · כיוון ג · פסטיבל",
+   "maxW": 8520,
+   "text": "בצד · ספרייה והשוואות (לייחוס בלבד)",
    "w": 240,
    "x": 0,
-   "y": 6980
+   "y": 20038
   },
-  "title-d": {
+  "title-x1": {
    "kind": "title1",
-   "maxW": 33500,
-   "text": "כיוון ד · כנס + פסטיבל (הנבחר)",
+   "maxW": 3680,
+   "text": "בצד · ניסויי כרטיס וארנק (לא פעיל)",
    "w": 240,
    "x": 0,
-   "y": 80
+   "y": 21488
   },
-  "title-d-admin": {
+  "title-xa": {
    "kind": "title1",
-   "maxW": 63000,
-   "text": "כיוון ד · מסכי ניהול (דסקטופ 1440x900) · בשורה מתחת למסכי המובייל",
+   "maxW": 2850,
+   "text": "בצד · סבב קודם · כיוון א · כנס",
    "w": 240,
    "x": 0,
-   "y": 3620
+   "y": 22748
   },
-  "title-old": {
+  "title-xb": {
    "kind": "title1",
-   "maxW": 1910,
-   "text": "סבב ראשון (הפניה בלבד) · מסכי ניהול וחבר ללא ארנק",
+   "maxW": 2850,
+   "text": "בצד · סבב קודם · כיוון ב · VIP",
    "w": 240,
    "x": 0,
-   "y": 8080
+   "y": 24008
   },
-  "title-exp": {
+  "title-xc": {
    "kind": "title1",
-   "maxW": 3000,
-   "text": "ניסוי · אותו עיצוב עם הרצועה, בלי החריץ ובלי חיתוכי העיגולים בצדדים (להשוואה מול המקוריים בשורה למטה)",
+   "maxW": 2850,
+   "text": "בצד · סבב קודם · כיוון ג · פסטיבל",
    "w": 240,
    "x": 0,
-   "y": -2600
+   "y": 25268
   }
  },
  "order": [
-  "D-Wallet.dc.html",
-  "D-Badge.dc.html",
+  "D-Welcome.dc.html",
+  "D-Verify.dc.html",
+  "D-VerifyError.dc.html",
+  "D-Profile.dc.html",
   "D-Join.dc.html",
+  "D-JoinRequest.dc.html",
+  "D-JoinSent.dc.html",
+  "D-InviteAccept.dc.html",
+  "D-Wallet.dc.html",
+  "D-WalletEmpty.dc.html",
+  "D-Badge.dc.html",
   "D-BadgeGym.dc.html",
-  "D-Section.dc.html",
-  "D-Admin.dc.html",
-  "D-Components.dc.html",
-  "D-Settings.dc.html",
-  "D-Access.dc.html",
-  "D-MySettings.dc.html",
-  "D-WalletMove.dc.html",
+  "D-BadgeBack.dc.html",
+  "D-BadgeFlip.dc.html",
   "D-WalletEdit.dc.html",
-  "D-NotificationsDone.dc.html",
-  "A-Wallet.dc.html",
-  "A-Badge.dc.html",
-  "B-Wallet.dc.html",
-  "B-Badge.dc.html",
-  "C-Wallet.dc.html",
-  "C-Badge.dc.html",
-  "A-Mobile.dc.html",
-  "B-Desktop.dc.html",
-  "B-Mobile.dc.html",
-  "C-Desktop.dc.html",
-  "C-Mobile.dc.html",
-  "Main.dc.html",
-  "D-Notifications.dc.html",
+  "D-WalletMove.dc.html",
   "D-WalletArchive.dc.html",
   "D-WalletDelete.dc.html",
   "D-Search.dc.html",
@@ -1042,55 +1302,86 @@
   "D-SearchDiscover.dc.html",
   "D-OrgPage.dc.html",
   "D-SearchEmpty.dc.html",
-  "D-Welcome.dc.html",
-  "D-Verify.dc.html",
-  "D-VerifyError.dc.html",
-  "D-Profile.dc.html",
-  "D-Labels.dc.html",
-  "D-JoinRequest.dc.html",
-  "D-JoinSent.dc.html",
-  "D-WalletEmpty.dc.html",
+  "D-QrScan.dc.html",
+  "D-QrMyCode.dc.html",
+  "D-QrConsent.dc.html",
+  "D-QrInviteFriend.dc.html",
+  "D-Invites.dc.html",
+  "D-InvitesFilter.dc.html",
+  "D-Notifications.dc.html",
+  "D-NotificationsDone.dc.html",
+  "D-NotifOrg.dc.html",
+  "D-Channel.dc.html",
+  "D-ChannelReact.dc.html",
+  "D-DirNotice.dc.html",
+  "D-DirSetup.dc.html",
+  "D-Directory.dc.html",
+  "D-DirPerson.dc.html",
+  "D-Section.dc.html",
+  "D-MemberFinance.dc.html",
+  "D-MyMembership.dc.html",
   "D-PayMethods.dc.html",
   "D-PayOrgSheet.dc.html",
   "D-PayAddCard.dc.html",
   "D-PayCharge.dc.html",
   "D-PaySuccess.dc.html",
   "D-PayFailed.dc.html",
+  "D-PayReceipt.dc.html",
   "D-PayHistory.dc.html",
   "D-AutoPay.dc.html",
-  "D-AutoPayList.dc.html",
   "D-PayManual.dc.html",
   "D-PayManualSent.dc.html",
   "D-PlanChange.dc.html",
   "D-CancelMember.dc.html",
-  "D-MemberFinance.dc.html",
-  "D-MyMembership.dc.html",
-  "D-NotifOrg.dc.html",
+  "D-MySettings.dc.html",
+  "D-Access.dc.html",
   "D-LoginMethods.dc.html",
   "D-ChangePhone.dc.html",
   "D-ChangePhone2.dc.html",
   "D-LostPhone.dc.html",
   "D-DataExport.dc.html",
   "D-DeleteAccount.dc.html",
-  "D-AdmOrgSettings.dc.html",
-  "D-AdmWizard3.dc.html",
-  "D-AdmWizard4.dc.html",
-  "D-AdmKupa.dc.html",
-  "D-AdmCharge.dc.html",
-  "D-AdmLabels.dc.html",
-  "D-AdmRoles.dc.html",
+  "D-MAdmHome.dc.html",
+  "D-MAdmRequests.dc.html",
+  "D-MAdmRequestsFilter.dc.html",
+  "D-MAdmScan.dc.html",
+  "D-MAdmAddMember.dc.html",
+  "D-MAdmInvite.dc.html",
+  "D-MAdmMember.dc.html",
+  "D-MAdmPayRecord.dc.html",
+  "D-MAdmMessage.dc.html",
+  "D-AutoPayList.dc.html",
+  "D-AdmOverview.dc.html",
+  "D-Admin.dc.html",
   "D-AdmRequests.dc.html",
   "D-AdmMember.dc.html",
   "D-AdmMessage.dc.html",
-  "D-AdmReports.dc.html",
-  "D-AdmPublicPage.dc.html",
-  "D-AdmTypes.dc.html",
-  "D-AdmModules.dc.html",
-  "D-AdmOverview.dc.html",
+  "D-AdmMessages.dc.html",
   "D-AdmInquiries.dc.html",
   "D-AdmActivities.dc.html",
+  "D-AdmReports.dc.html",
+  "D-AdmJoinQr.dc.html",
+  "D-AdmAddMember.dc.html",
+  "D-AdmImport1.dc.html",
+  "D-AdmImport2.dc.html",
+  "D-AdmImport3.dc.html",
+  "D-AdmDirectory.dc.html",
+  "D-AdmLabels.dc.html",
+  "D-AdmRoles.dc.html",
+  "D-AdmKupa.dc.html",
+  "D-AdmCharge.dc.html",
+  "D-AdmWizard1.dc.html",
+  "D-AdmWizard2.dc.html",
+  "D-AdmWizard3.dc.html",
+  "D-AdmWizard4.dc.html",
+  "D-AdmWizard5.dc.html",
+  "D-Settings.dc.html",
+  "D-AdmOrgSettings.dc.html",
+  "D-AdmPublicPage.dc.html",
   "D-AdmAppearance.dc.html",
   "D-AdmAccount.dc.html",
+  "D-AdmTypes.dc.html",
+  "D-AdmModules.dc.html",
   "D-ModSynSchedule.dc.html",
   "D-ModSynDonations.dc.html",
   "D-ModSynYahrzeit.dc.html",
@@ -1103,16 +1394,12 @@
   "D-ModClubTiers.dc.html",
   "D-ModClubEvents.dc.html",
   "D-ModClubPerks.dc.html",
-  "D-MAdmHome.dc.html",
-  "D-MAdmRequests.dc.html",
-  "D-MAdmMember.dc.html",
-  "D-MAdmPayRecord.dc.html",
-  "D-MAdmMessage.dc.html",
-  "D-AdmWizard1.dc.html",
-  "D-AdmWizard2.dc.html",
-  "D-AdmWizard5.dc.html",
-  "D-PayReceipt.dc.html",
+  "D-Components.dc.html",
+  "D-Labels.dc.html",
+  "D-HighContrast.dc.html",
   "D-Brand.dc.html",
+  "D-BrandB.dc.html",
+  "D-BrandLogo.dc.html",
   "D-WalletN1.dc.html",
   "D-BadgeN1.dc.html",
   "D-BadgeN1a.dc.html",
@@ -1121,27 +1408,36 @@
   "D-PayChargeN.dc.html",
   "D-PaySuccessN.dc.html",
   "D-PayReceiptN.dc.html",
-  "D-BrandB.dc.html",
-  "D-BrandLogo.dc.html",
-  "D-HighContrast.dc.html",
-  "D-BadgeBack.dc.html",
-  "D-BadgeFlip.dc.html",
-  "D-QrScan.dc.html",
-  "D-QrMyCode.dc.html",
-  "D-QrConsent.dc.html",
-  "D-QrInviteFriend.dc.html",
-  "D-MAdmScan.dc.html",
-  "D-AdmJoinQr.dc.html",
-  "D-MAdmRequestsFilter.dc.html",
-  "D-Invites.dc.html",
-  "D-InvitesFilter.dc.html",
-  "D-MAdmAddMember.dc.html",
-  "D-MAdmInvite.dc.html",
-  "D-InviteAccept.dc.html",
-  "D-AdmAddMember.dc.html",
-  "D-AdmImport1.dc.html",
-  "D-AdmImport2.dc.html",
-  "D-AdmImport3.dc.html"
+  "A-Wallet.dc.html",
+  "A-Badge.dc.html",
+  "A-Mobile.dc.html",
+  "Main.dc.html",
+  "B-Wallet.dc.html",
+  "B-Badge.dc.html",
+  "B-Mobile.dc.html",
+  "B-Desktop.dc.html",
+  "C-Wallet.dc.html",
+  "C-Badge.dc.html",
+  "C-Mobile.dc.html",
+  "C-Desktop.dc.html",
+  "D-OrgSettings.dc.html",
+  "D-ChannelDislike.dc.html",
+  "D-DirEmpty.dc.html",
+  "D-DirClosed.dc.html",
+  "D-InviteExpired.dc.html",
+  "D-JoinDeclined.dc.html",
+  "D-AdmCompose.dc.html",
+  "D-AdmImportErrors.dc.html",
+  "D-InquiryNew.dc.html",
+  "D-InquirySent.dc.html",
+  "D-MAdmNote.dc.html",
+  "D-AdmMembersLeft.dc.html",
+  "D-AdmOrgClose.dc.html",
+  "D-InquiryList.dc.html",
+  "D-InquiryEmpty.dc.html",
+  "D-InquiryView.dc.html",
+  "D-AdmInquiry.dc.html",
+  "D-InquiryClosed.dc.html"
  ],
  "pages": [],
  "title": "MemberHub – ארנק חברויות"
