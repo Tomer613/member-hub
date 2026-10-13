@@ -31,6 +31,16 @@ const pairs: Array<[string, string, string, number]> = [
     ["danger text on surface", danger, surface, 4.5],
     ["danger text on ticket", danger, ticket, 4.5],
     ["white on danger button", "#FFFFFF", danger, 4.5],
+    // Public home page blocks.
+    ["ink on brand yellow", ink, token("--mh-sun"), 4.5],
+    ["ink on pastel violet", ink, token("--mh-pastel-violet"), 4.5],
+    ["ink on pastel teal", ink, token("--mh-pastel-teal"), 4.5],
+    ["ink on pastel orange", ink, token("--mh-pastel-orange"), 4.5],
+    ["ink on pastel pink", ink, token("--mh-pastel-pink"), 4.5],
+    ["ink on sun tint", ink, token("--mh-tint-sun"), 4.5],
+    ["paid text on ok tint", token("--mh-ok-ink"), token("--mh-tint-ok"), 4.5],
+    ["ticket text on ink section", ticket, ink, 4.5],
+    ["brand yellow numbers on ink section", token("--mh-sun"), ink, 4.5],
     // Non-text: the focus ring (ink) against the background and the surface.
     ["focus ring on background", ink, bg, 3],
     ["focus ring on surface", ink, surface, 3],

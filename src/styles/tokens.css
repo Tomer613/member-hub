@@ -27,6 +27,17 @@
   --mh-tint-pink: #FFD9E8;
   --mh-tint-sky: #CFF0FC;
 
+  /* Public home page: big color blocks behind ink text (pastels, not the saturated org palette) */
+  --mh-sun: #FFD84A;           /* fixed brand yellow; unlike --mh-bg it never changes per surface */
+  --mh-line-soft: #EDE6D6;     /* hairline dividers on white and cream */
+  --mh-pastel-violet: #B9A4FF;
+  --mh-pastel-teal: #5EE0C0;
+  --mh-pastel-orange: #FF9B6B;
+  --mh-pastel-pink: #FF9EC4;
+  --mh-tint-ok: #D5F5E8;       /* "paid" chip background */
+  --mh-tint-sun: #FFF0B3;
+  --mh-ok-ink: #0F7A55;        /* green text for "paid" on the ok tint */
+
   /* Status */
   --mh-ok: #00B67A;
   --mh-warn: #FFB020;
