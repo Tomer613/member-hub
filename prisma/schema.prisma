@@ -35,7 +35,7 @@ model Organization {
   locale     String   @default("he") // UI language
   timezone   String   @default("Asia/Jerusalem")
   settings   Json     @default("{}") // pack-specific org settings, letterhead, branding, etc.
-  status     String   @default("active") // active | suspended | closed
+  status     String   @default("active") // setup (wizard not finished) | active | suspended | closed
   // Wallet identity: what members see on their membership badge.
   logoUrl    String?
   brandColor String? // hex; suggested from the logo, overridable by the org (members can override per card)
@@ -43,6 +43,8 @@ model Organization {
   // "listed": appears in search; people can send a join request, an admin must approve it.
   visibility String   @default("private") // private | listed
   city       String? // shown in search results next to the name; search matches name or city
+  // The org's shareable join link (/join/<token>). Whoever opens it sends a join request; an admin approves.
+  joinToken  String?  @unique
   // Platform business model: what this org pays us.
   platformPlan     String @default("free") // free | monthly | yearly (placeholder names)
   platformFeeBps   Int    @default(0) // optional percentage of payments, in basis points

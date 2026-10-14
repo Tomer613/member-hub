@@ -110,8 +110,8 @@ export default function Landing() {
                   <svg viewBox="0 0 120 140"><rect x="14" y="58" width="92" height="72" rx="16" fill="var(--white)" stroke="var(--ink)" strokeWidth="5"/><g className="shk"><path d="M34 58V40a26 26 0 0 1 52 0v18" fill="none" stroke="var(--ink)" strokeWidth="5" strokeLinecap="round"/></g><circle cx="60" cy="90" r="9" fill="var(--ink)"/><path d="M60 98v14" stroke="var(--ink)" strokeWidth="5" strokeLinecap="round"/></svg>
                 </div>
                 <p className="side-note">נבנה כך שגם אנחנו לא רואים את פרטי האשראי שלכם.</p>
-                <div className="stds"><span className="std" title="תקן האבטחה של חברות האשראי לסליקת כרטיסים">PCI DSS</span><span className="std" title="הצפנת כל התעבורה בין המכשיר שלכם לשרת">TLS 1.3</span><span className="std" title="הצפנת המידע השמור אצלנו">AES-256</span></div>
-                <p className="std-cap">אותם תקני אבטחה שעליהם סומכים הבנקים וחברות האשראי.</p>
+                <div className="stds"><span className="std" tabIndex={0} data-tip="תקן האבטחה של חברות האשראי. פרטי הכרטיס לא נשמרים אצלנו">PCI DSS</span><span className="std" tabIndex={0} data-tip="כל מה שעובר בין המכשיר שלכם לשרת מוצפן בדרך">TLS 1.3</span><span className="std" tabIndex={0} data-tip="המידע ששמור אצלנו מוצפן, גם על הדיסק">AES-256</span></div>
+                <p className="std-cap" aria-live="polite"><span>אותם תקני אבטחה שעליהם סומכים הבנקים וחברות האשראי.</span></p>
                 <div className="stream" id="stream" aria-hidden="true"></div>
               </div>
             </section>

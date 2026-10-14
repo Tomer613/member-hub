@@ -25,8 +25,10 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
                 <p className="m-0 max-w-[24em] text-[19px] font-semibold">ועד הבית, בית הכנסת, חדר הכושר והמועדון. כרטיס חבר, תשלומים והודעות, במקום אחד.</p>
             </section>
             <main className="flex min-h-dvh flex-col justify-center gap-4 px-4 py-6 lg:border-s-[3px] lg:border-[var(--mh-ink)] lg:bg-[var(--mh-ticket)] lg:px-7">
-                <Link href="/" className="font-display text-[22px] lg:hidden"><bdi>PIRI</bdi></Link>
-                <LoginFlow flow={flow} inviteOrg={invite?.orgName ?? null} />
+                <div className="mx-auto flex w-full max-w-[460px] flex-col gap-4">
+                    <Link href="/" className="font-display text-[22px] lg:hidden"><bdi>PIRI</bdi></Link>
+                    <LoginFlow flow={flow} inviteOrg={invite?.orgName ?? null} />
+                </div>
             </main>
         </div>
     );

@@ -33,6 +33,7 @@ Implementation order is in `docs/NEXT-STEPS.md`.
 - Joining an organization is always two-sided (invite then accept, or request then approve). Contacts are stored only
   after verification. Never reveal to an org or a stranger whether a phone or email has an account.
 - Visual language: `docs/design-direction-d.he.md`; tokens in `src/styles/tokens.css`; components in `src/components/ui`. No hardcoded colors in components.
+- Every screen must work at every size (decided 14.10.2026): small phones (360px) up to very wide desktops (2560px+), including tablets and small laptops. Check about ten widths (360, 390, 430, 768, 1024, 1180, 1280x720, 1440, 1920, 2560): no sideways scroll, no cramped or overlapping parts, no large empty bands. Prefer fluid sizes (`clamp`) over single breakpoints. Very wide screens zoom the whole app via `--z` in `src/app/globals.css`; inside it, divide viewport units by `var(--z)`.
 - RTL and LTR: `docs/rtl-ltr.he.md`. Use logical properties only (start/end, `ms-*`/`me-*`, `text-start`), never left/right.
 - Accessibility is a requirement (`docs/accessibility.he.md`): any color or token change must pass `npm test` (`src/styles/contrast.test.ts`); text on org colors uses `onColor()`.
 - Terminology is binding: `docs/glossary.he.md`. Never invent or reword a term, and never use the phrases it lists as avoided. UI copy follows the voice rules in `docs/brand-voice.he.md`.

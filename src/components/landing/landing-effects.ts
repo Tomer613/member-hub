@@ -94,6 +94,14 @@ export function initLanding(root: HTMLElement): () => void {
         return el;
     };
 
+    // On very wide screens the page is zoomed (--z in globals.css). Element boxes come back in screen pixels,
+    // while positions we set are in page pixels, so divide by the zoom.
+    const zrect = (el: Element): DOMRect => {
+        const z = (parseFloat(getComputedStyle(document.body).zoom) || 1) * (parseFloat(getComputedStyle(root).zoom) || 1);
+        const r = el.getBoundingClientRect();
+        return new DOMRect(r.left / z, r.top / z, r.width / z, r.height / z);
+    };
+
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const narrow = window.matchMedia("(max-width:860px)");
     if (!reduce) root.classList.add("js");
@@ -153,7 +161,7 @@ export function initLanding(root: HTMLElement): () => void {
                 els[i].innerHTML = `<div class="hd" style="background:var(${d[2]})"><span class="av">${esc(d[1])}</span><span class="nm">${esc(d[0])}</span><span class="st">${esc(d[4])}</span></div><div class="ft">${esc(d[3])}</div>`;
             });
         };
-        const area = (): Frame => (narrow.matches ? { left: 0, top: 0, width: innerWidth, height: innerHeight } : hero.getBoundingClientRect());
+        const area = (): Frame => (narrow.matches ? { left: 0, top: 0, width: innerWidth, height: innerHeight } : zrect(hero));
 
         // After landing, cards keep sliding slowly until none hides another, the scroll cue or the stack.
         const drift = (f: Frame, w: number, h: number, cueBox: DOMRect | null, c: DOMRect) => {
@@ -218,9 +226,9 @@ export function initLanding(root: HTMLElement): () => void {
             busy = true;
             draw();
             const w = own[0].offsetWidth, h = own[0].offsetHeight;
-            const f = area(), c = stack.getBoundingClientRect();
+            const f = area(), c = zrect(stack);
             const ox = c.left - f.left + c.width / 2 - w / 2, oy = c.top - f.top + c.height / 2 - h / 2;
-            const cueBox = cue && !narrow.matches ? cue.getBoundingClientRect() : null;
+            const cueBox = cue && !narrow.matches ? zrect(cue) : null;
             const slots = shuffle((narrow.matches ? MOB_SLOTS : DESK_SLOTS).slice());
             const mode = Math.floor(Math.random() * 3); // 0 burst, 1 fan one by one, 2 wide slide
             const ease = EASES[Math.floor(Math.random() * EASES.length)];
@@ -339,7 +347,7 @@ export function initLanding(root: HTMLElement): () => void {
             rows.push(sp);
         }
         const center = () => {
-            const b = (stream.parentNode as HTMLElement).getBoundingClientRect(), l = lock.getBoundingClientRect();
+            const b = zrect(stream.parentNode as HTMLElement), l = zrect(lock);
             stream.style.top = l.top - b.top + l.height / 2 + "px";
         };
         let mut: number | null = null, hideT: number | null = null;
@@ -354,6 +362,30 @@ export function initLanding(root: HTMLElement): () => void {
         on(lock, "mouseleave", hide);
         on(lock, "click", () => { show(); cancel(hideT); hideT = later(hide, 2200); });
         on(window, "resize", center);
+    }
+
+    // Security standards: hovering or focusing a chip swaps the caption below for what that standard means.
+    const cap = $(".std-cap");
+    const capText = cap?.querySelector("span");
+    if (cap && capText) {
+        const base = capText.textContent ?? "";
+        const show = (chip: HTMLElement | null) => {
+            $$(".std").forEach((c) => c.classList.toggle("on", c === chip));
+            const text = chip?.dataset.tip ?? base;
+            if (capText.textContent === text) return;
+            capText.textContent = text;
+            cap.classList.toggle("tip", !!chip);
+            cap.classList.remove("swap");
+            void cap.offsetWidth; // restart the entrance animation
+            cap.classList.add("swap");
+        };
+        $$(".std").forEach((chip) => {
+            on(chip, "mouseenter", () => show(chip));
+            on(chip, "focus", () => show(chip));
+            on(chip, "click", () => show(chip));
+            on(chip, "mouseleave", () => show(null));
+            on(chip, "blur", () => show(null));
+        });
     }
 
     // Admins: numbers count up, then apartment 11 pays and the totals update.

@@ -3,7 +3,7 @@ import { SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS, createSessionToken, verify
 
 // Optimistic check only (signature and expiry of the cookie). Pages re-check the session in the
 // database, where a disconnected device is caught.
-const PRIVATE = ["/wallet", "/settings", "/invite", "/orgs"];
+const PRIVATE = ["/wallet", "/settings", "/invite", "/orgs", "/join"];
 // A phone session's cookie is re-issued at most once a day, so it lasts 180 days from last use.
 const REISSUE_AFTER_SECONDS = 24 * 60 * 60;
 
@@ -26,4 +26,4 @@ export async function proxy(req: NextRequest) {
     return res;
 }
 
-export const config = { matcher: ["/wallet/:path*", "/settings/:path*", "/invite/:path*", "/orgs/:path*"] };
+export const config = { matcher: ["/wallet/:path*", "/settings/:path*", "/invite/:path*", "/orgs/:path*", "/join/:path*"] };

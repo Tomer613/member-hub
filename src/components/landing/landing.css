@@ -13,11 +13,11 @@
 .lp{margin:0;background:var(--sun);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
 .lp a{color:inherit;text-decoration:none}
 .lp a:focus-visible,.lp button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-.lp .split{direction:rtl;display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);min-height:100vh}
+.lp .split{direction:rtl;display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);min-height:calc(100vh / var(--z))}
 .lp .showcol{padding-inline:clamp(16px,4vw,56px);padding-block:16px 40px;min-width:0}
 .lp .entry{background:var(--cream);border-inline-start:3px solid var(--ink);padding-inline:clamp(16px,3vw,40px);padding-block:16px 40px;min-width:0}
 .lp .entry{position:relative;z-index:1}
-.lp .entry-in{position:sticky;top:0;min-height:calc(100vh - 56px);display:flex;flex-direction:column;justify-content:center;gap:16px;max-width:400px;margin-inline:auto}
+.lp .entry-in{position:sticky;top:0;min-height:calc(100vh / var(--z) - 56px);display:flex;flex-direction:column;justify-content:center;gap:16px;max-width:400px;margin-inline:auto}
 .lp .top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px}
 .lp .brand{font-family:var(--display);font-size:26px}
 .lp .lang{min-height:44px;padding:0 12px;border-radius:22px;border:2px solid var(--ink);background:var(--white);font-weight:800;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
@@ -31,7 +31,7 @@
 .lp .entry-back{align-self:flex-start;min-height:44px;display:inline-flex;align-items:center;gap:4px;padding:0 4px;border:0;background:none;font:inherit;font-weight:800;font-size:15px;color:var(--ink);cursor:pointer;text-decoration:underline}
 .lp .show{display:flex;flex-direction:column;gap:40px;min-width:0;max-width:980px;position:relative;z-index:1}
 .lp .top{position:relative;z-index:1}
-.lp .hero{min-height:calc(100vh - 84px);display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:center;gap:32px;position:relative}
+.lp .hero{min-height:calc(100vh / var(--z) - 84px);display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:center;gap:32px;position:relative}
 .lp .hero .cards{margin-top:0!important;height:300px}
 .lp .hero .bc{width:min(360px,100%);height:100px}
 .lp .hero .c1{top:0;inset-inline-start:auto;inset-inline-end:0}
@@ -47,7 +47,7 @@
 .lp .cue .ball{width:48px;height:48px;border-radius:50%;border:2.5px solid var(--ink);background:var(--white);box-shadow:0 3px 0 var(--ink);display:flex;align-items:center;justify-content:center;transform-origin:50% 100%;animation:lp-bounce 3s cubic-bezier(.3,0,.4,1) infinite}
 .lp .cue:hover .ball{background:var(--sun)}
 @keyframes lp-bounce{0%{transform:translateY(0)}7%{transform:translateY(-22px) scale(.96,1.04)}14%{transform:translateY(0) scale(1.14,.86)}19%{transform:translateY(-9px) scale(1)}24%{transform:translateY(0) scale(1.06,.94)}28%{transform:translateY(-3px)}32%,100%{transform:translateY(0) scale(1)}}
-.lp .doodles{position:fixed;top:0;bottom:0;right:0;width:calc(100% - max(320px,33.333vw));pointer-events:none;overflow:hidden;z-index:0}
+.lp .doodles{position:fixed;top:0;bottom:0;right:0;width:calc(100% - max(320px,33.333vw / var(--z)));pointer-events:none;overflow:hidden;z-index:0}
 .lp .dd{position:absolute;color:var(--ink);opacity:0;transition:opacity 1.4s ease;animation:lp-float var(--f) ease-in-out infinite alternate;animation-delay:var(--d)}
 .lp .dd.on{opacity:.2}
 .lp .dd svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -342,9 +342,14 @@
 .lp .srow:nth-child(even) span{animation-direction:reverse}
 @keyframes lp-slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .lp .stds{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:300px}
-.lp .std{font-weight:800;font-size:13px;padding:4px 12px;border-radius:14px;border:2px solid var(--ink);background:var(--white);direction:ltr;cursor:help}
-.lp .std-cap{margin:0;text-align:center;font-weight:700;font-size:14px;max-width:20em;text-wrap:balance}
-@media (prefers-reduced-motion:no-preference){.lp .std{transition:transform .25s cubic-bezier(.3,1.8,.5,1)}.lp .std:hover{transform:translateY(-3px) rotate(-3deg)}}/* admin demo views */
+.lp .std{font-weight:800;font-size:13px;padding:4px 12px;border-radius:14px;border:2px solid var(--ink);background:var(--white);direction:ltr;cursor:default;transition:background-color .2s ease,box-shadow .2s ease}
+.lp .std.on{background:var(--sun);box-shadow:0 3px 0 var(--ink)}
+.lp .std:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.lp .std-cap{margin:0;text-align:center;font-weight:700;font-size:14px;max-width:20em;min-height:2.6em;text-wrap:balance}
+.lp .std-cap span{display:inline-block}
+.lp .std-cap.tip span{font-weight:800}
+@media (prefers-reduced-motion:no-preference){.lp .std{transition:transform .25s cubic-bezier(.3,1.8,.5,1)}.lp .std:hover,.lp .std.on{transform:translateY(-3px) rotate(-3deg)}.lp .std-cap.swap span{animation:lp-tipin .3s cubic-bezier(.25,1.4,.45,1)}}
+@keyframes lp-tipin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}/* admin demo views */
 
 .lp .br-main{min-height:258px}
 .lp .view{display:none}
@@ -363,5 +368,26 @@
 @media (prefers-reduced-motion:no-preference){.lp .view.cur .chart b{animation:lp-grow .7s cubic-bezier(.25,1.3,.45,1) both;animation-delay:calc(var(--i)*60ms)}}
 @keyframes lp-grow{from{transform:scaleY(0)}}
 .lp .chart-note{margin:8px 4px 0;font-size:13px;font-weight:700;color:var(--ink2)}
-.lp .side-ink .btn.pri{transition:transform .22s cubic-bezier(.3,1.6,.5,1),box-shadow .22s ease,background-color .25s ease}
-.lp .side-ink .btn.pri:hover{background:var(--cream)}
+.lp .side-ink .btn.pri,.lp .sec-dark .btn.pri{transition:transform .22s cubic-bezier(.3,1.6,.5,1),box-shadow .22s ease,background-color .25s ease}
+.lp .side-ink .btn.pri:hover,.lp .sec-dark .btn.pri:hover{background:var(--cream)}
+/* wide screens (Tommy 14.10.2026): the hero uses the full showcase column, so the cards sit further left and grow a little */
+@media (min-width:1400px){
+ .lp .hero{align-self:flex-start;width:min(1500px,calc(66.6vw / var(--z) - 112px));grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,5vw,120px)}
+ .lp .hero .cards{height:340px;justify-self:end;width:min(440px,100%)}
+ .lp .hero .bc{width:min(410px,100%);height:112px}
+ .lp .hero .c2{top:108px;inset-inline-end:30px}
+ .lp .hero .c3{top:216px;inset-inline-end:8px}
+}
+
+/* --z: the page zoom on very wide screens, set in globals.css; viewport units here are divided by it. */
+/* small laptops and landscape tablets: the side column leaves too little room for text and cards side by side */
+@media (min-width:861px) and (max-width:1199px){
+ .lp .hero{grid-template-columns:minmax(0,1fr);align-content:center;gap:28px;padding-bottom:110px}
+ .lp .hero .cards{justify-self:center;width:min(380px,100%)}
+}
+/* portrait tablets and large phones: text and cards side by side instead of a lone stack on one edge */
+@media (min-width:600px) and (max-width:860px){
+ .lp .hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:center;gap:24px}
+ .lp .hero .cards{margin-top:0!important;height:230px}
+ .lp .hero .bc{width:min(320px,100%)}
+}

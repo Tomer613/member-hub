@@ -16,3 +16,20 @@ h1, h2, h3, .font-display {
 /* Wrong one-time code: the boxes shake once. */
 @keyframes mh-shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
 .mh-shake { animation: mh-shake 0.45s; }
+
+/* Every screen size (Tommy 14.10.2026): very wide screens scale the whole app up, so screens never look tiny
+   with empty bands around them. Inside the zoom, 100vh/100dvh would grow too, so code that needs the real
+   screen height divides by --z (see .min-h-dvh below and the landing page). */
+:root{--z:1}
+@media (min-width:1700px){:root{--z:1.12}}
+@media (min-width:1950px){:root{--z:1.25}}
+@media (min-width:2300px){:root{--z:1.45}}
+@media (min-width:3000px){:root{--z:1.8}}
+body{zoom:var(--z)}
+.min-h-dvh{min-height:calc(100dvh / var(--z))}
+
+/* A new wizard screen slides in softly (org setup). */
+@keyframes mh-in { from { opacity: 0; transform: translateY(10px) scale(.99); } }
+.wz-in { animation: mh-in .35s cubic-bezier(.2,.9,.3,1.15) both; }
+.wz-in + .wz-in { animation-delay: .06s; }
+@media (prefers-reduced-motion: reduce) { .wz-in { animation: none; } }

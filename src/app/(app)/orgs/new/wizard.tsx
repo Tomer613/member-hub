@@ -1,0 +1,569 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useRef, useState, useTransition, type InputHTMLAttributes, type ReactNode, type RefObject } from "react";
+import { CopyLink } from "@/components/copy-link";
+import { OrgCard } from "@/components/org-card";
+import { getPack } from "@/packs";
+import { IL_CITIES } from "@/lib/il-cities";
+import {
+    DEFAULT_COLOR, LOGO_MIN_PX, NAME_MAX, PALETTE, STEP_LABELS, wizardSteps,
+    type Collection, type PackChoice, type StepKey,
+} from "@/lib/org-setup";
+import { finishSetup, invitePhones, saveAccountStep, saveCollection, saveLook, saveName, saveType } from "./actions";
+
+// The org setup wizard, one decision per screen (decided with Tommy 14.10.2026, docs/open-questions.he.md,
+// "אשף פתיחת ארגון: מסך אחר מסך"): name, type, card, collection, account (only when collecting through
+// the system), invite. Layout follows boards D-AdmWizard1-5: step bar, a main card and a side card.
+
+export type Draft = {
+    orgId: string | null;
+    step: StepKey;
+    name: string;
+    packId: PackChoice | null;
+    color: string | null;
+    city: string;
+    logo: string | null;
+    collection: Collection | null;
+    joinToken: string | null;
+};
+
+const TYPES: { id: PackChoice; label: string; line: string; tools: string[] }[] = [
+    { id: "synagogue", label: "בית כנסת", line: "תפילות, תרומות, יארצייט", tools: ["תפילות ולוח זמנים", "תרומות ונדרים", "יארצייט"] },
+    { id: "hoa", label: "ועד בית", line: "דמי ועד, תקלות, אסיפות", tools: ["דמי ועד לפי דירה", "תקלות ותחזוקה", "אסיפות דיירים"] },
+    { id: "gym", label: "חדר כושר", line: "מנויים, שיעורים, הקפאות", tools: ["מנויים וכרטיסיות", "שיעורים", "הקפאת מנוי"] },
+    { id: "club", label: "מועדון", line: "רמות חברות, אירועים, הטבות", tools: ["רמות חברות", "אירועים", "הטבות לחברים"] },
+    { id: "generic", label: "משהו אחר", line: "רק הבסיס: חברים, כספים, הודעות", tools: [] },
+];
+
+const COLLECTIONS: { id: Collection; label: string; line: string; tag?: string }[] = [
+    { id: "system", label: "גבייה דרך המערכת", tag: "מומלץ", line: "החברים משלמים בכרטיס או בהוראת קבע, והכסף מועבר אליכם." },
+    { id: "manual", label: "דיווח ידני בלבד", line: "החברים משלמים מחוץ למערכת (מזומן, העברה), ואתם מסמנים מה שולם." },
+    { id: "none", label: "בלי כסף בכלל", line: "בלי תשלומים. רק רשימת חברים, הודעות ואירועים." },
+];
+
+const BANKS = [
+    "הפועלים (12)", "לאומי (10)", "דיסקונט (11)", "מזרחי טפחות (20)", "הבינלאומי (31)", "מרכנתיל (17)",
+    "ירושלים (54)", "מסד (46)", "יהב (4)", "פאג״י (52)", "וואן זירו (18)", "בנק הדואר (9)",
+];
+
+const COLOR_NAMES: Record<string, string> = {
+    "#5B3DF5": "סגול", "#FF5A36": "כתום", "#00B67A": "ירוק", "#FF5C9E": "ורוד", "#18B8F0": "תכלת", "#1E1633": "כהה",
+};
+
+const box = "rounded-[24px] border-[2.5px] border-[var(--mh-ink)] bg-white shadow-[0_4px_0_var(--mh-ink)]";
+const h2 = "m-0 font-display text-[clamp(24px,2.2vw,30px)] leading-[1.15] [text-wrap:balance]";
+const sub = "m-0 mt-1 font-semibold text-[var(--mh-ink-soft)]";
+const pill = "inline-flex min-h-[var(--mh-hit)] items-center justify-center gap-2 rounded-full border-[2.5px] border-[var(--mh-ink)] px-[22px] font-extrabold shadow-[var(--mh-shadow)] transition-[transform,box-shadow,background-color] duration-150 hover:-translate-y-px active:translate-y-[2px] active:shadow-none focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--mh-ink)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:translate-y-0 disabled:border-[#B8AFC7] disabled:bg-[#EDE6D6] disabled:text-[var(--mh-ink-soft)] disabled:shadow-none";
+const primary = `${pill} bg-[var(--mh-org-violet)] text-white hover:bg-[#4A2EE0]`;
+const secondary = `${pill} bg-white text-[var(--mh-ink)] hover:bg-[var(--mh-ticket)]`;
+const field = "min-h-[var(--mh-hit)] w-full rounded-[14px] border-2 border-[var(--mh-ink)] bg-white px-[14px] font-semibold outline-none placeholder:text-[var(--mh-ink-soft)] focus-visible:ring-[3px] focus-visible:ring-[var(--mh-ink)]";
+const label = "text-[14px] font-extrabold";
+
+export function Wizard({ draft }: { draft: Draft }) {
+    const [orgId, setOrgId] = useState(draft.orgId);
+    const [joinToken, setJoinToken] = useState(draft.joinToken);
+    const [step, setStep] = useState<StepKey>(draft.step);
+    const [name, setName] = useState(draft.name);
+    const [packId, setPackId] = useState<PackChoice | null>(draft.packId);
+    const [color, setColor] = useState<string | null>(draft.color);
+    const [city, setCity] = useState(draft.city);
+    const [logo, setLogo] = useState<string | null>(draft.logo);
+    const [logoChanged, setLogoChanged] = useState(false);
+    const [collection, setCollection] = useState<Collection>(draft.collection ?? "system");
+    const [inviteWith, setInviteWith] = useState<"link" | "phone" | "import">("link");
+    const [error, setError] = useState("");
+    const [pending, start] = useTransition();
+
+    const steps = wizardSteps(collection);
+    const index = Math.max(0, steps.indexOf(step));
+    const shownColor = color ?? DEFAULT_COLOR[packId ?? "synagogue"];
+    const heading = useRef<HTMLHeadingElement>(null);
+
+    // Each new screen starts at the top with focus on its heading, so screen readers announce it.
+    const first = useRef(true);
+    useEffect(() => {
+        if (first.current) { first.current = false; return; }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        heading.current?.focus({ preventScroll: true });
+    }, [step]);
+
+    const go = (to: StepKey) => { setError(""); setStep(to); };
+    const back = () => index > 0 && go(steps[index - 1]);
+
+    const next = () => {
+        setError("");
+        start(async () => {
+            if (step === "name") {
+                const r = await saveName(orgId, name);
+                if (r.error || !r.orgId) return setError(r.error ?? "משהו השתבש. נסו שוב");
+                setOrgId(r.orgId);
+                setJoinToken(r.joinToken ?? null);
+                return go("type");
+            }
+            if (!orgId) return go("name");
+            if (step === "type") {
+                if (!packId) return setError("בחרו את סוג הארגון");
+                const r = await saveType(orgId, packId);
+                if (r.error) return setError(r.error);
+                return go("look");
+            }
+            if (step === "look") {
+                const r = await saveLook(orgId, { color: shownColor, city, logo: logoChanged ? logo : undefined });
+                if (r.error) return setError(r.error);
+                setColor(shownColor);
+                setLogoChanged(false);
+                return go("collection");
+            }
+            if (step === "collection") {
+                const r = await saveCollection(orgId, collection);
+                if (r.error) return setError(r.error);
+                return go(collection === "system" ? "account" : "invite");
+            }
+            if (step === "account") {
+                await saveAccountStep(orgId);
+                return go("invite");
+            }
+        });
+    };
+
+    const finish = (how: string) => {
+        if (!orgId) return;
+        start(async () => { await finishSetup(orgId, how); });
+    };
+
+    const pack = getPack(packId ?? "generic");
+    const type = TYPES.find((t) => t.id === packId);
+    const card = <OrgCard name={name.trim()} city={city.trim()} color={shownColor} logo={logo} note="כך החברים יראו את הארגון בארנק." size={step === "look" ? "lg" : "md"} />;
+
+    let main: ReactNode;
+    let side: ReactNode;
+    let sideFirstOnPhone = false;
+
+    if (step === "name") {
+        main = (
+            <>
+                <Head refEl={heading} title="איך קוראים לארגון שלכם?" text="זה מה שהחברים יראו בראש הכרטיס שלהם." />
+                <label className="mt-2 flex flex-col gap-2">
+                    <span className="sr-only">שם הארגון</span>
+                    <input
+                        autoFocus
+                        value={name}
+                        maxLength={NAME_MAX}
+                        onChange={(e) => setName(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter" && name.trim().length >= 2) next(); }}
+                        placeholder="למשל: בית הכנסת אור חדש"
+                        className={`${field} min-h-[68px] rounded-[18px] border-[2.5px] text-[clamp(20px,2vw,26px)] font-extrabold`}
+                        aria-invalid={error ? true : undefined}
+                    />
+                </label>
+                <p className="m-0 text-[14px] font-semibold text-[var(--mh-ink-soft)]">את השם אפשר לשנות בכל רגע בהגדרות.</p>
+            </>
+        );
+        side = <Side title="כך הכרטיס ייראה">{card}</Side>;
+    } else if (step === "type") {
+        main = (
+            <>
+                <Head refEl={heading} title="איזה סוג ארגון אתם?" text="ככה נדבר במילים שלכם ונפתח את הכלים שמתאימים לכם." />
+                <div role="radiogroup" aria-label="סוג הארגון" className="mt-1 grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+                    {TYPES.map((t) => (
+                        <Choice key={t.id} name="type" checked={packId === t.id} onPick={() => setPackId(t.id)} title={t.label} line={t.line} />
+                    ))}
+                </div>
+            </>
+        );
+        side = type ? (
+            <Side title={`מה מקבלים ב${type.id === "generic" ? "ארגון כללי" : type.label}`}>
+                <dl className="m-0 flex flex-col">
+                    <Row k="חבר נקרא" v={pack.terms.member} />
+                    <Row k="מנהל נקרא" v={pack.terms.admin} />
+                </dl>
+                <h4 className="m-0 mt-1 text-[16px] font-extrabold">כלים מיוחדים שנפתחים</h4>
+                {type.tools.length ? (
+                    <ul className="m-0 flex list-none flex-col gap-2 p-0">
+                        {type.tools.map((tool) => (
+                            <li key={tool} className="rounded-[14px] border-2 border-dashed border-[var(--mh-ink)] bg-[var(--mh-tint-violet)] px-3 py-2 font-extrabold">{tool}</li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="m-0 font-semibold text-[var(--mh-ink-soft)]">בלי כלים מיוחדים. את הבסיס מקבלים כולם, ואפשר להוסיף כלים אחר כך.</p>
+                )}
+                <Info>אפשר להחליף סוג או לכבות כלים אחר כך, בלי לאבד נתונים.</Info>
+            </Side>
+        ) : (
+            <Side title="מה מקבלים">
+                <p className="m-0 font-semibold text-[var(--mh-ink-soft)]">בחרו סוג, ונראה כאן איך יקראו לחברים ולמנהלים ואילו כלים נפתחים.</p>
+            </Side>
+        );
+    } else if (step === "look") {
+        sideFirstOnPhone = true;
+        main = (
+            <>
+                <Head refEl={heading} title="איך הכרטיס שלכם ייראה?" text="כל שינוי מופיע מיד על הכרטיס." />
+                <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
+                    <legend className={`${label} mb-2`}>צבע הארגון</legend>
+                    <div role="radiogroup" aria-label="צבע הארגון" className="flex flex-wrap gap-[clamp(8px,2.4vw,12px)]">
+                        {PALETTE.map((c) => (
+                            <button
+                                key={c}
+                                type="button"
+                                role="radio"
+                                aria-checked={shownColor === c}
+                                aria-label={COLOR_NAMES[c]}
+                                onClick={() => setColor(c)}
+                                className={`h-11 w-11 rounded-full border-[2.5px] border-[var(--mh-ink)] transition-transform duration-150 hover:scale-110 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--mh-ink)] focus-visible:ring-offset-2 ${shownColor === c ? "scale-110 shadow-[0_0_0_3px_#fff,0_0_0_5.5px_var(--mh-ink)]" : ""}`}
+                                style={{ background: c }}
+                            />
+                        ))}
+                    </div>
+                    <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">בוחרים אחד, והמערכת דואגת שהכול יישאר קריא.</span>
+                </fieldset>
+                <LogoPicker logo={logo} onChange={(v) => { setLogo(v); setLogoChanged(true); }} />
+                <label className="flex flex-col gap-2">
+                    <span className={label}>עיר</span>
+                    <input value={city} onChange={(e) => setCity(e.target.value)} list="il-cities" maxLength={40} placeholder="מתחילים להקליד" className={`${field} max-w-[420px]`} autoComplete="address-level2" />
+                    <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">עוזרת לחברים למצוא אתכם בחיפוש.</span>
+                    <datalist id="il-cities">{IL_CITIES.map((c) => <option key={c} value={c} />)}</datalist>
+                </label>
+            </>
+        );
+        side = (
+            <Side title="כך הכרטיס ייראה">
+                {card}
+                <Info>את כל זה אפשר לשנות בכל רגע בהגדרות.</Info>
+            </Side>
+        );
+    } else if (step === "collection") {
+        main = (
+            <>
+                <Head refEl={heading} title="איך תגבו כסף מהחברים?" text="אפשר לשנות בכל שלב, והבחירה לא מפעילה גבייה עדיין." />
+                <div role="radiogroup" aria-label="אופן הגבייה" className="flex flex-col gap-3">
+                    {COLLECTIONS.map((c) => (
+                        <Choice key={c.id} name="collection" checked={collection === c.id} onPick={() => setCollection(c.id)} title={c.label} tag={c.tag} line={c.line} />
+                    ))}
+                </div>
+            </>
+        );
+        side = (
+            <Side title="מה זה אומר">
+                {collection === "system" && <p className="m-0 font-semibold">במסך הבא תזינו את פרטי החשבון שאליו יעבור הכסף. אפשר גם להשלים אותם אחר כך.</p>}
+                {collection === "manual" && <p className="m-0 font-semibold">נדלג על פרטי החשבון. החיובים יופיעו לחברים, ואתם מסמנים מה שולם.</p>}
+                {collection === "none" && <p className="m-0 font-semibold">נדלג על פרטי החשבון. אם תרצו לגבות בעתיד, מפעילים את זה בהגדרות.</p>}
+                <Info>הכסף לא עובר דרך חשבון של PIRI. ספק התשלומים מחזיק את הכסף ומבצע את ההעברות, ואנחנו מנהלים את ההוראות.</Info>
+            </Side>
+        );
+    } else if (step === "account") {
+        main = (
+            <>
+                <Head refEl={heading} title="פרטי חשבון לקבלת כסף" text="מה שמוזן כאן מועבר ישירות לספק התשלומים, ולא נשמר אצלנו." />
+                <div role="radiogroup" aria-label="חשבון בנק" className="grid gap-3 sm:grid-cols-2">
+                    <Choice name="bank" checked onPick={() => undefined} title="יש לנו חשבון בנק על שם הארגון" line="הכסף יעבור אליו ישירות." />
+                    <Choice name="bank" checked={false} disabled onPick={() => undefined} title="אין לנו חשבון בנק" tag="בקרוב" line="נפתח לכם יתרה אצל ספק התשלומים." />
+                </div>
+                <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2">
+                    <Field label="שם בעל החשבון" autoComplete="organization" />
+                    <Field label="מספר עמותה / ח.פ." ltr inputMode="numeric" />
+                    <label className="flex flex-col gap-2">
+                        <span className={label}>בנק</span>
+                        <select className={field} defaultValue="">
+                            <option value="" disabled>בחירה מהרשימה</option>
+                            {BANKS.map((b) => <option key={b}>{b}</option>)}
+                        </select>
+                    </label>
+                    <Field label="סניף" ltr inputMode="numeric" />
+                    <Field label="מספר חשבון" ltr inputMode="numeric" />
+                    <Field label="שם איש קשר מורשה" autoComplete="name" />
+                </div>
+                <ProofPicker />
+            </>
+        );
+        side = (
+            <Side title="סטטוס אימות">
+                <dl className="m-0 flex flex-col">
+                    <Row k="פרטי הארגון" v={<Chip tone="need">נדרש</Chip>} />
+                    <Row k="חשבון בנק" v={<Chip tone="need">נדרש</Chip>} />
+                    <Row k="מורשה חתימה" v={<Chip tone="need">נדרש</Chip>} />
+                </dl>
+                <Info>בדרך כלל הבדיקה לוקחת עד יומיים עסקים, ובינתיים הארגון כבר פתוח. מי שעוד לא מוכן, ממשיך ומשלים אחר כך מדף הסקירה.</Info>
+                <p className="m-0 rounded-[14px] border-2 border-dashed border-[var(--mh-ink)] p-3 text-[14px] font-bold text-[var(--mh-ink-soft)]">
+                    החיבור לספק התשלומים עוד בבנייה, ולכן כרגע הפרטים לא נשמרים ולא נשלחים לשום מקום.
+                </p>
+            </Side>
+        );
+    } else {
+        main = (
+            <>
+                <Head refEl={heading} title="איך החברים הראשונים יגיעו?" text="כל הצטרפות היא דו-צדדית: מזמינים, והאדם מאשר." />
+                <div role="radiogroup" aria-label="דרך ההזמנה" className="flex flex-col gap-3">
+                    <Choice name="invite" checked={inviteWith === "link"} onPick={() => setInviteWith("link")} title="קישור הצטרפות" tag="הכי קל" line="שולחים בווטסאפ או במייל. מי שנכנס שולח בקשה, ואתם מאשרים." />
+                    {inviteWith === "link" && joinToken && <CopyLink path={`/join/${joinToken}`} />}
+                    <Choice name="invite" checked={inviteWith === "phone"} onPick={() => setInviteWith("phone")} title="הזמנה לפי טלפון" line="מדביקים רשימת מספרים, וכל אחד מקבל הזמנה אישית." />
+                    {inviteWith === "phone" && orgId && <PhoneInvites orgId={orgId} />}
+                    <Choice name="invite" checked={inviteWith === "import"} onPick={() => setInviteWith("import")} title="יש לנו רשימה קיימת" line="ייבוא מקובץ אקסל. נתאים עמודות ונראה תצוגה מקדימה לפני שמזמינים." />
+                    {inviteWith === "import" && (
+                        <p className="m-0 rounded-[14px] border-2 border-dashed border-[var(--mh-ink)] bg-[var(--mh-ticket)] p-3 font-bold">מסך הייבוא מקובץ עוד בבנייה. אחרי הסיום הוא יחכה לכם כמשימה בדף הסקירה.</p>
+                    )}
+                </div>
+            </>
+        );
+        side = (
+            <Side title="מה הוקם עד עכשיו">
+                <ul className="m-0 flex list-none flex-col p-0">
+                    <Done>שם: {name}</Done>
+                    <Done>סוג ארגון: {type?.label ?? "משהו אחר"}</Done>
+                    <Done>כרטיס: צבע {COLOR_NAMES[shownColor] ?? ""}{logo ? ", לוגו" : ""}{city.trim() ? `, ${city.trim()}` : ""}</Done>
+                    <Done>גבייה: {COLLECTIONS.find((c) => c.id === collection)?.label}</Done>
+                    {collection === "system" && <Done later>חשבון לקבלת כסף: יושלם אחר כך</Done>}
+                </ul>
+                <Info>אפשר לסיים עכשיו ולהזמין אחר כך. הכול ממשיך מדף הסקירה.</Info>
+            </Side>
+        );
+    }
+
+    return (
+        <main className="flex min-h-dvh flex-col bg-[var(--mh-sun)]">
+            <div className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col gap-[clamp(12px,1.6vw,18px)] px-[clamp(12px,3vw,32px)] pt-[clamp(14px,2.5vw,28px)]">
+                <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <div className="flex items-baseline gap-3">
+                        <h1 className="m-0 font-display text-[clamp(26px,2.6vw,34px)]">פתיחת ארגון</h1>
+                        <span className="font-extrabold text-[var(--mh-ink-soft)]">שלב <bdi>{index + 1}</bdi> מתוך <bdi>{steps.length}</bdi></span>
+                    </div>
+                    <Link href="/wallet" className="min-h-10 content-center font-extrabold underline">לארנק</Link>
+                </header>
+                <Stepper steps={steps} index={index} />
+                <div className="grid flex-1 grid-cols-[minmax(0,1fr)] items-start gap-[clamp(12px,1.6vw,18px)] lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,1fr)]">
+                    <section key={step} className={`${box} wz-in flex flex-col gap-4 p-[clamp(16px,2vw,26px)]`}>
+                        {main}
+                        {error && <p role="alert" className="m-0 font-extrabold text-[var(--mh-danger)]">{error}</p>}
+                    </section>
+                    <aside key={`${step}-side`} className={`wz-in flex flex-col gap-3 lg:sticky lg:top-4 ${sideFirstOnPhone ? "max-lg:order-first" : ""}`}>{side}</aside>
+                </div>
+            </div>
+            <footer className="sticky bottom-0 z-10 mt-4 border-t-[2.5px] border-[var(--mh-ink)] bg-[var(--mh-sun)] lg:static lg:border-0">
+                <div className="mx-auto flex w-full max-w-[1280px] flex-wrap items-center gap-3 px-[clamp(12px,3vw,32px)] py-3 lg:pb-6">
+                    {index > 0 && <button type="button" onClick={back} disabled={pending} className={secondary}>חזרה</button>}
+                    <span className="flex-1" />
+                    {step === "invite" ? (
+                        <>
+                            <button type="button" onClick={() => finish("later")} disabled={pending} className={`${secondary} max-sm:order-last max-sm:w-full`}>אזמין אחר כך</button>
+                            <button type="button" onClick={() => finish(inviteWith)} disabled={pending} className={`${primary} max-sm:flex-1`}>סיום ופתיחת הארגון</button>
+                        </>
+                    ) : (
+                        <>
+                            <span className="text-[14px] font-bold text-[var(--mh-ink-soft)] max-sm:hidden" aria-live="polite">{pending ? "שומרים…" : orgId && step !== "account" ? "נשמר אוטומטית" : ""}</span>
+                            {step === "account" && <button type="button" onClick={next} disabled={pending} className={secondary}>אשלים אחר כך</button>}
+                            <button
+                                type="button"
+                                onClick={next}
+                                disabled={pending || (step === "name" && name.trim().length < 2) || (step === "type" && !packId)}
+                                className={`${primary} min-w-[140px] max-sm:flex-1`}
+                            >
+                                המשך
+                            </button>
+                        </>
+                    )}
+                </div>
+            </footer>
+        </main>
+    );
+}
+
+function Head({ title, text, refEl }: { title: string; text: string; refEl: RefObject<HTMLHeadingElement | null> }) {
+    return (
+        <div>
+            <h2 ref={refEl} tabIndex={-1} className={`${h2} outline-none`}>{title}</h2>
+            <p className={sub}>{text}</p>
+        </div>
+    );
+}
+
+function Side({ title, children }: { title: string; children: ReactNode }) {
+    return (
+        <div className={`${box} flex flex-col gap-3 p-[clamp(16px,1.8vw,22px)]`}>
+            <h3 className="m-0 font-display text-[20px]">{title}</h3>
+            {children}
+        </div>
+    );
+}
+
+function Info({ children }: { children: ReactNode }) {
+    return (
+        <p className="m-0 flex items-start gap-2 rounded-[14px] border-2 border-[var(--mh-ink)] bg-[var(--mh-tint-sun)] p-3 text-[14px] font-bold">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="mt-px shrink-0"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
+            <span>{children}</span>
+        </p>
+    );
+}
+
+function Row({ k, v }: { k: string; v: ReactNode }) {
+    return (
+        <div className="flex items-center justify-between gap-3 border-b-2 border-[var(--mh-line-soft)] py-[10px] last:border-0">
+            <dt className="font-semibold text-[var(--mh-ink-soft)]">{k}</dt>
+            <dd className="m-0 font-extrabold">{v}</dd>
+        </div>
+    );
+}
+
+function Chip({ tone, children }: { tone: "need" | "wait" | "ok"; children: ReactNode }) {
+    const bg = tone === "ok" ? "bg-[var(--mh-tint-ok)]" : tone === "wait" ? "bg-[var(--mh-ticket)]" : "bg-[var(--mh-tint-pink)]";
+    return <span className={`inline-flex min-h-7 items-center rounded-full border-2 border-[var(--mh-ink)] px-3 text-[13px] font-extrabold ${bg}`}>{children}</span>;
+}
+
+function Done({ children, later = false }: { children: ReactNode; later?: boolean }) {
+    return (
+        <li className="flex items-center gap-3 border-b-2 border-[var(--mh-line-soft)] py-[10px] font-extrabold last:border-0">
+            <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-[var(--mh-ink)] ${later ? "bg-[var(--mh-ticket)]" : "bg-[var(--mh-ok)]"}`} aria-hidden="true">
+                {later ? "…" : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mh-ink)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5 9-10" /></svg>}
+            </span>
+            <span className="min-w-0 break-words">{children}</span>
+        </li>
+    );
+}
+
+// A radio card: the whole card is the hit area. Arrow keys move between cards like native radios.
+function Choice({ name, checked, onPick, title, line, tag, disabled = false }: {
+    name: string; checked: boolean; onPick: () => void; title: string; line: string; tag?: string; disabled?: boolean;
+}) {
+    return (
+        <label className={`group flex items-start gap-3 rounded-[18px] border-[2.5px] border-[var(--mh-ink)] p-[14px] transition-[transform,box-shadow,background-color] duration-150 ${disabled ? "cursor-not-allowed border-dashed bg-white opacity-70" : checked ? "cursor-pointer bg-[var(--mh-tint-sun)] shadow-[0_4px_0_var(--mh-ink)]" : "cursor-pointer bg-white hover:-translate-y-px hover:bg-[var(--mh-ticket)] hover:shadow-[var(--mh-shadow)]"}`}>
+            <input type="radio" name={name} checked={checked} disabled={disabled} onChange={onPick} className="peer sr-only" />
+            <span className="mt-[2px] inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[2.5px] border-[var(--mh-ink)] bg-white peer-focus-visible:ring-[3px] peer-focus-visible:ring-[var(--mh-ink)] peer-focus-visible:ring-offset-2" aria-hidden="true">
+                <span className={`h-3 w-3 rounded-full bg-[var(--mh-ink)] transition-transform duration-150 ${checked ? "scale-100" : "scale-0"}`} />
+            </span>
+            <span className="flex min-w-0 flex-col gap-1">
+                <span className="flex flex-wrap items-center gap-2">
+                    <b className="text-[18px] leading-tight">{title}</b>
+                    {tag && <span className="rounded-full border-2 border-[var(--mh-ink)] bg-[var(--mh-sun)] px-2 text-[12px] font-extrabold">{tag}</span>}
+                </span>
+                <span className="font-semibold text-[var(--mh-ink-soft)]">{line}</span>
+            </span>
+        </label>
+    );
+}
+
+function Field({ label: text, ltr = false, ...props }: { label: string; ltr?: boolean } & InputHTMLAttributes<HTMLInputElement>) {
+    return (
+        <label className="flex flex-col gap-2">
+            <span className={label}>{text}</span>
+            <input {...props} dir={ltr ? "ltr" : undefined} className={`${field} ${ltr ? "text-end" : ""}`} />
+        </label>
+    );
+}
+
+// The logo is cropped to a square in the browser and saved at 256x256, so any photo works as long as
+// it is big enough. Smaller than 256 pixels would look blurry on the card.
+function LogoPicker({ logo, onChange }: { logo: string | null; onChange: (v: string | null) => void }) {
+    const input = useRef<HTMLInputElement>(null);
+    const [error, setError] = useState("");
+    const pick = (file: File | undefined) => {
+        setError("");
+        if (!file) return;
+        if (!/^image\/(png|jpeg|webp)$/.test(file.type)) return setError("אפשר להעלות תמונה מסוג PNG, JPG או WEBP");
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            const side = Math.min(img.naturalWidth, img.naturalHeight);
+            if (side < LOGO_MIN_PX) return setError("התמונה קטנה מדי. צריך לפחות 256 פיקסלים בכל צד");
+            const canvas = document.createElement("canvas");
+            canvas.width = canvas.height = LOGO_MIN_PX;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return setError("הלוגו לא נקלט. נסו קובץ אחר");
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, LOGO_MIN_PX, LOGO_MIN_PX);
+            ctx.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, LOGO_MIN_PX, LOGO_MIN_PX);
+            onChange(canvas.toDataURL("image/webp", 0.9));
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); setError("הלוגו לא נקלט. נסו קובץ אחר"); };
+        img.src = url;
+    };
+    return (
+        <div className="flex flex-col gap-2">
+            <span className={label}>לוגו <span className="font-semibold text-[var(--mh-ink-soft)]">(לא חובה)</span></span>
+            <div className="flex flex-wrap items-center gap-3">
+                {logo && (
+                    // eslint-disable-next-line @next/next/no-img-element -- inline data URL
+                    <img src={logo} alt="הלוגו שנבחר" className="h-14 w-14 rounded-full border-[2.5px] border-[var(--mh-ink)] object-cover" />
+                )}
+                <button type="button" onClick={() => input.current?.click()} className={secondary}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                    {logo ? "להחליף לוגו" : "להוסיף לוגו"}
+                </button>
+                {logo && <button type="button" onClick={() => onChange(null)} className="min-h-10 font-extrabold underline">להסיר</button>}
+                <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ""; }} />
+            </div>
+            <span className={`text-[14px] font-semibold ${error ? "font-extrabold text-[var(--mh-danger)]" : "text-[var(--mh-ink-soft)]"}`} role={error ? "alert" : undefined}>
+                {error || "בלי לוגו, הכרטיס מציג את האות הראשונה של השם. מרובע, לפחות 256 פיקסלים."}
+            </span>
+        </div>
+    );
+}
+
+// Proof of account ownership. Kept in the browser only until a payment provider is connected.
+function ProofPicker() {
+    const input = useRef<HTMLInputElement>(null);
+    const [file, setFile] = useState("");
+    return (
+        <div className="flex flex-col gap-2">
+            <span className={label} id="proof-label">אסמכתא לבעלות על החשבון</span>
+            <div className="flex min-h-[var(--mh-hit)] flex-wrap items-center gap-3">
+                <button type="button" aria-describedby="proof-label" onClick={() => input.current?.click()} className={secondary}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14" /></svg>
+                    {file ? "להחליף קובץ" : "לבחור קובץ"}
+                </button>
+                {file && <bdi className="min-w-0 truncate font-extrabold">{file}</bdi>}
+                <input ref={input} type="file" accept="image/*,application/pdf" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={(e) => setFile(e.target.files?.[0]?.name ?? "")} />
+            </div>
+            <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">צילום של אישור ניהול חשבון או צ׳ק. הספק מבקש את זה כדי למנוע העברות לחשבון לא נכון.</span>
+        </div>
+    );
+}
+
+function PhoneInvites({ orgId }: { orgId: string }) {
+    const [raw, setRaw] = useState("");
+    const [result, setResult] = useState<{ added: number; invalid: string[]; error?: string } | null>(null);
+    const [pending, start] = useTransition();
+    return (
+        <div className="flex flex-col gap-2 rounded-[18px] border-[2.5px] border-[var(--mh-ink)] bg-white p-3">
+            <label className="flex flex-col gap-2">
+                <span className={label}>מספרי טלפון, כל מספר בשורה או מופרדים בפסיק</span>
+                <textarea value={raw} onChange={(e) => setRaw(e.target.value)} rows={4} dir="ltr" placeholder={"050-1234567\n052-7654321"} className={`${field} py-3 text-end`} />
+            </label>
+            <button type="button" disabled={pending || !raw.trim()} onClick={() => start(async () => { const r = await invitePhones(orgId, raw); setResult(r); if (r.added) setRaw(r.invalid.join("\n")); })} className={`${secondary} self-start`}>
+                להוסיף להזמנות
+            </button>
+            {result && (
+                <p role="status" className="m-0 font-bold">
+                    {result.error ?? `נרשמו ${result.added} הזמנות. הן יישלחו ברגע שנחבר את שירות ההודעות.`}
+                    {result.invalid.length > 0 && <span className="block text-[var(--mh-danger)]">לא הצלחנו לקרוא: <bdi dir="ltr">{result.invalid.join(", ")}</bdi></span>}
+                </p>
+            )}
+        </div>
+    );
+}
+
+function Stepper({ steps, index }: { steps: StepKey[]; index: number }) {
+    return (
+        <nav aria-label="שלבי הפתיחה" className={`${box} px-[clamp(12px,2vw,24px)] py-3`}>
+            {/* Phones: the current step's name and a segmented bar. */}
+            <div className="flex flex-col gap-2 md:hidden">
+                <b className="text-[16px]">{STEP_LABELS[steps[index]]}</b>
+                <div className="flex gap-1" aria-hidden="true">
+                    {steps.map((s, i) => (
+                        <span key={s} className={`h-2 flex-1 rounded-full border-2 border-[var(--mh-ink)] transition-colors duration-300 ${i < index ? "bg-[var(--mh-ok)]" : i === index ? "bg-[var(--mh-sun)]" : "bg-white"}`} />
+                    ))}
+                </div>
+            </div>
+            <ol className="m-0 hidden list-none items-center justify-between gap-2 p-0 md:flex">
+                {steps.map((s, i) => (
+                    <li key={s} aria-current={i === index ? "step" : undefined} className="flex min-w-0 items-center gap-2">
+                        <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-[2.5px] border-[var(--mh-ink)] text-[14px] font-extrabold transition-colors duration-300 ${i < index ? "bg-[var(--mh-ok)]" : i === index ? "bg-[var(--mh-sun)]" : "bg-white"}`}>
+                            {i < index ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--mh-ink)" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-label="הושלם"><path d="M5 12l5 5 9-10" /></svg> : <bdi>{i + 1}</bdi>}
+                        </span>
+                        <span className={`truncate text-[clamp(13px,1.1vw,15px)] ${i === index ? "font-extrabold" : i < index ? "font-semibold" : "font-semibold text-[var(--mh-ink-soft)]"}`}>{STEP_LABELS[s]}</span>
+                    </li>
+                ))}
+            </ol>
+        </nav>
+    );
+}
