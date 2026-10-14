@@ -22,7 +22,13 @@
 .lp .brand{font-family:var(--display);font-size:26px}
 .lp .lang{min-height:44px;padding:0 12px;border-radius:22px;border:2px solid var(--ink);background:var(--white);font-weight:800;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .lp .lang .more{display:inline-block;max-width:0;overflow:hidden;opacity:0;font-weight:600;color:var(--ink2);transition:max-width .35s ease,opacity .25s ease}
-.lp .lang:hover .more,.lp .lang:focus-visible .more{max-width:200px;opacity:1}
+.lp .lang:hover .more,.lp .lang:focus-visible .more,.lp .lang.open .more{max-width:220px;opacity:1}
+.lp .lang{cursor:pointer;color:inherit;font-family:inherit}
+.lp button.btn{font-family:inherit;color:inherit;cursor:pointer}
+/* sign-in flow inside the side panel */
+.lp .entry-box{display:flex;flex-direction:column;min-width:0}
+.lp .entry-flow{display:flex;flex-direction:column;gap:10px;min-width:0}
+.lp .entry-back{align-self:flex-start;min-height:44px;display:inline-flex;align-items:center;gap:4px;padding:0 4px;border:0;background:none;font:inherit;font-weight:800;font-size:15px;color:var(--ink);cursor:pointer;text-decoration:underline}
 .lp .show{display:flex;flex-direction:column;gap:40px;min-width:0;max-width:980px;position:relative;z-index:1}
 .lp .top{position:relative;z-index:1}
 .lp .hero{min-height:calc(100vh - 84px);display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:center;gap:32px;position:relative}

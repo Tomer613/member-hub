@@ -1,7 +1,12 @@
 // Public home page (logged-out showcase): brand promise, entry buttons, and sections for members and admins.
 // Approved design: design/landing/showcase.html (keep both in sync until this page fully replaces it).
-// Copy is a draft; the product name PIRI is not final. Entry buttons lead to /login (with intent=join or intent=open); legal and help links are still "#".
+// Copy is a draft; the product name PIRI is not final. Entry buttons open the sign-in flow inside the side panel
+// (entry-panel.tsx); footer links go to the short pages in src/app/(info).
 import type { CSSProperties } from "react";
+import Link from "next/link";
+import EntryPanel from "./entry-panel";
+import InstallButton from "./install-button";
+import LangButton from "./lang-button";
 import LandingEffects from "./landing-effects-client";
 import "./landing.css";
 
@@ -16,7 +21,7 @@ export default function Landing() {
             <div className="showcol">
             <header className="top">
                 <bdi className="brand">PIRI</bdi>
-                <a href="#" className="lang"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>עברית<span className="more">English · العربية · ועוד</span></a>
+                <LangButton />
               </header>
             <main className="show">
                   <section className="hero" id="hero">
@@ -55,15 +60,7 @@ export default function Landing() {
                   </section>
                 </main>
             </div>
-            <aside className="entry" aria-label="כניסה והצטרפות"><div className="entry-in"><div className="panel" style={{ display: "flex", flexDirection: "column", gap: "12px" } as CSSProperties}>
-                  <h3>מתחילים כאן</h3>
-                  <p>בלי סיסמה. נשלח קוד לטלפון או למייל.</p>
-                  <a href="/login?intent=join" className="btn pri">להצטרף לארגון<small>לארגון שלכם, או לגלות קהילות ומועדונים חדשים</small></a>
-                  <a href="/login?intent=open" className="btn sec">לפתוח ארגון<small>הקמה וניהול, בכמה דקות</small></a>
-                  <div className="sep"></div>
-                  <div className="login">כבר רשומים? <a href="/login">כניסה</a></div>
-                  <div className="legal"><a href="#">תנאי שימוש</a><a href="#">מדיניות פרטיות</a></div>
-                </div><p className="draft">טיוטה לבדיקה. השם והטקסטים זמניים.</p></div></aside>
+            <aside className="entry" aria-label="כניסה והצטרפות"><div className="entry-in"><EntryPanel /><p className="draft">טיוטה לבדיקה. השם והטקסטים זמניים.</p></div></aside>
             </div>
             <div className="more" dir="rtl" lang="he">
 
@@ -77,7 +74,7 @@ export default function Landing() {
                     <li className="rv" style={{ "--d": ".3s" } as CSSProperties} data-s="2"><span className="n">2</span><div><b>מקבלים כרטיס חבר</b><span>הכרטיס נכנס לארנק, ומראים אותו בכניסה בלחיצה אחת.</span></div></li>
                     <li className="rv" style={{ "--d": ".45s" } as CSSProperties} data-s="3"><span className="n">3</span><div><b>משלמים ומתעדכנים</b><span>דמי חבר, קבלות והודעות מהארגון, הכול במקום אחד.</span></div></li>
                   </ol>
-                  <a href="/login?intent=join" className="btn pri inline">להצטרף לארגון</a>
+                  <Link href="/login?intent=join" data-start="join" className="btn pri inline">להצטרף לארגון</Link>
                 </div>
               </div>
               <div className="b-side side-violet">
@@ -174,7 +171,7 @@ export default function Landing() {
                   <div className="stat"><b><span className="cnt" data-to="4280" data-fmt="1">4,280</span> ₪</b><span>נגבו החודש, מתוך 5,600 ₪</span><div className="bar"><i id="bar" style={{ width: "76%" } as CSSProperties}></i></div></div>
                   <div className="stat"><b><span className="cnt" data-to="19">19</span> מתוך 24</b><span>דירות כבר שילמו</span></div>
                   <div className="stat"><b><span className="cnt" data-to="21">21</span> קראו</b><span>את ההודעה על ניקיון חדר המדרגות</span></div>
-                  <a href="/login?intent=open" className="btn pri">לפתוח ארגון<small>הקמה וניהול, בכמה דקות</small></a>
+                  <Link href="/login?intent=open" data-start="open" className="btn pri">לפתוח ארגון<small>הקמה וניהול, בכמה דקות</small></Link>
                 </div>
               </div>
             </section>
@@ -186,7 +183,7 @@ export default function Landing() {
                   <h2 className="big rv" style={{ "--d": ".08s" } as CSSProperties}>הכרטיס תמיד איתכם</h2>
                   <p className="lead2 rv" style={{ "--d": ".16s" } as CSSProperties}>פותחים בטלפון, מוסיפים למסך הבית, והכרטיס מוכן בכניסה. עובד גם בלי להוריד כלום מהחנות.</p>
                   <div className="stores rv" style={{ "--d": ".24s" } as CSSProperties}>
-                    <a href="#" className="btn pri inline">הוספה למסך הבית</a>
+                    <InstallButton />
                     <span className="store">בקרוב ב־Google Play</span>
                     <span className="store">בקרוב ב־App Store</span>
                   </div>
@@ -206,9 +203,9 @@ export default function Landing() {
             <footer className="foot">
               <div className="foot-in">
                 <div className="fbrand"><bdi>{Array.from(BRAND).map((ch, i) => <i key={i} style={{ "--i": i } as CSSProperties}>{ch}</i>)}</bdi><span>כל החברויות שלך, בארנק אחד.</span></div>
-                <nav className="fcol" aria-label="המוצר"><b>המוצר</b><a href="#how">איך זה עובד</a><a href="#admins">למנהלים</a><a href="#">מחירים</a><a href="#">סוגי ארגונים</a></nav>
-                <nav className="fcol" aria-label="עזרה"><b>עזרה</b><a href="#">מרכז עזרה</a><a href="#">יצירת קשר</a><a href="#">מצב המערכת</a></nav>
-                <nav className="fcol" aria-label="מידע משפטי"><b>משפטי</b><a href="#">תנאי שימוש</a><a href="#">מדיניות פרטיות</a><a href="#">הצהרת נגישות</a><a href="#">עוגיות</a></nav>
+                <nav className="fcol" aria-label="המוצר"><b>המוצר</b><a href="#how">איך זה עובד</a><a href="#admins">למנהלים</a><Link href="/pricing">מחירים</Link><Link href="/types">סוגי ארגונים</Link></nav>
+                <nav className="fcol" aria-label="עזרה"><b>עזרה</b><Link href="/help">מרכז עזרה</Link><Link href="/contact">יצירת קשר</Link><Link href="/status">מצב המערכת</Link></nav>
+                <nav className="fcol" aria-label="מידע משפטי"><b>משפטי</b><Link href="/terms">תנאי שימוש</Link><Link href="/privacy">מדיניות פרטיות</Link><Link href="/accessibility">הצהרת נגישות</Link><Link href="/cookies">עוגיות</Link></nav>
               </div>
               <div className="foot-bot"><span>© 2026 PIRI</span><span>עברית · English</span></div>
             </footer>
@@ -216,7 +213,7 @@ export default function Landing() {
             </div>
             <div className="stickybar" id="stickybar" aria-label="כניסה והצטרפות">
               <bdi className="sb-brand">PIRI</bdi>
-              <div className="sb-act"><a href="/login?intent=join" className="sb-join">להצטרף</a><a href="/login?intent=open" className="sb-open">לפתוח ארגון</a><a href="/login" className="sb-login">כניסה</a></div>
+              <div className="sb-act"><Link href="/login?intent=join" data-start="join" className="sb-join">להצטרף</Link><Link href="/login?intent=open" data-start="open" className="sb-open">לפתוח ארגון</Link><Link href="/login" data-start="login" className="sb-login">כניסה</Link></div>
             </div>
             <LandingEffects />
         </div>

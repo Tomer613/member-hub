@@ -28,7 +28,9 @@ const title = "m-0 font-display text-[30px] leading-[1.1] [text-wrap:balance]";
 const sub = "m-0 font-semibold text-[var(--mh-ink-soft)]";
 const link = "min-h-10 self-center font-extrabold underline";
 
-export function LoginFlow({ flow, inviteOrg }: { flow: Flow; inviteOrg: string | null }) {
+// embedded: shown inside the public home page's side panel, where the page already has its own h1.
+export function LoginFlow({ flow, inviteOrg, embedded = false }: { flow: Flow; inviteOrg: string | null; embedded?: boolean }) {
+    const H: "h1" | "h2" = embedded ? "h2" : "h1";
     const router = useRouter();
     const [step, setStep] = useState<Step>("contact");
     const [kind, setKind] = useState<ContactKind>("phone");
@@ -121,7 +123,7 @@ export function LoginFlow({ flow, inviteOrg }: { flow: Flow; inviteOrg: string |
                         </span>
                     </div>
                 )}
-                <h1 className={title}>נכנסים או מצטרפים</h1>
+                <H className={title}>נכנסים או מצטרפים</H>
                 <form
                     className={card}
                     onSubmit={(e) => {
@@ -158,7 +160,7 @@ export function LoginFlow({ flow, inviteOrg }: { flow: Flow; inviteOrg: string |
     if (step === "code")
         return (
             <div className="flex flex-col gap-[14px]">
-                <h1 className={title}>הקלידו את הקוד</h1>
+                <H className={title}>הקלידו את הקוד</H>
                 <p className={sub}>
                     שלחנו קוד ל־<b dir="ltr" className="text-[var(--mh-ink)] [unicode-bidi:isolate]">{masked}</b>
                 </p>
@@ -197,7 +199,7 @@ export function LoginFlow({ flow, inviteOrg }: { flow: Flow; inviteOrg: string |
                     finish();
                 }}
             >
-                <h1 className={title}>נעים להכיר!</h1>
+                <H className={title}>נעים להכיר!</H>
                 <p className={sub}>{inviteOrg && first ? `כך רשמו אתכם ב${inviteOrg}. אפשר לתקן.` : "איך קוראים לכם?"}</p>
                 <div className={card}>
                     <Input label="שם פרטי" autoComplete="given-name" value={first} onChange={(e) => setFirst(e.target.value)} required autoFocus={!first} />
@@ -212,7 +214,7 @@ export function LoginFlow({ flow, inviteOrg }: { flow: Flow; inviteOrg: string |
     if (step === "locked")
         return (
             <div className="flex flex-col items-stretch gap-[14px] text-center">
-                <h1 className={title}>רגע, יותר מדי ניסיונות</h1>
+                <H className={title}>רגע, יותר מדי ניסיונות</H>
                 <p className={sub}>כדי לשמור על החשבון, אפשר לנסות שוב בעוד:</p>
                 <div dir="ltr" className="font-display text-[56px] leading-none" aria-live="polite">
                     {Math.floor(lockLeft / 60)}:{String(lockLeft % 60).padStart(2, "0")}
@@ -224,11 +226,11 @@ export function LoginFlow({ flow, inviteOrg }: { flow: Flow; inviteOrg: string |
             </div>
         );
 
-    if (step === "help") return <NoPhoneAccess oldPhone={kind === "phone" ? raw : ""} onBack={() => setStep("locked")} onSent={() => setStep("helpSent")} />;
+    if (step === "help") return <NoPhoneAccess H={H} oldPhone={kind === "phone" ? raw : ""} onBack={() => setStep("locked")} onSent={() => setStep("helpSent")} />;
 
     return (
         <div className="flex flex-col gap-[14px] text-center">
-            <h1 className={title}>הבקשה נשלחה</h1>
+            <H className={title}>הבקשה נשלחה</H>
             <p className={sub}>אם הפרטים נכונים, מנהלי הארגון יקבלו בקשה לאשר שזה אתם. אחרי האישור המספר החדש ייכנס לתוקף בעוד 3 ימים, ונודיע על כך גם במספר הישן.</p>
             <Button variant="secondary" onClick={() => setStep("contact")} className="min-h-[54px]">חזרה לכניסה</Button>
         </div>
@@ -236,7 +238,7 @@ export function LoginFlow({ flow, inviteOrg }: { flow: Flow; inviteOrg: string |
 }
 
 // "No access to my phone": new number (proved with a code) + an org the person belongs to.
-function NoPhoneAccess({ oldPhone, onBack, onSent }: { oldPhone: string; onBack: () => void; onSent: () => void }) {
+function NoPhoneAccess({ H, oldPhone, onBack, onSent }: { H: "h1" | "h2"; oldPhone: string; onBack: () => void; onSent: () => void }) {
     const [old, setOld] = useState(oldPhone);
     const [fresh, setFresh] = useState("");
     const [org, setOrg] = useState("");
@@ -264,7 +266,7 @@ function NoPhoneAccess({ oldPhone, onBack, onSent }: { oldPhone: string; onBack:
             }}
         >
             <button type="button" onClick={onBack} className="min-h-11 self-start rounded-full border-2 border-[var(--mh-ink)] bg-white px-[14px] text-sm font-extrabold">חזרה</button>
-            <h1 className={title}>אין גישה לטלפון?</h1>
+            <H className={title}>אין גישה לטלפון?</H>
             <p className={sub}>מנהל של ארגון שאתם חברים בו יאשר שזה אתם. אחרי האישור המספר יוחלף בעוד 3 ימים, ונודיע על כך גם במספר הישן.</p>
             <div className={card}>
                 <Input label="המספר הקודם" type="tel" ltr value={old} onChange={(e) => setOld(e.target.value)} required />
