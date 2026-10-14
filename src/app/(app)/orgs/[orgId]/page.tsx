@@ -42,6 +42,11 @@ export default async function OrgOverviewPage({ params }: { params: Promise<{ or
                     <section className={box}>
                         <h2 className="m-0 font-display text-[24px]">הארגון פתוח. מה נשאר לעשות</h2>
                         <ul className="m-0 flex list-none flex-col gap-2 p-0">
+                            {requests > 0 && (
+                                <Task title={requests === 1 ? "בקשת הצטרפות אחת מחכה" : `${requests} בקשות הצטרפות מחכות`} line="מי שנכנס בקישור מחכה לאישור שלכם.">
+                                    <Link href={`/orgs/${orgId}/requests`} className="inline-flex min-h-11 items-center self-start rounded-full border-[2.5px] border-[var(--mh-ink)] bg-[var(--mh-sun)] px-5 font-extrabold shadow-[var(--mh-shadow)]">לבקשות</Link>
+                                </Task>
+                            )}
                             {settings.collection === "system" && (
                                 <Task title="להשלים את פרטי החשבון לקבלת כסף" line="עד אז הגבייה דרך המערכת מחכה. החיבור לספק התשלומים עוד בבנייה." soon />
                             )}
@@ -55,7 +60,7 @@ export default async function OrgOverviewPage({ params }: { params: Promise<{ or
                         <OrgCard name={org.name} city={org.city} color={org.brandColor ?? "#5B3DF5"} logo={org.logoUrl} />
                         <div className={box}>
                             <Stat k="חברים פעילים" v={members} />
-                            <Stat k="בקשות הצטרפות שמחכות" v={requests} />
+                            <Stat k="בקשות הצטרפות שמחכות" v={requests} href={`/orgs/${orgId}/requests`} />
                             <Stat k="הזמנות שעוד לא נענו" v={invites} />
                         </div>
                     </aside>
@@ -78,10 +83,10 @@ function Task({ title, line, soon = false, children }: { title: string; line: st
     );
 }
 
-function Stat({ k, v }: { k: string; v: number }) {
+function Stat({ k, v, href }: { k: string; v: number; href?: string }) {
     return (
         <div className="flex items-center justify-between gap-3 border-b-2 border-[var(--mh-line-soft)] pb-2 last:border-0 last:pb-0">
-            <span className="font-semibold text-[var(--mh-ink-soft)]">{k}</span>
+            {href ? <Link href={href} className="font-semibold text-[var(--mh-ink-soft)] underline">{k}</Link> : <span className="font-semibold text-[var(--mh-ink-soft)]">{k}</span>}
             <b className="font-display text-[22px]"><bdi>{v}</bdi></b>
         </div>
     );
