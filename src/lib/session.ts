@@ -9,7 +9,9 @@ import { SignJWT, jwtVerify } from "jose";
 
 export const SESSION_COOKIE_NAME = "memberhub_session";
 
-const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 30; // 30 days
+// Upper bound for the token itself. The real lifetime is AuthSession.expiresAt in the database:
+// sliding sessions renew on use and end after 180 idle days; "don't remember" sessions end after 12 hours.
+export const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 180;
 
 export const SESSION_COOKIE_OPTIONS = {
     httpOnly: true,
@@ -21,10 +23,13 @@ export const SESSION_COOKIE_OPTIONS = {
 
 export interface SessionPayload {
     sub: string; // User.id
+    sid: string; // AuthSession.id: lets a device be disconnected from another device
     name: string | null; // User.displayName, for the header only; contacts live in UserContact
     orgId: string | null; // active organization, null before one is chosen
     role: string | null; // role inside the active org
     mustChangePassword: boolean;
+    sliding?: boolean; // phone session: the proxy re-issues the cookie on use so it never ages out while in use
+    iat?: number; // set by verifySessionToken, ignored when creating
 }
 
 function getSecretKey() {
@@ -34,7 +39,9 @@ function getSecretKey() {
 }
 
 export async function createSessionToken(payload: SessionPayload): Promise<string> {
-    return new SignJWT({ ...payload })
+    const { iat: _iat, ...claims } = payload;
+    void _iat;
+    return new SignJWT({ ...claims })
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
         .setExpirationTime(`${SESSION_DURATION_SECONDS}s`)
@@ -48,10 +55,13 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
         if (typeof payload.sub !== "string") return null;
         return {
             sub: payload.sub,
+            sid: typeof payload.sid === "string" ? payload.sid : "",
             name: typeof payload.name === "string" ? payload.name : null,
             orgId: typeof payload.orgId === "string" ? payload.orgId : null,
             role: typeof payload.role === "string" ? payload.role : null,
             mustChangePassword: !!payload.mustChangePassword,
+            sliding: !!payload.sliding,
+            iat: payload.iat,
         };
     } catch {
         return null;

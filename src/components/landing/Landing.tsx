@@ -1,6 +1,6 @@
 // Public home page (logged-out showcase): brand promise, entry buttons, and sections for members and admins.
 // Approved design: design/landing/showcase.html (keep both in sync until this page fully replaces it).
-// Copy is a draft; the product name PIRI is not final. Links point to "#" until the sign-up and login screens exist.
+// Copy is a draft; the product name PIRI is not final. Entry buttons lead to /login (with intent=join or intent=open); legal and help links are still "#".
 import type { CSSProperties } from "react";
 import LandingEffects from "./landing-effects-client";
 import "./landing.css";
@@ -58,10 +58,10 @@ export default function Landing() {
             <aside className="entry" aria-label="כניסה והצטרפות"><div className="entry-in"><div className="panel" style={{ display: "flex", flexDirection: "column", gap: "12px" } as CSSProperties}>
                   <h3>מתחילים כאן</h3>
                   <p>בלי סיסמה. נשלח קוד לטלפון או למייל.</p>
-                  <a href="#" className="btn pri">להצטרף לארגון<small>לארגון שלכם, או לגלות קהילות ומועדונים חדשים</small></a>
-                  <a href="#" className="btn sec">לפתוח ארגון<small>הקמה וניהול, בכמה דקות</small></a>
+                  <a href="/login?intent=join" className="btn pri">להצטרף לארגון<small>לארגון שלכם, או לגלות קהילות ומועדונים חדשים</small></a>
+                  <a href="/login?intent=open" className="btn sec">לפתוח ארגון<small>הקמה וניהול, בכמה דקות</small></a>
                   <div className="sep"></div>
-                  <div className="login">כבר רשומים? <a href="#">כניסה</a></div>
+                  <div className="login">כבר רשומים? <a href="/login">כניסה</a></div>
                   <div className="legal"><a href="#">תנאי שימוש</a><a href="#">מדיניות פרטיות</a></div>
                 </div><p className="draft">טיוטה לבדיקה. השם והטקסטים זמניים.</p></div></aside>
             </div>
@@ -77,7 +77,7 @@ export default function Landing() {
                     <li className="rv" style={{ "--d": ".3s" } as CSSProperties} data-s="2"><span className="n">2</span><div><b>מקבלים כרטיס חבר</b><span>הכרטיס נכנס לארנק, ומראים אותו בכניסה בלחיצה אחת.</span></div></li>
                     <li className="rv" style={{ "--d": ".45s" } as CSSProperties} data-s="3"><span className="n">3</span><div><b>משלמים ומתעדכנים</b><span>דמי חבר, קבלות והודעות מהארגון, הכול במקום אחד.</span></div></li>
                   </ol>
-                  <a href="#" className="btn pri inline">להצטרף לארגון</a>
+                  <a href="/login?intent=join" className="btn pri inline">להצטרף לארגון</a>
                 </div>
               </div>
               <div className="b-side side-violet">
@@ -174,7 +174,7 @@ export default function Landing() {
                   <div className="stat"><b><span className="cnt" data-to="4280" data-fmt="1">4,280</span> ₪</b><span>נגבו החודש, מתוך 5,600 ₪</span><div className="bar"><i id="bar" style={{ width: "76%" } as CSSProperties}></i></div></div>
                   <div className="stat"><b><span className="cnt" data-to="19">19</span> מתוך 24</b><span>דירות כבר שילמו</span></div>
                   <div className="stat"><b><span className="cnt" data-to="21">21</span> קראו</b><span>את ההודעה על ניקיון חדר המדרגות</span></div>
-                  <a href="#" className="btn pri">לפתוח ארגון<small>הקמה וניהול, בכמה דקות</small></a>
+                  <a href="/login?intent=open" className="btn pri">לפתוח ארגון<small>הקמה וניהול, בכמה דקות</small></a>
                 </div>
               </div>
             </section>
@@ -216,7 +216,7 @@ export default function Landing() {
             </div>
             <div className="stickybar" id="stickybar" aria-label="כניסה והצטרפות">
               <bdi className="sb-brand">PIRI</bdi>
-              <div className="sb-act"><a href="#" className="sb-join">להצטרף</a><a href="#" className="sb-open">לפתוח ארגון</a><a href="#" className="sb-login">כניסה</a></div>
+              <div className="sb-act"><a href="/login?intent=join" className="sb-join">להצטרף</a><a href="/login?intent=open" className="sb-open">לפתוח ארגון</a><a href="/login" className="sb-login">כניסה</a></div>
             </div>
             <LandingEffects />
         </div>

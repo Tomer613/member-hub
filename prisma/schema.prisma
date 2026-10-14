@@ -42,6 +42,7 @@ model Organization {
   // "private": never shown in search, people join by invitation only (gym, synagogue with front-desk signup).
   // "listed": appears in search; people can send a join request, an admin must approve it.
   visibility String   @default("private") // private | listed
+  city       String? // shown in search results next to the name; search matches name or city
   // Platform business model: what this org pays us.
   platformPlan     String @default("free") // free | monthly | yearly (placeholder names)
   platformFeeBps   Int    @default(0) // optional percentage of payments, in basis points
@@ -80,6 +81,10 @@ model Organization {
 // as a Member inside the household and need no account.
 model User {
   id                 String   @id @default(cuid())
+  // Both required at sign-up (decided 13.10.2026). Other members usually see the first name only;
+  // the UI adds a distinguishing detail only when two people in the same org share it.
+  firstName          String?
+  lastName           String?
   displayName        String?
   gender             String? // male | female | undisclosed. Drives Hebrew address (חבר/חברה); null or undisclosed → masculine. Shared with an org only when the org requests it as a field and the member consents.
   language           String?  // preferred message language (he, en, ...); visible to orgs the member joined, so they can write in the right language
@@ -92,6 +97,7 @@ model User {
   updatedAt          DateTime @updatedAt
 
   contacts      UserContact[]
+  authSessions  AuthSession[]
   orgUsers      OrgUser[]
   joinRequests  JoinRequest[]
   disputesOpened ChargeDispute[]
@@ -131,6 +137,75 @@ model ContactChallenge {
 
   @@index([kind, value])
   @@index([expiresAt])
+}
+
+// One signed-in device or browser ("connected devices" in settings). The session cookie carries this id,
+// so a session can be revoked from another device. Approximate location is the city the hosting edge
+// derived from the IP address, shown to the owner only with "(בערך)". We never ask for device location.
+model AuthSession {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // sliding: phone and "remember" on desktop renew on use and end after 180 idle days.
+  // fixed: desktop with "remember" switched off ends when the browser closes (cookie) or after 12 hours.
+  kind       String    @default("sliding") // sliding | fixed
+  deviceKind String    @default("computer") // phone | tablet | computer
+  label      String // "iPhone · Safari", derived from the user agent
+  city       String? // approximate, from the edge's IP geolocation header; null when unknown
+  ip         String?
+  createdAt  DateTime  @default(now())
+  lastSeenAt DateTime  @default(now())
+  expiresAt  DateTime
+  revokedAt  DateTime?
+
+  @@index([userId, revokedAt])
+}
+
+// Rate limit and growing lockout for sign-in, keyed by contact value or IP ("phone:+9725...", "ip:1.2.3.4").
+// The same rules apply whether or not the contact belongs to an account, so the lock never reveals that.
+model AuthThrottle {
+  key         String    @id
+  sends       Int       @default(0) // codes sent in the current window
+  failures    Int       @default(0) // wrong codes in the current window
+  windowStart DateTime  @default(now())
+  strikes     Int       @default(0) // how many locks so far; each lock lasts longer (1, 5, 30 minutes)
+  lockedUntil DateTime?
+  updatedAt   DateTime  @updatedAt
+}
+
+// Security log for sign-in events (code sent, login, failed code, lock, new device, phone change).
+// Not org-scoped: it belongs to the platform. Kept per docs/retention-policy.he.md.
+model SecurityEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  kind      String // code_sent | login | signup | code_failed | locked | session_revoked | phone_change_requested | phone_change_approved
+  contact   String? // normalized value the event was about
+  ip        String?
+  city      String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([contact, createdAt])
+}
+
+// "I have no access to my phone": the person proves the NEW number with a code, names an org they belong
+// to, and an admin of that org confirms it is them. The change takes effect 3 days after approval unless
+// the person objects from any existing contact; the old number is told about it (decided 13.10.2026).
+model PhoneChangeRequest {
+  id          String    @id @default(cuid())
+  userId      String
+  orgId       String
+  oldValue    String // E.164
+  newValue    String // E.164, verified by code when the request was made
+  status      String    @default("pending") // pending | approved | rejected | cancelled | done
+  decidedById String?
+  decidedAt   DateTime?
+  effectiveAt DateTime? // decidedAt + 3 days
+  createdAt   DateTime  @default(now())
+
+  @@index([orgId, status])
+  @@index([userId])
 }
 
 // One person's membership in one org, and everything they decided about it. This is the "badge".
@@ -199,6 +274,7 @@ model Invitation {
   invitedById String // User.id of the admin
   status      String   @default("pending") // pending | accepted | declined | expired | revoked
   expiresAt   DateTime // default 30 days; phone numbers get recycled
+  linkToken   String?  @unique // random token in the invitation link (/login?invite=...); also typed as an invite code
   respondedAt DateTime?
   acceptedByUserId String?
   createdAt   DateTime @default(now())

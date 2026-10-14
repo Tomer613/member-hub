@@ -12,3 +12,7 @@ h1, h2, h3, .font-display {
   font-family: var(--font-display), var(--mh-font-display);
   font-weight: 400;
 }
+
+/* Wrong one-time code: the boxes shake once. */
+@keyframes mh-shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+.mh-shake { animation: mh-shake 0.45s; }

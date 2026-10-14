@@ -45,11 +45,15 @@ This is the working task list for the agent and Tommy. Rules of use:
 - [ ] 2.9 Org settings screen (admin): design board `D-Settings` done, spec in `docs/ux-spec.he.md` section 13 (fields and privacy with 30-day effect, card categories per pack and role, membership types and charges, payments and reminders, requests, team and permissions, invitations and joining, account). Build after the component library and the pack config (`memberActions`, fields, request kinds) exist
 
 ## Phase 3. Identity, wallet and membership (spec: `docs/ux-spec.he.md`)
-- [ ] 3.1 Sign up and login by verified phone or email (one-time code via `ContactChallenge`, attempt limits); only verified values are stored in `UserContact`
-- [ ] 3.2 Several verified contacts per user; adding a contact attaches matching pending invitations; merging two accounts only when both contacts are verified
+- [x] 3.1 Sign up and login by verified phone or email (one-time code via `ContactChallenge`, attempt limits); only verified values are stored in `UserContact`
+  - Built 2026-10-13 (screens 1 to 5 of `docs/open-questions.he.md`), tested end to end on a dev database. Code: `src/app/(auth)/login`, `src/lib/auth`, `src/proxy.ts`.
+  - Needs `npx prisma db push` (new tables `AuthSession`, `AuthThrottle`, `SecurityEvent`, `PhoneChangeRequest`; new columns on `User`, `Invitation`, `Organization`).
+  - Email codes go through Resend (`RESEND_API_KEY`, `RESEND_FROM_EMAIL`). SMS provider not chosen yet (VERIFY); in development the code is printed to the server log.
+  - Not built yet: admin approval of a phone change request, the admin backup reminders, re-asking for a code before sensitive admin actions.
+- [ ] 3.2 (partly built 2026-10-13: adding a verified backup contact in settings) Several verified contacts per user; adding a contact attaches matching pending invitations; merging two accounts only when both contacts are verified
 - [ ] 3.3 Create an organization by choosing a pack; set visibility (private or listed), logo and color
 - [ ] 3.4 Invitations: admin enters a phone or email, the person accepts (`Invitation`, expires after 30 days, no hint to the admin whether the number has an account)
-- [ ] 3.5 Join requests to listed orgs, admin approval, per-user daily limit, admin can block a user (`JoinRequest`)
+- [ ] 3.5 (partly built 2026-10-13: search of listed orgs and sending a request from the wallet) Join requests to listed orgs, admin approval, per-user daily limit, admin can block a user (`JoinRequest`)
 - [ ] 3.6 Data policy and consent: org mandatory fields with reasons, platform ceiling (name and a contact are always mandatory), member toggles (`OrgUser.hiddenFields`), 30-day notice before a new mandatory field takes effect (`OrgDataPolicy`); consent screen shown before accepting an invitation
 - [ ] 3.7 The wallet read path and the "needs attention" feed across orgs, with the isolation tests from 1.1
 - [ ] 3.8 Leaving an org: always allowed; with an open balance the status becomes `left_with_debt`, the badge stays, the org keeps only mandatory fields
