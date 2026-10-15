@@ -162,7 +162,7 @@ export async function saveWhen(orgId: string, input: { date: string; time: strin
     return {};
 }
 
-export async function saveMoney(orgId: string, input: { mode: string; per: string; amount: string; kidAmount: string; payLink: string }): Promise<{ error?: string }> {
+export async function saveMoney(orgId: string, input: { mode: string; per: string; amount: string; kidAmount: string; payLink: string; goal: string }): Promise<{ error?: string }> {
     const mode = input.mode === "fixed" || input.mode === "free" ? input.mode : "none";
     const per = input.per === "family" ? "family" : "person";
     const amountMinor = mode === "fixed" ? shekelsToMinor(input.amount) : null;
@@ -173,7 +173,9 @@ export async function saveMoney(orgId: string, input: { mode: string; per: strin
     if (kidPrice && !kidAmountMinor) return { error: "הסכום לילד לא נקלט" };
     const payLink = mode === "none" ? null : cleanPayLink(input.payLink);
     if (mode !== "none" && input.payLink.trim() && !payLink) return { error: "הקישור צריך להתחיל ב-https://" };
-    await saveCelebration(orgId, { money: { mode, per, amountMinor, kidAmountMinor, payLink } }, "access");
+    const goalMinor = mode === "free" && input.goal.trim() ? shekelsToMinor(input.goal) : null;
+    if (mode === "free" && input.goal.trim() && !goalMinor) return { error: "סכום היעד לא נקלט" };
+    await saveCelebration(orgId, { money: { mode, per, amountMinor, kidAmountMinor, payLink, goalMinor } }, "access");
     return {};
 }
 

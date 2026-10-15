@@ -11,7 +11,8 @@ export type CelebrationSettings = {
     startsAt: string | null; // "2026-11-03T20:00" local time in the org's timezone
     place: string | null; // exact address, shown only after answering "coming"
     city: string | null; // shown to everyone
-    money: { mode: MoneyMode; per: Per; amountMinor: number | null; kidAmountMinor: number | null; payLink: string | null };
+    // goalMinor: "כמה רוצים לאסוף בסך הכול?" (optional, only when each gives what they like).
+    money: { mode: MoneyMode; per: Per; amountMinor: number | null; kidAmountMinor: number | null; payLink: string | null; goalMinor: number | null };
     kids: boolean; // "ילדים מוזמנים?" When off, guests are not asked how many kids and there is no kid price.
     access: Access;
     // phone: the honoree's number (E.164). Signed in with it, the invitation shows as inactive and is never saved.
@@ -22,7 +23,7 @@ export const EMPTY_CELEBRATION: CelebrationSettings = {
     startsAt: null,
     place: null,
     city: null,
-    money: { mode: "none", per: "person", amountMinor: null, kidAmountMinor: null, payLink: null },
+    money: { mode: "none", per: "person", amountMinor: null, kidAmountMinor: null, payLink: null, goalMinor: null },
     kids: true,
     access: "link",
     surprise: { on: false, honoree: null, phone: null },
@@ -119,4 +120,14 @@ export function guestLabel(name: string, people: number): string {
 // The honoree of a surprise party must not see it: true when one of the viewer's verified phones is theirs.
 export function isHonoree(c: CelebrationSettings, viewerPhones: string[]): boolean {
     return c.surprise.on && !!c.surprise.phone && viewerPhones.includes(c.surprise.phone);
+}
+
+// What the progress bar fills toward: with a fixed amount, what everyone coming should pay;
+// with "any amount", the organizer's optional goal. Null means no bar.
+export function collectionTarget(money: CelebrationSettings["money"], coming: { people: number; kids: number }[]): number | null {
+    if (money.mode === "fixed") {
+        const sum = coming.reduce((n, r) => n + (amountOwed(money, r.people, r.kids) ?? 0), 0);
+        return sum > 0 ? sum : null;
+    }
+    return money.mode === "free" && money.goalMinor ? money.goalMinor : null;
 }

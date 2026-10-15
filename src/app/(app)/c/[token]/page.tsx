@@ -7,6 +7,7 @@ import { getSession } from "@/lib/auth/session-server";
 import { onColor } from "@/lib/color";
 import { amountOwed, formatShekels, formatWhen, guestLabel, isRsvpStatus, readCelebration } from "@/lib/celebration";
 import { keepInWallet, markPaid } from "./actions";
+import { CollectBar } from "@/components/collect-bar";
 import { WalletArt } from "@/components/wallet-art";
 import { ReplyForm } from "./reply-form";
 import { cookieName, findReply, hiddenFrom } from "./reply";
@@ -58,6 +59,9 @@ export default async function InvitationPage({ params, searchParams }: Props) {
     const when = formatWhen(c.startsAt);
     const owed = reply && reply.status !== "no" ? amountOwed(c.money, reply.people, reply.kids) : null;
     const showMoney = c.money.mode !== "none" && reply && reply.status !== "no";
+    // Guests see the shared progress toward the organizer's goal (only "any amount" with a goal).
+    const goal = showMoney && c.money.mode === "free" ? c.money.goalMinor : null;
+    const collected = goal ? (await db.rsvp.aggregate({ where: { orgId: org.id, paid: "confirmed" }, _sum: { paidMinor: true } }))._sum.paidMinor ?? 0 : 0;
 
     return (
         <main className="min-h-dvh bg-[var(--mh-sun)]">
@@ -116,8 +120,9 @@ export default async function InvitationPage({ params, searchParams }: Props) {
                                 <h2 id="pay-h" className="m-0 font-display text-[24px]">
                                     {reply.paid === "confirmed" ? "התשלום התקבל" : reply.paid === "claimed" ? "סימנתם ששילמתם" : owed ? `להעביר ${formatShekels(owed)}` : "השתתפות בתשלום"}
                                 </h2>
+                                {goal && <CollectBar collected={collected} target={goal} />}
                                 {reply.paid === "confirmed" && <p className="m-0 font-semibold">המארגנים אישרו שהגיעו {formatShekels(reply.paidMinor ?? 0)}. תודה!</p>}
-                                {reply.paid === "claimed" && <p className="m-0 font-semibold">{formatShekels(reply.paidMinor ?? 0)}. מחכה לאישור של המארגנים.</p>}
+                                {reply.paid === "claimed" && <p className="m-0 font-semibold">שילמתם <bdi>{formatShekels(reply.paidMinor ?? 0)}</bdi>, וזה מחכה לאישור של המארגנים.</p>}
                                 {reply.paid === "none" && (
                                     <>
                                         <p className="m-0 font-semibold text-[var(--mh-ink-soft)]">

@@ -86,6 +86,7 @@ export function Wizard({ draft }: { draft: Draft }) {
     const [kidAmount, setKidAmount] = useState(c0.money.kidAmountMinor ? String(c0.money.kidAmountMinor / 100) : "");
     const [kidPriceOpen, setKidPriceOpen] = useState(!!c0.money.kidAmountMinor);
     const [payLink, setPayLink] = useState(c0.money.payLink ?? "");
+    const [goal, setGoal] = useState(c0.money.goalMinor ? String(c0.money.goalMinor / 100) : "");
     const [surprise, setSurprise] = useState(c0.surprise.on);
     const [honoree, setHonoree] = useState(c0.surprise.honoree ?? "");
     const [honoreePhone, setHonoreePhone] = useState(c0.surprise.phone ?? "");
@@ -148,7 +149,7 @@ export function Wizard({ draft }: { draft: Draft }) {
                 return go("money");
             }
             if (step === "money") {
-                const r = await saveMoney(orgId, { mode: moneyMode, per, amount, kidAmount: kidsInvited && kidPriceOpen ? kidAmount : "", payLink });
+                const r = await saveMoney(orgId, { mode: moneyMode, per, amount, kidAmount: kidsInvited && kidPriceOpen ? kidAmount : "", payLink, goal });
                 if (r.error) return setError(r.error);
                 return go("access");
             }
@@ -351,7 +352,7 @@ export function Wizard({ draft }: { draft: Draft }) {
         );
     } else if (step === "money") {
         const sample = amountOwed(
-            { mode: moneyMode, per, amountMinor: shekelsToMinor(amount), kidAmountMinor: kidsInvited && kidPriceOpen ? shekelsToMinor(kidAmount) : null, payLink: null },
+            { mode: moneyMode, per, amountMinor: shekelsToMinor(amount), kidAmountMinor: kidsInvited && kidPriceOpen ? shekelsToMinor(kidAmount) : null, payLink: null, goalMinor: null },
             3, kidsInvited && kidPriceOpen ? 1 : 0,
         );
         main = (
@@ -387,6 +388,12 @@ export function Wizard({ draft }: { draft: Draft }) {
                         </div>
                     )}
                     <Choice name="money" checked={moneyMode === "free"} onPick={() => setMoneyMode("free")} title="כל אחד כמה שרוצה" line="מתאים למתנה משותפת. האורח כותב כמה שם." />
+                    {moneyMode === "free" && (
+                        <div className="flex flex-col gap-2 rounded-[18px] border-[2.5px] border-[var(--mh-ink)] bg-white p-3">
+                            <div className="sm:max-w-[50%]"><Field label="כמה רוצים לאסוף בסך הכול? (לא חובה)" inputMode="decimal" ltr value={goal} onChange={(e) => setGoal(e.target.value)} placeholder="1200" /></div>
+                            <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">למשל מחיר המתנה. האורחים יראו פס שמתמלא לעבר היעד.</span>
+                        </div>
+                    )}
                 </div>
                 {moneyMode !== "none" && (
                     <label className="flex flex-col gap-2">
@@ -407,7 +414,7 @@ export function Wizard({ draft }: { draft: Draft }) {
                             : "כתבו סכום, ונראה כאן מה האורחים יקבלו."}
                     </p>
                 )}
-                {moneyMode === "free" && <p className="m-0 font-semibold">כל אורח כותב כמה העביר, ואתם רואים את הסך הכול מצטבר.</p>}
+                {moneyMode === "free" && <p className="m-0 font-semibold">כל אורח כותב כמה העביר{shekelsToMinor(goal) ? <>, וכולם רואים <b className="whitespace-nowrap">נאסף ₪0 מתוך {formatShekels(shekelsToMinor(goal) ?? 0)}</b></> : ", ואתם רואים את הסך הכול מצטבר"}.</p>}
                 <Info>הכסף עובר ישירות אליכם, ואנחנו רק עוקבים מי שילם. אתם מאשרים כל תשלום שהגיע.</Info>
             </Side>
         );

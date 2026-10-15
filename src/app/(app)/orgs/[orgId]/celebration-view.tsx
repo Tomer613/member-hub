@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { Organization, Rsvp } from "@prisma/client";
 import type { ReactNode } from "react";
 import { CopyLink, WhatsAppShare } from "@/components/copy-link";
-import { amountOwed, formatShekels, formatWhen, readCelebration, totals } from "@/lib/celebration";
+import { amountOwed, collectionTarget, formatShekels, formatWhen, readCelebration, totals } from "@/lib/celebration";
+import { CollectBar } from "@/components/collect-bar";
 import { setPayment } from "./actions";
 
 // The organizer's page of a celebration (decided with Tommy 14.10.2026): how many are coming and how many
@@ -17,7 +18,7 @@ export function CelebrationView({ org, rsvps }: { org: Organization; rsvps: Rsvp
     const t = totals(rsvps);
     const when = formatWhen(c.startsAt);
     const money = c.money.mode !== "none";
-    const expected = c.money.mode === "fixed" ? rsvps.filter((r) => r.status === "yes").reduce((n, r) => n + (amountOwed(c.money, r.people, r.kids) ?? 0), 0) : 0;
+    const target = collectionTarget(c.money, rsvps.filter((r) => r.status === "yes"));
     const path = `/c/${org.joinToken}`;
     const order = { claimed: 0, none: 1, confirmed: 2 } as Record<string, number>;
     const list = [...rsvps].sort((a, b) => (a.status === "no" ? 1 : 0) - (b.status === "no" ? 1 : 0) || (order[a.paid] ?? 1) - (order[b.paid] ?? 1) || a.name.localeCompare(b.name, "he"));
@@ -81,14 +82,8 @@ export function CelebrationView({ org, rsvps }: { org: Organization; rsvps: Rsvp
                         {money && (
                             <section className={box} aria-labelledby="money-h">
                                 <h2 id="money-h" className="m-0 font-display text-[22px]">כסף</h2>
-                                {c.money.mode === "fixed" && expected > 0 ? (
-                                    <div className="flex flex-col gap-2">
-                                        <span className="text-[18px] font-extrabold">נאסף <bdi>{formatShekels(t.paidMinor)}</bdi> מתוך <bdi>{formatShekels(expected)}</bdi></span>
-                                        <div className="h-4 overflow-hidden rounded-full border-2 border-[var(--mh-ink)] bg-white" role="progressbar" aria-label="כמה כבר נאסף" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.min(100, Math.round((t.paidMinor / expected) * 100))}>
-                                            <div className="h-full bg-[var(--mh-ok)] transition-[width] duration-500" style={{ width: `${Math.min(100, (t.paidMinor / expected) * 100)}%` }} />
-                                        </div>
-                                        <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">״מתוך״ הוא מה שאמור להגיע מכל מי שאישר הגעה.</span>
-                                    </div>
+                                {target ? (
+                                    <CollectBar collected={t.paidMinor} target={target} note={c.money.mode === "fixed" ? "״מתוך״ הוא מה שאמור להגיע מכל מי שאישר הגעה." : "״מתוך״ הוא היעד שקבעתם."} />
                                 ) : (
                                     <Row k="נאסף עד עכשיו" v={formatShekels(t.paidMinor)} />
                                 )}

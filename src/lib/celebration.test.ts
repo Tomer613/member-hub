@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { EMPTY_CELEBRATION, cleanGuestName, guestLabel, isHonoree, amountOwed, cleanPayLink, formatShekels, formatWhen, readCelebration, shekelsToMinor, totals } from "./celebration.ts";
+import { EMPTY_CELEBRATION, cleanGuestName, collectionTarget, guestLabel, isHonoree, amountOwed, cleanPayLink, formatShekels, formatWhen, readCelebration, shekelsToMinor, totals } from "./celebration.ts";
 
 const money = (m: Partial<typeof EMPTY_CELEBRATION.money>) => ({ ...EMPTY_CELEBRATION.money, ...m });
 
@@ -57,4 +57,11 @@ test("the honoree's phone hides a surprise party, and only while it is a surpris
     assert.ok(!isHonoree(c, ["+972521112222"]));
     assert.ok(!isHonoree({ ...c, surprise: { ...c.surprise, on: false } }, ["+972501234567"]));
     assert.equal(readCelebration({ celebration: { startsAt: "2026-11-05" } }).kids, true);
+});
+
+test("the bar fills toward what everyone coming owes, or toward the organizer's goal", () => {
+    assert.equal(collectionTarget(money({ mode: "fixed", amountMinor: 10000 }), [{ people: 2, kids: 0 }, { people: 1, kids: 0 }]), 30000);
+    assert.equal(collectionTarget(money({ mode: "free", goalMinor: 120000 }), []), 120000);
+    assert.equal(collectionTarget(money({ mode: "free" }), []), null);
+    assert.equal(collectionTarget(money({ mode: "none", goalMinor: 5 }), []), null);
 });
