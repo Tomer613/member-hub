@@ -10,11 +10,13 @@ import {
     DEFAULT_COLOR, LOGO_MIN_PX, NAME_MAX, PALETTE, STEP_LABELS, wizardSteps,
     type Collection, type PackChoice, type StepKey,
 } from "@/lib/org-setup";
-import { finishSetup, invitePhones, saveAccountStep, saveCollection, saveLook, saveName, saveType } from "./actions";
+import { amountOwed, formatShekels, formatWhen, shekelsToMinor, type CelebrationSettings, type MoneyMode, type Per } from "@/lib/celebration";
+import { finishCelebration, finishSetup, invitePhones, saveAccountStep, saveCollection, saveLook, saveMoney, saveName, saveType, saveWhen } from "./actions";
 
 // The org setup wizard, one decision per screen (decided with Tommy 14.10.2026, docs/open-questions.he.md,
 // "אשף פתיחת ארגון: מסך אחר מסך"): name, type, card, collection, account (only when collecting through
 // the system), invite. Layout follows boards D-AdmWizard1-5: step bar, a main card and a side card.
+// A celebration (decided 14.10.2026) goes from the type straight to: when and where, money, who can come in.
 
 export type Draft = {
     orgId: string | null;
@@ -26,6 +28,7 @@ export type Draft = {
     logo: string | null;
     collection: Collection | null;
     joinToken: string | null;
+    celebration: CelebrationSettings;
 };
 
 const TYPES: { id: PackChoice; label: string; line: string; tools: string[] }[] = [
@@ -33,6 +36,7 @@ const TYPES: { id: PackChoice; label: string; line: string; tools: string[] }[] 
     { id: "hoa", label: "ועד בית", line: "דמי ועד, תקלות, אסיפות", tools: ["דמי ועד לפי דירה", "תקלות ותחזוקה", "אסיפות דיירים"] },
     { id: "gym", label: "חדר כושר", line: "מנויים, שיעורים, הקפאות", tools: ["מנויים וכרטיסיות", "שיעורים", "הקפאת מנוי"] },
     { id: "club", label: "מועדון", line: "רמות חברות, אירועים, הטבות", tools: ["רמות חברות", "אירועים", "הטבות לחברים"] },
+    { id: "celebration", label: "אירוע או חגיגה", line: "יום הולדת, שבע ברכות, מסיבה", tools: ["אישורי הגעה וכמה מגיעים", "מעקב תשלומים למתנה", "מסיבת הפתעה"] },
     { id: "generic", label: "משהו אחר", line: "רק הבסיס: חברים, כספים, הודעות", tools: [] },
 ];
 
@@ -72,10 +76,24 @@ export function Wizard({ draft }: { draft: Draft }) {
     const [logoChanged, setLogoChanged] = useState(false);
     const [collection, setCollection] = useState<Collection>(draft.collection ?? "system");
     const [inviteWith, setInviteWith] = useState<"link" | "phone" | "import">("link");
+    const c0 = draft.celebration;
+    const [date, setDate] = useState(c0.startsAt?.slice(0, 10) ?? "");
+    const [time, setTime] = useState(c0.startsAt?.slice(11, 16) ?? "");
+    const [place, setPlace] = useState(c0.place ?? "");
+    const [moneyMode, setMoneyMode] = useState<MoneyMode>(c0.money.mode);
+    const [per, setPer] = useState<Per>(c0.money.per);
+    const [amount, setAmount] = useState(c0.money.amountMinor ? String(c0.money.amountMinor / 100) : "");
+    const [kidAmount, setKidAmount] = useState(c0.money.kidAmountMinor ? String(c0.money.kidAmountMinor / 100) : "");
+    const [kidPriceOpen, setKidPriceOpen] = useState(!!c0.money.kidAmountMinor);
+    const [payLink, setPayLink] = useState(c0.money.payLink ?? "");
+    const [surprise, setSurprise] = useState(c0.surprise.on);
+    const [honoree, setHonoree] = useState(c0.surprise.honoree ?? "");
+    const [honoreePhone, setHonoreePhone] = useState(c0.surprise.phone ?? "");
+    const [kidsInvited, setKidsInvited] = useState(c0.kids);
     const [error, setError] = useState("");
     const [pending, start] = useTransition();
 
-    const steps = wizardSteps(collection);
+    const steps = wizardSteps(collection, packId);
     const index = Math.max(0, steps.indexOf(step));
     const shownColor = color ?? DEFAULT_COLOR[packId ?? "synagogue"];
     const heading = useRef<HTMLHeadingElement>(null);
@@ -106,7 +124,7 @@ export function Wizard({ draft }: { draft: Draft }) {
                 if (!packId) return setError("בחרו את סוג הארגון");
                 const r = await saveType(orgId, packId);
                 if (r.error) return setError(r.error);
-                return go("look");
+                return go(packId === "celebration" ? "when" : "look");
             }
             if (step === "look") {
                 const r = await saveLook(orgId, { color: shownColor, city, logo: logoChanged ? logo : undefined });
@@ -123,6 +141,20 @@ export function Wizard({ draft }: { draft: Draft }) {
             if (step === "account") {
                 await saveAccountStep(orgId);
                 return go("invite");
+            }
+            if (step === "when") {
+                const r = await saveWhen(orgId, { date, time, place, city, kids: kidsInvited });
+                if (r.error) return setError(r.error);
+                return go("money");
+            }
+            if (step === "money") {
+                const r = await saveMoney(orgId, { mode: moneyMode, per, amount, kidAmount: kidsInvited && kidPriceOpen ? kidAmount : "", payLink });
+                if (r.error) return setError(r.error);
+                return go("access");
+            }
+            if (step === "access") {
+                const r = await finishCelebration(orgId, { surprise, honoree, phone: honoreePhone });
+                if (r?.error) return setError(r.error);
             }
         });
     };
@@ -290,6 +322,118 @@ export function Wizard({ draft }: { draft: Draft }) {
                 </p>
             </Side>
         );
+    } else if (step === "when") {
+        main = (
+            <>
+                <Head refEl={heading} title="מתי ואיפה חוגגים?" text="העיר והתאריך מופיעים לכל מי שמקבל את ההזמנה. הכתובת המדויקת רק למי שאישר הגעה." />
+                <div className="grid grid-cols-[minmax(0,1fr)] gap-x-4 gap-y-3 sm:grid-cols-2">
+                    <Field label="תאריך" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+                    <Field label="שעה (לא חובה)" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+                </div>
+                <label className="flex flex-col gap-2">
+                    <span className={label}>עיר</span>
+                    <input value={city} onChange={(e) => setCity(e.target.value)} list="il-cities" maxLength={40} placeholder="מתחילים להקליד" className={`${field} max-w-[420px]`} autoComplete="address-level2" />
+                    <datalist id="il-cities">{IL_CITIES.map((c) => <option key={c} value={c} />)}</datalist>
+                </label>
+                <label className="flex flex-col gap-2">
+                    <span className={label}>המקום המדויק <span className="font-semibold text-[var(--mh-ink-soft)]">(לא חובה)</span></span>
+                    <input value={place} onChange={(e) => setPlace(e.target.value)} maxLength={120} placeholder="למשל: אצל דנה, הרצל 12, קומה 3" className={field} autoComplete="street-address" />
+                    <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">עוד לא סגור? אפשר להוסיף אחר כך, וכל מי שאישר יראה את העדכון.</span>
+                </label>
+                <Switch on={kidsInvited} onChange={setKidsInvited} title="ילדים מוזמנים?" line={kidsInvited ? "האורחים יוכלו לציין כמה מהם ילדים." : "לא נשאל את האורחים על ילדים."} />
+            </>
+        );
+        side = (
+            <Side title="כך ההזמנה תיראה">
+                <InvitePreview name={name} color={shownColor} when={formatWhen(date ? `${date}${time ? `T${time}` : ""}` : null)} city={city.trim()} />
+                <Info>את כל הפרטים אפשר לשנות גם אחרי שההזמנה נשלחה.</Info>
+            </Side>
+        );
+    } else if (step === "money") {
+        const sample = amountOwed(
+            { mode: moneyMode, per, amountMinor: shekelsToMinor(amount), kidAmountMinor: kidsInvited && kidPriceOpen ? shekelsToMinor(kidAmount) : null, payLink: null },
+            3, kidsInvited && kidPriceOpen ? 1 : 0,
+        );
+        main = (
+            <>
+                <Head refEl={heading} title="יש כסף באמצע?" text="למתנה משותפת, לאוכל או לאולם. אפשר גם בלי." />
+                <div role="radiogroup" aria-label="כסף" className="flex flex-col gap-3">
+                    <Choice name="money" checked={moneyMode === "none"} onPick={() => setMoneyMode("none")} title="בלי כסף" line="רק אישורי הגעה." />
+                    <Choice name="money" checked={moneyMode === "fixed"} onPick={() => setMoneyMode("fixed")} title="סכום קבוע" line="כל אחד יודע בדיוק כמה לשים." />
+                    {moneyMode === "fixed" && (
+                        <div className="flex flex-col gap-3 rounded-[18px] border-[2.5px] border-[var(--mh-ink)] bg-white p-3">
+                            <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
+                                <Field label="סכום בשקלים" inputMode="decimal" ltr value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="100" />
+                                <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
+                                    <legend className={`${label} mb-2`}>לכל</legend>
+                                    <div role="radiogroup" aria-label="לכל" className="flex gap-2">
+                                        {(["person", "family"] as const).map((p) => (
+                                            <button key={p} type="button" role="radio" aria-checked={per === p} onClick={() => setPer(p)}
+                                                className={`min-h-[var(--mh-hit)] flex-1 rounded-full border-[2.5px] border-[var(--mh-ink)] px-4 font-extrabold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--mh-ink)] focus-visible:ring-offset-2 ${per === p ? "bg-[var(--mh-ink)] text-white" : "bg-white hover:bg-[var(--mh-ticket)]"}`}>
+                                                {p === "person" ? "אדם" : "משפחה"}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </fieldset>
+                            </div>
+                            {per === "person" && kidsInvited && (kidPriceOpen ? (
+                                <div className="flex flex-wrap items-end gap-3">
+                                    <div className="min-w-0 flex-1 sm:max-w-[50%]"><Field label="סכום לילד" inputMode="decimal" ltr value={kidAmount} onChange={(e) => setKidAmount(e.target.value)} placeholder="50" /></div>
+                                    <button type="button" onClick={() => { setKidPriceOpen(false); setKidAmount(""); }} className="min-h-[var(--mh-hit)] font-extrabold underline">בלי מחיר לילדים</button>
+                                </div>
+                            ) : (
+                                <button type="button" onClick={() => setKidPriceOpen(true)} className="min-h-10 self-start font-extrabold underline">+ סכום אחר לילד</button>
+                            ))}
+                        </div>
+                    )}
+                    <Choice name="money" checked={moneyMode === "free"} onPick={() => setMoneyMode("free")} title="כל אחד כמה שרוצה" line="מתאים למתנה משותפת. האורח כותב כמה שם." />
+                </div>
+                {moneyMode !== "none" && (
+                    <label className="flex flex-col gap-2">
+                        <span className={label}>קישור לתשלום בביט או בפייבוקס <span className="font-semibold text-[var(--mh-ink-soft)]">(לא חובה)</span></span>
+                        <input value={payLink} onChange={(e) => setPayLink(e.target.value)} dir="ltr" inputMode="url" maxLength={300} placeholder="https://" className={`${field} text-end`} />
+                        <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">האורחים ילחצו עליו כדי לשלם לכם ישירות, ואז יסמנו ״שילמתי״.</span>
+                    </label>
+                )}
+            </>
+        );
+        side = (
+            <Side title="מה האורחים יראו">
+                {moneyMode === "none" && <p className="m-0 font-semibold">בלי כפתור תשלום. רק ״מגיע/ה״, ״אולי״ או ״לא מגיע/ה״.</p>}
+                {moneyMode === "fixed" && (
+                    <p className="m-0 font-semibold">
+                        {sample
+                            ? <>למשל, מי שמגיע עם {kidsInvited && kidPriceOpen ? "שני מבוגרים וילד" : "שלושה אנשים"} יראה: <b className="whitespace-nowrap">להעביר {formatShekels(sample)}</b></>
+                            : "כתבו סכום, ונראה כאן מה האורחים יקבלו."}
+                    </p>
+                )}
+                {moneyMode === "free" && <p className="m-0 font-semibold">כל אורח כותב כמה העביר, ואתם רואים את הסך הכול מצטבר.</p>}
+                <Info>הכסף עובר ישירות אליכם, ואנחנו רק עוקבים מי שילם. אתם מאשרים כל תשלום שהגיע.</Info>
+            </Side>
+        );
+    } else if (step === "access") {
+        main = (
+            <>
+                <Head refEl={heading} title="מי יכול להיכנס להזמנה?" text="בכל מקרה, הכתובת ורשימת המגיעים נפתחות רק למי שאישר הגעה." />
+                <div role="radiogroup" aria-label="מי יכול להיכנס" className="flex flex-col gap-3">
+                    <Choice name="access" checked onPick={() => undefined} title="כל מי שקיבל את הקישור" tag="הכי קל" line="שולחים בווטסאפ, ומי שנכנס עונה עם השם שלו, בלי הרשמה." />
+                    <Choice name="access" checked={false} disabled onPick={() => undefined} title="רק מי שהזמנתי" tag="בקרוב" line="קישור אישי לכל אורח, וכניסה עם קוד לטלפון." />
+                </div>
+                <Switch on={surprise} onChange={setSurprise} tone="bg-[var(--mh-tint-pink)]" title="זו מסיבת הפתעה?" line="כל האורחים יראו תזכורת לא לספר.">
+                    <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
+                        <Field label="למי ההפתעה? (לא חובה)" value={honoree} onChange={(e) => setHonoree(e.target.value)} maxLength={40} placeholder="השם הפרטי" />
+                        <Field label="הטלפון שלו או שלה (לא חובה)" ltr type="tel" inputMode="tel" value={honoreePhone} onChange={(e) => setHonoreePhone(e.target.value)} placeholder="050-1234567" autoComplete="off" />
+                    </div>
+                    <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">מי שנכנס עם המספר הזה יראה שהקישור לא פעיל, וההזמנה לא תישמר אצלו.</span>
+                </Switch>
+            </>
+        );
+        side = (
+            <Side title="כך ההזמנה תיראה">
+                <InvitePreview name={name} color={shownColor} when={formatWhen(date ? `${date}${time ? `T${time}` : ""}` : null)} city={city.trim()} surprise={surprise} honoree={honoree.trim()} />
+                <Info>אחרי הפתיחה תקבלו קישור לשלוח בווטסאפ, ודף שבו רואים מי מגיע ומי שילם.</Info>
+            </Side>
+        );
     } else {
         main = (
             <>
@@ -355,16 +499,63 @@ export function Wizard({ draft }: { draft: Draft }) {
                             <button
                                 type="button"
                                 onClick={next}
-                                disabled={pending || (step === "name" && name.trim().length < 2) || (step === "type" && !packId)}
+                                disabled={pending || (step === "name" && name.trim().length < 2) || (step === "type" && !packId) || (step === "when" && !date)}
                                 className={`${primary} min-w-[140px] max-sm:flex-1`}
                             >
-                                המשך
+                                {step === "access" ? "לפתוח את החגיגה" : "המשך"}
                             </button>
                         </>
                     )}
                 </div>
             </footer>
         </main>
+    );
+}
+
+// The top of the guest's invitation, as the organizer fills in the details.
+function InvitePreview({ name, color, when, city, surprise = false, honoree = "" }: { name: string; color: string; when: string | null; city: string; surprise?: boolean; honoree?: string }) {
+    return (
+        <div className="overflow-hidden rounded-[22px] border-[2.5px] border-[var(--mh-ink)] bg-white shadow-[0_4px_0_var(--mh-ink)]">
+            <div className="flex flex-col gap-1 p-4 text-white" style={{ background: color }}>
+                <span className="text-[14px] font-extrabold opacity-90">הוזמנתם ל</span>
+                <b className="font-display text-[24px] leading-tight [text-wrap:balance]">{name.trim() || "החגיגה שלכם"}</b>
+            </div>
+            <div className="flex flex-col gap-2 p-4">
+                {surprise && (
+                    <p className="m-0 rounded-[14px] border-2 border-[var(--mh-ink)] bg-[var(--mh-tint-pink)] p-2 text-[14px] font-extrabold">
+                        <span aria-hidden="true">🤫 </span>מסיבת הפתעה. {honoree ? `לא לספר ל${honoree}!` : "לא לספר!"}
+                    </p>
+                )}
+                <span className="font-extrabold">{when ?? "התאריך יופיע כאן"}</span>
+                {city && <span className="font-semibold text-[var(--mh-ink-soft)]">{city}</span>}
+                <div className="mt-1 grid grid-cols-3 gap-2" aria-hidden="true">
+                    {["מגיע/ה", "אולי", "לא"].map((t, i) => (
+                        <span key={t} className={`rounded-full border-2 border-[var(--mh-ink)] py-1 text-center text-[13px] font-extrabold ${i === 0 ? "bg-[var(--mh-ok)]" : "bg-white"}`}>{t}</span>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// An on/off row. Extra fields for the "on" state open inside the same box.
+function Switch({ on, onChange, title, line, tone = "bg-[var(--mh-tint-sun)]", children }: {
+    on: boolean; onChange: (v: boolean) => void; title: string; line: string; tone?: string; children?: ReactNode;
+}) {
+    return (
+        <div className={`flex flex-col gap-3 rounded-[18px] border-[2.5px] border-[var(--mh-ink)] p-[14px] transition-colors duration-200 ${on ? tone : "bg-white"}`}>
+            <label className="flex cursor-pointer items-center justify-between gap-3">
+                <span className="flex min-w-0 flex-col gap-1">
+                    <b className="text-[18px] leading-tight">{title}</b>
+                    <span className="font-semibold text-[var(--mh-ink-soft)]">{line}</span>
+                </span>
+                <input type="checkbox" role="switch" checked={on} onChange={(e) => onChange(e.target.checked)} className="peer sr-only" />
+                <span aria-hidden="true" className={`relative inline-flex h-8 w-14 shrink-0 rounded-full border-[2.5px] border-[var(--mh-ink)] transition-colors duration-200 peer-focus-visible:ring-[3px] peer-focus-visible:ring-[var(--mh-ink)] peer-focus-visible:ring-offset-2 ${on ? "bg-[var(--mh-ok)]" : "bg-white"}`}>
+                    <span className={`absolute top-[2px] h-[22px] w-[22px] rounded-full border-2 border-[var(--mh-ink)] bg-white transition-[inset-inline-start] duration-200 ${on ? "start-[26px]" : "start-[2px]"}`} />
+                </span>
+            </label>
+            {on && children}
+        </div>
     );
 }
 

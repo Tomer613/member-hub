@@ -7,6 +7,7 @@ test("collecting outside the system skips the account step", () => {
     assert.deepEqual(wizardSteps("system"), ["name", "type", "look", "collection", "account", "invite"]);
     assert.deepEqual(wizardSteps("manual"), ["name", "type", "look", "collection", "invite"]);
     assert.deepEqual(wizardSteps("none"), ["name", "type", "look", "collection", "invite"]);
+    assert.deepEqual(wizardSteps("system", "celebration"), ["name", "type", "when", "money", "access"]);
 });
 
 test("every type's default color is in the palette and readable", () => {

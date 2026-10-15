@@ -3,9 +3,9 @@ import { normalizePhone } from "./auth/contact.ts";
 // Rules of the "open an organization" wizard (decided with Tommy 14.10.2026, docs/open-questions.he.md,
 // "אשף פתיחת ארגון: מסך אחר מסך"). Pure functions, so the client screens and the server actions agree.
 
-export type StepKey = "name" | "type" | "look" | "collection" | "account" | "invite";
+export type StepKey = "name" | "type" | "look" | "collection" | "account" | "invite" | "when" | "money" | "access";
 export type Collection = "system" | "manual" | "none";
-export type PackChoice = "synagogue" | "hoa" | "gym" | "club" | "generic";
+export type PackChoice = "synagogue" | "hoa" | "gym" | "club" | "celebration" | "generic";
 
 export const STEP_LABELS: Record<StepKey, string> = {
     name: "השם",
@@ -14,10 +14,15 @@ export const STEP_LABELS: Record<StepKey, string> = {
     collection: "גבייה",
     account: "חשבון לקבלת כסף",
     invite: "הזמנת חברים",
+    when: "מתי ואיפה",
+    money: "כסף",
+    access: "שליחת ההזמנה",
 };
 
 // Manual reporting and "no money" skip the account screen, and the step bar shortens with it.
-export function wizardSteps(collection: Collection): StepKey[] {
+// A celebration takes its own short path after the type: when and where, money, who can come in.
+export function wizardSteps(collection: Collection, packId?: string | null): StepKey[] {
+    if (packId === "celebration") return ["name", "type", "when", "money", "access"];
     const all: StepKey[] = ["name", "type", "look", "collection", "account", "invite"];
     return collection === "system" ? all : all.filter((s) => s !== "account");
 }
@@ -30,11 +35,12 @@ export const DEFAULT_COLOR: Record<PackChoice, string> = {
     hoa: "#00B67A",
     gym: "#FF5A36",
     club: "#FF5C9E",
+    celebration: "#FF5A36",
     generic: "#18B8F0",
 };
 
 export const isPackChoice = (v: unknown): v is PackChoice =>
-    v === "synagogue" || v === "hoa" || v === "gym" || v === "club" || v === "generic";
+    v === "synagogue" || v === "hoa" || v === "gym" || v === "club" || v === "celebration" || v === "generic";
 export const isCollection = (v: unknown): v is Collection => v === "system" || v === "manual" || v === "none";
 export const isPaletteColor = (v: unknown): v is string => typeof v === "string" && (PALETTE as readonly string[]).includes(v);
 

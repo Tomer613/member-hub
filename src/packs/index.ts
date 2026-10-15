@@ -3,6 +3,7 @@ import { hoaPack } from "./hoa";
 import { synagoguePack } from "./synagogue";
 import { gymPack } from "./gym";
 import { clubPack } from "./club";
+import { celebrationPack } from "./celebration";
 
 export type { PackDefinition } from "./types";
 
@@ -11,6 +12,7 @@ export const PACKS: Record<PackDefinition["id"], PackDefinition> = {
     synagogue: synagoguePack,
     gym: gymPack,
     club: clubPack,
+    celebration: celebrationPack,
     generic: {
         id: "generic",
         name: "כללי",

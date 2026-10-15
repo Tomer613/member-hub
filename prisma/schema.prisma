@@ -26,55 +26,56 @@ datasource db {
 
 // One customer of the platform: a building committee, a synagogue, a gym, a club.
 model Organization {
-  id         String   @id @default(cuid())
-  slug       String   @unique
-  name       String
-  packId     String // hoa | synagogue | gym | club | generic  (see src/packs)
-  country    String   @default("IL") // ISO 3166-1 alpha-2
-  currency   String   @default("ILS") // ISO 4217 default for new plans and charges
-  locale     String   @default("he") // UI language
-  timezone   String   @default("Asia/Jerusalem")
-  settings   Json     @default("{}") // pack-specific org settings, letterhead, branding, etc.
-  status     String   @default("active") // setup (wizard not finished) | active | suspended | closed
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  packId         String // hoa | synagogue | gym | club | generic  (see src/packs)
+  country        String   @default("IL") // ISO 3166-1 alpha-2
+  currency       String   @default("ILS") // ISO 4217 default for new plans and charges
+  locale         String   @default("he") // UI language
+  timezone       String   @default("Asia/Jerusalem")
+  settings       Json     @default("{}") // pack-specific org settings, letterhead, branding, etc.
+  status         String   @default("active") // setup (wizard not finished) | active | suspended | closed
   // Wallet identity: what members see on their membership badge.
-  logoUrl    String?
-  brandColor String? // hex; suggested from the logo, overridable by the org (members can override per card)
+  logoUrl        String?
+  brandColor     String? // hex; suggested from the logo, overridable by the org (members can override per card)
   // "private": never shown in search, people join by invitation only (gym, synagogue with front-desk signup).
   // "listed": appears in search; people can send a join request, an admin must approve it.
-  visibility String   @default("private") // private | listed
-  city       String? // shown in search results next to the name; search matches name or city
+  visibility     String   @default("private") // private | listed
+  city           String? // shown in search results next to the name; search matches name or city
   // The org's shareable join link (/join/<token>). Whoever opens it sends a join request; an admin approves.
-  joinToken  String?  @unique
+  joinToken      String?  @unique
   // Platform business model: what this org pays us.
-  platformPlan     String @default("free") // free | monthly | yearly (placeholder names)
-  platformFeeBps   Int    @default(0) // optional percentage of payments, in basis points
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  platformPlan   String   @default("free") // free | monthly | yearly (placeholder names)
+  platformFeeBps Int      @default(0) // optional percentage of payments, in basis points
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  orgUsers        OrgUser[]
-  members         Member[]
-  households      Household[]
+  orgUsers         OrgUser[]
+  members          Member[]
+  households       Household[]
   householdMembers HouseholdMember[]
-  funds           Fund[]
-  plans           Plan[]
-  subscriptions   Subscription[]
-  charges         Charge[]
-  payments        Payment[]
-  allocations     PaymentAllocation[]
-  invoices        Invoice[]
-  expenses        Expense[]
-  events          Event[]
-  requests        Request[]
-  joinRequests    JoinRequest[]
-  invitations     Invitation[]
-  dataPolicies    OrgDataPolicy[]
-  disputes        ChargeDispute[]
-  debtReminders   DebtReminder[]
-  campaigns       Campaign[]
-  paymentAccounts PaymentAccount[]
-  auditLogs       AuditLog[]
-  yahrzeits       Yahrzeit[]
-  parkingSpots    ParkingSpot[]
+  funds            Fund[]
+  plans            Plan[]
+  subscriptions    Subscription[]
+  charges          Charge[]
+  payments         Payment[]
+  allocations      PaymentAllocation[]
+  invoices         Invoice[]
+  expenses         Expense[]
+  events           Event[]
+  requests         Request[]
+  joinRequests     JoinRequest[]
+  invitations      Invitation[]
+  dataPolicies     OrgDataPolicy[]
+  disputes         ChargeDispute[]
+  debtReminders    DebtReminder[]
+  campaigns        Campaign[]
+  paymentAccounts  PaymentAccount[]
+  auditLogs        AuditLog[]
+  yahrzeits        Yahrzeit[]
+  parkingSpots     ParkingSpot[]
+  rsvps            Rsvp[]
 }
 
 // A person with an account in the app. Global, not per org: one person holds memberships in many orgs
@@ -89,19 +90,19 @@ model User {
   lastName           String?
   displayName        String?
   gender             String? // male | female | undisclosed. Drives Hebrew address (חבר/חברה); null or undisclosed → masculine. Shared with an org only when the org requests it as a field and the member consents.
-  language           String?  // preferred message language (he, en, ...); visible to orgs the member joined, so they can write in the right language
-  preferences        Json?    // { timeAxis: ltr|rtl (default ltr), quietHours, notifyChannels }; display preferences, not accessibility
-  accessibility      Json?    // { textSize: normal|large|xlarge, highContrast, reduceMotion, strongFocus }; applies in every membership, device settings are the default
+  language           String? // preferred message language (he, en, ...); visible to orgs the member joined, so they can write in the right language
+  preferences        Json? // { timeAxis: ltr|rtl (default ltr), quietHours, notifyChannels }; display preferences, not accessibility
+  accessibility      Json? // { textSize: normal|large|xlarge, highContrast, reduceMotion, strongFocus }; applies in every membership, device settings are the default
   locale             String   @default("he") // UI language; the member's choice, independent of the org's
   passwordHash       String?
   mustChangePassword Boolean  @default(false)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  contacts      UserContact[]
-  authSessions  AuthSession[]
-  orgUsers      OrgUser[]
-  joinRequests  JoinRequest[]
+  contacts       UserContact[]
+  authSessions   AuthSession[]
+  orgUsers       OrgUser[]
+  joinRequests   JoinRequest[]
   disputesOpened ChargeDispute[]
 }
 
@@ -213,19 +214,19 @@ model PhoneChangeRequest {
 // One person's membership in one org, and everything they decided about it. This is the "badge".
 // Not to be confused with Member (the org's own record of a person, which can exist with no login).
 model OrgUser {
-  id        String   @id @default(cuid())
-  orgId     String
-  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role      String   @default("member") // owner | admin | treasurer | staff | member
+  id       String       @id @default(cuid())
+  orgId    String
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     String       @default("member") // owner | admin | treasurer | staff | member | guest (celebrations)
   // active | suspended | left | left_with_debt. A user may always request to leave; with an open
   // balance the badge stays in the wallet as "left_with_debt" and the org keeps only the fields it
   // marked mandatory, for collection. We do not block leaving and we do not adjudicate disputes.
-  status    String   @default("active")
-  leftAt    DateTime?
-  memberId  String?  @unique // the Member record this login represents inside the org
-  member    Member?  @relation(fields: [memberId], references: [id])
+  status   String       @default("active")
+  leftAt   DateTime?
+  memberId String?      @unique // the Member record this login represents inside the org
+  member   Member?      @relation(fields: [memberId], references: [id])
 
   // Consent. Fields the member hides from the org (the org's mandatory fields can never be hidden).
   hiddenFields          String[] @default([])
@@ -234,8 +235,8 @@ model OrgUser {
   // Wallet personalization, per user, invisible to the org.
   cardColor   String? // overrides Organization.brandColor; picked from a curated palette
   walletGroup String? // the member's own grouping ("home", "health", "community")
-  walletOrder Int      @default(0)
-  isPinned    Boolean  @default(false)
+  walletOrder Int     @default(0)
+  isPinned    Boolean @default(false)
 
   createdAt DateTime @default(now())
 
@@ -248,14 +249,14 @@ model OrgUser {
 // default) so members can react or leave. The platform keeps a ceiling in code (src/lib/privacy):
 // name and a contact method are always mandatory; anything else mandatory needs a stated reason.
 model OrgDataPolicy {
-  id              String   @id @default(cuid())
+  id              String       @id @default(cuid())
   orgId           String
   org             Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   version         Int
-  mandatoryFields String[] @default([]) // e.g. ["name", "phone", "address"]
-  optionalFields  String[] @default([]) // asked for, member decides
-  reasons         Json     @default("{}") // { "address": "needed to send the building bill" }
-  announcedAt     DateTime @default(now())
+  mandatoryFields String[]     @default([]) // e.g. ["name", "phone", "address"]
+  optionalFields  String[]     @default([]) // asked for, member decides
+  reasons         Json         @default("{}") // { "address": "needed to send the building bill" }
+  announcedAt     DateTime     @default(now())
   effectiveFrom   DateTime // announcedAt + notice period; the active policy is the latest already effective
 
   @@unique([orgId, version])
@@ -266,20 +267,20 @@ model OrgDataPolicy {
 // the invitation waits and attaches only when someone verifies that exact contact (UserContact).
 // Joining always needs both sides: the admin invites, the person accepts.
 model Invitation {
-  id          String   @id @default(cuid())
-  orgId       String
-  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  kind        String // email | phone
-  value       String // normalized
-  memberId    String? // the Member record the admin prepared; the user attaches to it on acceptance
-  role        String   @default("member")
-  invitedById String // User.id of the admin
-  status      String   @default("pending") // pending | accepted | declined | expired | revoked
-  expiresAt   DateTime // default 30 days; phone numbers get recycled
-  linkToken   String?  @unique // random token in the invitation link (/login?invite=...); also typed as an invite code
-  respondedAt DateTime?
+  id               String       @id @default(cuid())
+  orgId            String
+  org              Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  kind             String // email | phone
+  value            String // normalized
+  memberId         String? // the Member record the admin prepared; the user attaches to it on acceptance
+  role             String       @default("member")
+  invitedById      String // User.id of the admin
+  status           String       @default("pending") // pending | accepted | declined | expired | revoked
+  expiresAt        DateTime // default 30 days; phone numbers get recycled
+  linkToken        String?      @unique // random token in the invitation link (/login?invite=...); also typed as an invite code
+  respondedAt      DateTime?
   acceptedByUserId String?
-  createdAt   DateTime @default(now())
+  createdAt        DateTime     @default(now())
 
   // Application rule: at most one pending invitation per org + kind + value.
   @@index([kind, value, status])
@@ -292,7 +293,7 @@ model Invitation {
 
 // A person inside an org: tenant, community member, gym member, club member.
 model Member {
-  id           String   @id @default(cuid())
+  id           String       @id @default(cuid())
   orgId        String
   org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   firstName    String
@@ -302,24 +303,24 @@ model Member {
   phone2       String?
   street       String?
   city         String?
-  status       String   @default("active") // pending | active | inactive
+  status       String       @default("active") // pending | active | inactive
   // Pack-defined extra fields (halachic status, children counts, etc.), validated against the pack.
-  customFields Json     @default("{}")
+  customFields Json         @default("{}")
   // Directory privacy, generalized from d3teman's showPhone/showAddress/receiveNewsletter.
-  privacy      Json     @default("{}")
+  privacy      Json         @default("{}")
   notes        String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
-  orgUser          OrgUser?
-  householdLinks   HouseholdMember[]
-  subscriptions    Subscription[]
-  charges          Charge[]
-  payments         Payment[]
-  events           Event[]
-  requests         Request[]
-  yahrzeits        Yahrzeit[]
-  debtReminders    DebtReminder[]
+  orgUser        OrgUser?
+  householdLinks HouseholdMember[]
+  subscriptions  Subscription[]
+  charges        Charge[]
+  payments       Payment[]
+  events         Event[]
+  requests       Request[]
+  yahrzeits      Yahrzeit[]
+  debtReminders  DebtReminder[]
 
   @@index([orgId, lastName, firstName])
   @@index([orgId, phone])
@@ -328,12 +329,12 @@ model Member {
 
 // The billable unit: an apartment (HOA), a family (synagogue), a membership account (gym/club).
 model Household {
-  id           String   @id @default(cuid())
+  id           String       @id @default(cuid())
   orgId        String
   org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   label        String // "14" for a flat, a family name, an account name
-  customFields Json     @default("{}")
-  createdAt    DateTime @default(now())
+  customFields Json         @default("{}")
+  createdAt    DateTime     @default(now())
 
   members       HouseholdMember[]
   subscriptions Subscription[]
@@ -348,24 +349,24 @@ model Household {
 // Who belongs to a household and for which period. Dated on purpose: the HOA project's
 // whole billing logic depends on who lived in a flat in which month (tenant turnover).
 model HouseholdMember {
-  id          String   @id @default(cuid())
-  orgId       String
-  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  householdId String
-  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
-  memberId    String
-  member      Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  relation    String    @default("member") // owner | tenant | head | spouse | child | member
-  isHead      Boolean   @default(false)
+  id                  String       @id @default(cuid())
+  orgId               String
+  org                 Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  householdId         String
+  household           Household    @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  memberId            String
+  member              Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  relation            String       @default("member") // owner | tenant | head | spouse | child | member
+  isHead              Boolean      @default(false)
   // Up to two people (e.g. both spouses) may act as payers for the household: see and pay its charges.
   // Application rule: at most two payers per household at a time.
-  isPayer     Boolean   @default(false)
-  isBilled    Boolean   @default(true) // false for a person who lives there but is not billed
-  startsOn    DateTime? @db.Date // null = since forever
-  endsOn      DateTime? @db.Date // null = still current
+  isPayer             Boolean      @default(false)
+  isBilled            Boolean      @default(true) // false for a person who lives there but is not billed
+  startsOn            DateTime?    @db.Date // null = since forever
+  endsOn              DateTime?    @db.Date // null = still current
   // Opening balance carried in from before the system, in minor units (HOA: חוב_התחלתי_היסטורי).
-  openingBalanceMinor Int @default(0)
-  createdAt   DateTime  @default(now())
+  openingBalanceMinor Int          @default(0)
+  createdAt           DateTime     @default(now())
 
   @@index([orgId, householdId, startsOn])
   @@index([orgId, memberId])
@@ -377,13 +378,13 @@ model HouseholdMember {
 
 // A ledger bucket. HOA: general fund, camera fund, parking gate. Synagogue: donation targets.
 model Fund {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   orgId       String
   org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   key         String // stable machine key, e.g. "general"
   displayName String
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
 
   plans    Plan[]
   charges  Charge[]
@@ -396,19 +397,19 @@ model Fund {
 
 // A price and rule set. "rules" carries the fee schedule (see src/lib/billing/schedule.ts).
 model Plan {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   orgId       String
   org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   fundId      String?
-  fund        Fund?    @relation(fields: [fundId], references: [id])
+  fund        Fund?        @relation(fields: [fundId], references: [id])
   name        String
-  interval    String   @default("month") // month | year | once | per_visit
-  amountMinor Int      @default(0) // default fee; dated changes live in rules.changes
-  currency    String   @default("ILS")
+  interval    String       @default("month") // month | year | once | per_visit
+  amountMinor Int          @default(0) // default fee; dated changes live in rules.changes
+  currency    String       @default("ILS")
   // { changes: {"2025-10": 27500}, routineSpecials: {...}, oneTimeCharges: {...}, perUnit: false }
-  rules       Json     @default("{}")
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  rules       Json         @default("{}")
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
 
   subscriptions Subscription[]
 
@@ -417,23 +418,23 @@ model Plan {
 
 // A household (or a single member) attached to a plan for a period.
 model Subscription {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   orgId       String
   org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   planId      String
-  plan        Plan     @relation(fields: [planId], references: [id])
+  plan        Plan         @relation(fields: [planId], references: [id])
   householdId String?
-  household   Household? @relation(fields: [householdId], references: [id])
+  household   Household?   @relation(fields: [householdId], references: [id])
   memberId    String?
-  member      Member?  @relation(fields: [memberId], references: [id])
+  member      Member?      @relation(fields: [memberId], references: [id])
   // Multiplier, e.g. number of children for the HOA daycare per-child fee.
-  quantity    Int      @default(1)
-  status      String   @default("active") // active | frozen | cancelled | ended
-  startsOn    DateTime @db.Date
-  endsOn      DateTime? @db.Date
-  frozenFrom  DateTime? @db.Date // gym freeze
-  frozenUntil DateTime? @db.Date
-  createdAt   DateTime @default(now())
+  quantity    Int          @default(1)
+  status      String       @default("active") // active | frozen | cancelled | ended
+  startsOn    DateTime     @db.Date
+  endsOn      DateTime?    @db.Date
+  frozenFrom  DateTime?    @db.Date // gym freeze
+  frozenUntil DateTime?    @db.Date
+  createdAt   DateTime     @default(now())
 
   charges Charge[]
 
@@ -443,54 +444,54 @@ model Subscription {
 
 // Something owed. Generated by the billing engine or entered by hand.
 model Charge {
-  id             String   @id @default(cuid())
+  id             String        @id @default(cuid())
   orgId          String
-  org            Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  org            Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
   fundId         String?
-  fund           Fund?    @relation(fields: [fundId], references: [id])
+  fund           Fund?         @relation(fields: [fundId], references: [id])
   subscriptionId String?
   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
   householdId    String?
-  household      Household? @relation(fields: [householdId], references: [id])
+  household      Household?    @relation(fields: [householdId], references: [id])
   memberId       String? // who is billed (the tenant at that time)
-  member         Member?  @relation(fields: [memberId], references: [id])
-  periodMonth    DateTime? @db.Date // first day of the billed month, null for non-periodic
-  kind           String   @default("recurring") // recurring | special | one_time | adjustment
+  member         Member?       @relation(fields: [memberId], references: [id])
+  periodMonth    DateTime?     @db.Date // first day of the billed month, null for non-periodic
+  kind           String        @default("recurring") // recurring | special | one_time | adjustment
   description    String
   amountMinor    Int
-  currency       String   @default("ILS")
-  fraction       Decimal? @db.Decimal(6, 5) // share of the month when pro-rated (1/3 -> 0.33333)
+  currency       String        @default("ILS")
+  fraction       Decimal?      @db.Decimal(6, 5) // share of the month when pro-rated (1/3 -> 0.33333)
   voidedAt       DateTime?
   // Set by the billing engine to make generation idempotent, e.g. "<subscriptionId>|<memberId>|2026-10|recurring".
   // Null for hand-entered charges (Postgres allows many NULLs in a unique index).
   dedupeKey      String?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime      @default(now())
 
   allocations PaymentAllocation[]
   disputes    ChargeDispute[]
 
+  @@unique([orgId, dedupeKey])
   @@index([orgId, householdId, periodMonth])
   @@index([orgId, memberId])
-  @@unique([orgId, dedupeKey])
 }
 
 // Either side may mark a charge as disputed. While a dispute is open, reminders for that charge stop.
 // The platform records the dispute and keeps the history; it does not decide who is right and does
 // not punish either side.
 model ChargeDispute {
-  id           String   @id @default(cuid())
-  orgId        String
-  org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  chargeId     String
-  charge       Charge   @relation(fields: [chargeId], references: [id], onDelete: Cascade)
-  openedById   String // User.id
-  openedBy     User     @relation(fields: [openedById], references: [id])
-  openedBySide String // member | org
-  reason       String
-  status       String   @default("open") // open | resolved | withdrawn
+  id             String       @id @default(cuid())
+  orgId          String
+  org            Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  chargeId       String
+  charge         Charge       @relation(fields: [chargeId], references: [id], onDelete: Cascade)
+  openedById     String // User.id
+  openedBy       User         @relation(fields: [openedById], references: [id])
+  openedBySide   String // member | org
+  reason         String
+  status         String       @default("open") // open | resolved | withdrawn
   resolutionNote String?
-  createdAt    DateTime @default(now())
-  resolvedAt   DateTime?
+  createdAt      DateTime     @default(now())
+  resolvedAt     DateTime?
 
   @@index([orgId, status])
   @@index([chargeId])
@@ -499,45 +500,45 @@ model ChargeDispute {
 // Every collection reminder sent, so a hard limit (default: one per member per week) can be enforced
 // in one place and nobody can be harassed through the platform. Disputed charges are never reminded.
 model DebtReminder {
-  id        String   @id @default(cuid())
-  orgId     String
-  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  memberId  String
-  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  channel   String // push | email | whatsapp_text | sms
-  sentById  String? // User.id, null for scheduled sends
-  sentAt    DateTime @default(now())
+  id       String       @id @default(cuid())
+  orgId    String
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  memberId String
+  member   Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  channel  String // push | email | whatsapp_text | sms
+  sentById String? // User.id, null for scheduled sends
+  sentAt   DateTime     @default(now())
 
   @@index([orgId, memberId, sentAt])
 }
 
 // Money received. Provider-agnostic: card via a processor, cash, bank transfer, standing order.
 model Payment {
-  id               String   @id @default(cuid())
+  id               String       @id @default(cuid())
   orgId            String
   org              Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   fundId           String?
-  fund             Fund?    @relation(fields: [fundId], references: [id])
+  fund             Fund?        @relation(fields: [fundId], references: [id])
   householdId      String?
-  household        Household? @relation(fields: [householdId], references: [id])
+  household        Household?   @relation(fields: [householdId], references: [id])
   memberId         String?
-  member           Member?  @relation(fields: [memberId], references: [id])
+  member           Member?      @relation(fields: [memberId], references: [id])
   payerName        String? // as reported by the provider; may not match a Member
   payerPhone       String?
   payerEmail       String?
   amountMinor      Int
-  currency         String   @default("ILS")
-  method           String   @default("card") // card | cash | bank | standing_order | other
+  currency         String       @default("ILS")
+  method           String       @default("card") // card | cash | bank | standing_order | other
   provider         String? // e.g. "nedarim", "cardcom", "stripe"
   providerTxId     String? // external id; unique per org+provider so webhooks are idempotent
-  status           String   @default("succeeded") // pending | succeeded | failed | refunded
-  source           String   @default("manual") // webhook | manual | import
-  isRecurring      Boolean  @default(false)
+  status           String       @default("succeeded") // pending | succeeded | failed | refunded
+  source           String       @default("manual") // webhook | manual | import
+  isRecurring      Boolean      @default(false)
   recurringRef     String? // groups installments of one standing order, when the provider tells us
-  platformFeeMinor Int      @default(0) // our cut, computed from Organization.platformFeeBps
+  platformFeeMinor Int          @default(0) // our cut, computed from Organization.platformFeeBps
   rawPayload       Json? // original provider payload, kept for audit and re-processing
-  receivedAt       DateTime @default(now())
-  createdAt        DateTime @default(now())
+  receivedAt       DateTime     @default(now())
+  createdAt        DateTime     @default(now())
 
   allocations PaymentAllocation[]
   invoice     Invoice?
@@ -549,13 +550,13 @@ model Payment {
 
 // How a payment was applied against charges (oldest-first by default).
 model PaymentAllocation {
-  id          String  @id @default(cuid())
+  id          String       @id @default(cuid())
   orgId       String
   org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   paymentId   String
-  payment     Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  payment     Payment      @relation(fields: [paymentId], references: [id], onDelete: Cascade)
   chargeId    String
-  charge      Charge  @relation(fields: [chargeId], references: [id], onDelete: Cascade)
+  charge      Charge       @relation(fields: [chargeId], references: [id], onDelete: Cascade)
   amountMinor Int
 
   @@unique([paymentId, chargeId])
@@ -564,47 +565,47 @@ model PaymentAllocation {
 
 // A legal receipt or invoice issued through an external, licensed provider. We store the reference.
 model Invoice {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   orgId       String
   org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  paymentId   String   @unique
-  payment     Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  paymentId   String       @unique
+  payment     Payment      @relation(fields: [paymentId], references: [id], onDelete: Cascade)
   provider    String // e.g. "icount", "green-invoice"
   externalId  String?
   number      String?
   documentUrl String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime     @default(now())
 
   @@index([orgId])
 }
 
 // Where an org's money lands: its own sub-account at a payment processor.
 model PaymentAccount {
-  id                String   @id @default(cuid())
+  id                String       @id @default(cuid())
   orgId             String
   org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   provider          String
   externalAccountId String // never store card data or API secrets here; secrets live in a vault
-  status            String   @default("pending") // pending | verified | disabled
-  createdAt         DateTime @default(now())
+  status            String       @default("pending") // pending | verified | disabled
+  createdAt         DateTime     @default(now())
 
   @@unique([orgId, provider])
 }
 
 // Money going out (HOA: הוצאות).
 model Expense {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   orgId       String
   org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   fundId      String?
-  fund        Fund?    @relation(fields: [fundId], references: [id])
+  fund        Fund?        @relation(fields: [fundId], references: [id])
   category    String
   vendor      String?
   details     String?
   amountMinor Int
-  currency    String   @default("ILS")
-  spentOn     DateTime @db.Date
-  createdAt   DateTime @default(now())
+  currency    String       @default("ILS")
+  spentOn     DateTime     @db.Date
+  createdAt   DateTime     @default(now())
 
   @@index([orgId, spentOn])
 }
@@ -614,19 +615,19 @@ model Expense {
 // ---------------------------------------------------------------------------
 
 model Event {
-  id             String   @id @default(cuid())
-  orgId          String
-  org            Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  type           String   @default("general") // pack-defined: brit | bar_mitzvah | wedding | class | meeting ...
-  title          String
-  description    String?
-  startsAt       DateTime
-  dateLabel      String? // free-text display date, e.g. a Hebrew date
-  location       String?
-  memberId       String? // the celebrating member, if applicable
-  member         Member?  @relation(fields: [memberId], references: [id])
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id          String       @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  type        String       @default("general") // pack-defined: brit | bar_mitzvah | wedding | class | meeting ...
+  title       String
+  description String?
+  startsAt    DateTime
+  dateLabel   String? // free-text display date, e.g. a Hebrew date
+  location    String?
+  memberId    String? // the celebrating member, if applicable
+  member      Member?      @relation(fields: [memberId], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@index([orgId, startsAt])
 }
@@ -635,17 +636,17 @@ model Event {
 // (Kiddush, Haftarah, Aliyah, EventNotification, GeneralInquiry). The pack declares the kinds
 // and the payload shape; admins triage them all in one inbox.
 model Request {
-  id         String   @id @default(cuid())
+  id         String       @id @default(cuid())
   orgId      String
   org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   memberId   String
-  member     Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  member     Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
   kind       String // pack-defined, e.g. "kiddush_sponsorship", "aliyah", "maintenance_issue"
-  payload    Json     @default("{}")
-  status     String   @default("pending") // pending | approved | rejected | done
+  payload    Json         @default("{}")
+  status     String       @default("pending") // pending | approved | rejected | done
   adminNotes String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   @@index([orgId, kind, status])
 }
@@ -654,17 +655,17 @@ model Request {
 // Application rules: only for orgs with visibility "listed"; rate-limited per user per day;
 // an admin may block a user from asking again.
 model JoinRequest {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   orgId       String
   org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   message     String?
-  status      String   @default("pending") // pending | approved | rejected | withdrawn | blocked
+  status      String       @default("pending") // pending | approved | rejected | withdrawn | blocked
   decidedById String? // User.id of the admin
   decidedAt   DateTime?
   adminNotes  String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime     @default(now())
 
   @@index([orgId, status])
   @@index([userId])
@@ -672,17 +673,17 @@ model JoinRequest {
 
 // Outbound communication (generalizes d3teman's Newsletter).
 model Campaign {
-  id          String    @id @default(cuid())
+  id          String       @id @default(cuid())
   orgId       String
   org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  channel     String    @default("email") // email | whatsapp_text | sms
+  channel     String       @default("email") // email | whatsapp_text | sms
   subject     String
-  targetGroup String    @default("all")
+  targetGroup String       @default("all")
   items       Json // [{ category, title, body, imageUrl }]
-  status      String    @default("draft") // draft | sent
+  status      String       @default("draft") // draft | sent
   sentCount   Int?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   sentAt      DateTime?
 
   @@index([orgId, status])
@@ -690,15 +691,15 @@ model Campaign {
 
 // Who did what, especially around money. Append-only.
 model AuditLog {
-  id        String   @id @default(cuid())
+  id        String       @id @default(cuid())
   orgId     String
   org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   actorId   String? // User.id, null for system or webhook actions
   action    String // e.g. "payment.recorded", "charge.voided", "member.role_changed"
   entity    String
   entityId  String?
-  meta      Json     @default("{}")
-  createdAt DateTime @default(now())
+  meta      Json         @default("{}")
+  createdAt DateTime     @default(now())
 
   @@index([orgId, createdAt])
   @@index([orgId, entity, entityId])
@@ -710,30 +711,54 @@ model AuditLog {
 
 // synagogue pack (from d3teman): memorial dates per member.
 model Yahrzeit {
-  id           String   @id @default(cuid())
+  id           String       @id @default(cuid())
   orgId        String
   org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   memberId     String
-  member       Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  member       Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
   deceasedName String
   relation     String // father | mother | brother | sister | husband | wife | son | daughter | other
   hebrewDay    Int
   hebrewMonth  String
   notes        String?
-  createdAt    DateTime @default(now())
+  createdAt    DateTime     @default(now())
 
   @@index([orgId, hebrewMonth, hebrewDay])
 }
 
 // hoa pack (from the HOA project): parking registry.
 model ParkingSpot {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   orgId       String
   org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   number      String
   householdId String?
-  household   Household? @relation(fields: [householdId], references: [id])
+  household   Household?   @relation(fields: [householdId], references: [id])
   notes       String?
 
   @@unique([orgId, number])
+}
+
+// celebration pack: a guest's answer to a celebration (decided with Tommy 14.10.2026). Guests answer with a
+// name only, no account; the browser keeps guestKey so they can change their answer. When a signed-in person
+// answers, userId links it and the celebration shows in their wallet. Event details live in Organization.settings.
+model Rsvp {
+  id        String       @id @default(cuid())
+  orgId     String
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  guestKey  String       @unique // random, kept in the guest's browser
+  userId    String?
+  name      String
+  status    String // yes | maybe | no
+  people    Int          @default(1) // how many are coming, the guest included
+  kids      Int          @default(0) // of them, children
+  // Money is tracked, not moved (phase 1): the guest pays the organizer directly and marks it here.
+  paid      String       @default("none") // none | claimed | confirmed
+  paidMinor Int? // what the guest says they paid, in agorot
+  paidAt    DateTime?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([orgId, userId])
+  @@index([orgId, status])
 }

@@ -13,6 +13,8 @@ const shell = "mx-auto flex min-h-dvh max-w-[480px] flex-col justify-center gap-
 // Where an org's shared join link lands. The person asks to join and the org's admins approve.
 export default async function JoinLinkPage({ params }: { params: Promise<{ token: string }> }) {
     const { token } = await params;
+    // A celebration's link opens its invitation, where guests reply without signing in.
+    if (await db.organization.findFirst({ where: { joinToken: token, packId: "celebration" }, select: { id: true } })) redirect(`/c/${token}`);
     const session = await getSession();
     if (!session) redirect(`/login?next=${encodeURIComponent(`/join/${token}`)}`);
     const org = await db.organization.findFirst({ where: { joinToken: token, status: "active" } });

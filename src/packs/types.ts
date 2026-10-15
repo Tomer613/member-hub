@@ -58,7 +58,7 @@ export interface CardPrimaryActionDef {
 export type TemplateCategory = "residential" | "religious" | "sports" | "social" | "other";
 
 export interface PackDefinition {
-    id: "hoa" | "synagogue" | "gym" | "club" | "generic";
+    id: "hoa" | "synagogue" | "gym" | "club" | "celebration" | "generic";
     name: string;
     status: "ready" | "draft" | "planned"; // ready = ported from working code
     terms: PackTerms;

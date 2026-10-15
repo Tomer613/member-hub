@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session-server";
 import { isCollection, isPackChoice, wizardSteps, type StepKey } from "@/lib/org-setup";
+import { readCelebration } from "@/lib/celebration";
 import { Wizard, type Draft } from "./wizard";
 
 export const metadata: Metadata = { title: "פתיחת ארגון · PIRI" };
@@ -21,7 +22,7 @@ export default async function NewOrgPage() {
     const settings = (org?.settings ?? {}) as { wizard?: { step?: StepKey }; collection?: string };
     const collection = isCollection(settings.collection) ? settings.collection : null;
     const saved = settings.wizard?.step;
-    const step: StepKey = org && saved && wizardSteps(collection ?? "system").includes(saved) ? saved : org ? "type" : "name";
+    const step: StepKey = org && saved && wizardSteps(collection ?? "system", org.packId).includes(saved) ? saved : org ? "type" : "name";
 
     const draft: Draft = {
         orgId: org?.id ?? null,
@@ -34,6 +35,7 @@ export default async function NewOrgPage() {
         logo: org?.logoUrl ?? null,
         collection,
         joinToken: org?.joinToken ?? null,
+        celebration: readCelebration(org?.settings),
     };
     return <Wizard draft={draft} />;
 }

@@ -56,7 +56,7 @@ export default function Landing() {
 
                   <section className="s-typ">
                     <h2>מתאים ל</h2>
-                    <div className="types"><span className="chip" tabIndex={0}>ועד בית<span className="more">גבייה, תקלות ואסיפות</span></span><span className="chip" tabIndex={0}>בית כנסת וקהילה<span className="more">תרומות וזמני תפילה</span></span><span className="chip" tabIndex={0}>חדר כושר<span className="more">מנויים וכניסה בקוד</span></span><span className="chip" tabIndex={0}>מועדון ותחביב<span className="more">מפגשים והטבות</span></span><span className="chip" tabIndex={0}>ועוד<span className="more">כל ארגון עם חברים</span></span></div>
+                    <div className="types"><span className="chip" tabIndex={0}>ועד בית<span className="more">גבייה, תקלות ואסיפות</span></span><span className="chip" tabIndex={0}>בית כנסת וקהילה<span className="more">תרומות וזמני תפילה</span></span><span className="chip" tabIndex={0}>חדר כושר<span className="more">מנויים וכניסה בקוד</span></span><span className="chip" tabIndex={0}>מועדון ותחביב<span className="more">מפגשים והטבות</span></span><span className="chip" tabIndex={0}>חגיגה ואירוע<span className="more">אישורי הגעה ומתנה משותפת</span></span><span className="chip" tabIndex={0}>ועוד<span className="more">כל ארגון עם חברים</span></span></div>
                   </section>
                 </main>
             </div>

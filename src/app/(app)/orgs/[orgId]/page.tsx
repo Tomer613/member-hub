@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session-server";
 import { CopyLink } from "@/components/copy-link";
 import { OrgCard } from "@/components/org-card";
+import { CelebrationView } from "./celebration-view";
 
 export const metadata: Metadata = { title: "סקירה · PIRI" };
 
@@ -24,6 +25,7 @@ export default async function OrgOverviewPage({ params }: { params: Promise<{ or
     if (!link) notFound();
     const org = link.org;
     if (org.status === "setup") redirect("/orgs/new");
+    if (org.packId === "celebration") return <CelebrationView org={org} rsvps={await db.rsvp.findMany({ where: { orgId } })} />;
     const settings = (org.settings ?? {}) as { collection?: string; account?: string; inviteWith?: string };
     const [requests, invites, members] = await Promise.all([
         db.joinRequest.count({ where: { orgId, status: "pending" } }),

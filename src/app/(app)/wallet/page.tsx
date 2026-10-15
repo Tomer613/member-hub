@@ -44,6 +44,7 @@ export default async function WalletPage({ searchParams }: { searchParams: Promi
                         <li key={m.id} className="flex items-center justify-between gap-3 rounded-[20px] border-[2.5px] border-[var(--mh-ink)] bg-[var(--mh-ticket)] p-4 font-extrabold shadow-[var(--mh-shadow)]">
                             {m.org.name}
                             {(m.role === "owner" || m.role === "admin") && <Link href={`/orgs/${m.org.id}`} className="min-h-10 content-center underline">ניהול</Link>}
+                            {m.role === "guest" && m.org.joinToken && <Link href={`/c/${m.org.joinToken}`} className="min-h-10 content-center underline">להזמנה</Link>}
                         </li>
                     ))}
                 </ul>
