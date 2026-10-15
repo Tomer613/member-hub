@@ -2,9 +2,10 @@ import Link from "next/link";
 import type { Organization, Rsvp } from "@prisma/client";
 import type { ReactNode } from "react";
 import { CopyLink, WhatsAppShare } from "@/components/copy-link";
-import { amountOwed, collectionTarget, formatShekels, formatWhen, readCelebration, totals } from "@/lib/celebration";
+import { amountOwed, collectionTarget, formatShekels, formatWhen, localPhone, readCelebration, totals } from "@/lib/celebration";
 import { CollectBar } from "@/components/collect-bar";
-import { setPayment } from "./actions";
+import { removeInvited, setPayment } from "./actions";
+import { AddInvited } from "./invited-form";
 
 // The organizer's page of a celebration (decided with Tommy 14.10.2026): how many are coming and how many
 // of them are kids, who has not answered, who paid, and the link to send.
@@ -13,7 +14,8 @@ const box = "flex flex-col gap-3 rounded-[24px] border-[2.5px] border-[var(--mh-
 const small = "inline-flex min-h-10 items-center justify-center rounded-full border-2 border-[var(--mh-ink)] px-4 text-[14px] font-extrabold shadow-[0_2px_0_var(--mh-ink)] transition-transform duration-150 hover:-translate-y-px active:translate-y-[1px] active:shadow-none";
 const STATUS = { yes: "מגיעים", maybe: "אולי", no: "לא מגיעים" } as Record<string, string>;
 
-export function CelebrationView({ org, rsvps }: { org: Organization; rsvps: Rsvp[] }) {
+// replyByPhone: an account phone -> that account's reply id, to show which invited numbers answered.
+export function CelebrationView({ org, rsvps, replyByPhone }: { org: Organization; rsvps: Rsvp[]; replyByPhone: Record<string, string> }) {
     const c = readCelebration(org.settings);
     const t = totals(rsvps);
     const when = formatWhen(c.startsAt);
@@ -71,7 +73,7 @@ export function CelebrationView({ org, rsvps }: { org: Organization; rsvps: Rsvp
                     <aside className="flex flex-col gap-4">
                         <section className={box} aria-labelledby="share-h">
                             <h2 id="share-h" className="m-0 font-display text-[22px]">הקישור להזמנה</h2>
-                            <p className="m-0 font-semibold text-[var(--mh-ink-soft)]">מי שמקבל אותו עונה עם השם שלו, בלי הרשמה.</p>
+                            <p className="m-0 font-semibold text-[var(--mh-ink-soft)]">{c.access === "invited" ? "אותו קישור לכולם. רק מי שברשימת המוזמנים יוכל לפתוח אותו, עם קוד לטלפון." : "מי שמקבל אותו עונה עם השם שלו, בלי הרשמה."}</p>
                             {org.joinToken && (
                                 <>
                                     <CopyLink path={path} label="קישור ההזמנה" />
@@ -79,6 +81,29 @@ export function CelebrationView({ org, rsvps }: { org: Organization; rsvps: Rsvp
                                 </>
                             )}
                         </section>
+                        {c.access === "invited" && (
+                            <section className={box} aria-labelledby="invited-h">
+                                <h2 id="invited-h" className="m-0 font-display text-[22px]">המוזמנים</h2>
+                                <Row k="ברשימה" v={String(c.invited.length)} />
+                                <Row k="ענו" v={String(c.invited.filter((p) => replyByPhone[p]).length)} />
+                                {c.invited.some((p) => !replyByPhone[p]) && (
+                                    <details className="group">
+                                        <summary className="min-h-10 cursor-pointer content-center font-extrabold underline marker:content-none">
+                                            עוד לא ענו ({c.invited.filter((p) => !replyByPhone[p]).length})
+                                        </summary>
+                                        <ul className="m-0 flex list-none flex-col p-0 pt-2">
+                                            {c.invited.filter((p) => !replyByPhone[p]).map((p) => (
+                                                <li key={p} className="flex items-center justify-between gap-3 border-b-2 border-[var(--mh-line-soft)] py-2 last:border-0">
+                                                    <bdi dir="ltr" className="font-extrabold">{localPhone(p)}</bdi>
+                                                    <form action={removeInvited.bind(null, org.id, p)}><button className="min-h-10 text-[14px] font-extrabold underline">להסיר</button></form>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </details>
+                                )}
+                                <AddInvited orgId={org.id} />
+                            </section>
+                        )}
                         {money && (
                             <section className={box} aria-labelledby="money-h">
                                 <h2 id="money-h" className="m-0 font-display text-[22px]">כסף</h2>

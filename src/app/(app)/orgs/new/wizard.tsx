@@ -7,10 +7,10 @@ import { OrgCard } from "@/components/org-card";
 import { getPack } from "@/packs";
 import { IL_CITIES } from "@/lib/il-cities";
 import {
-    DEFAULT_COLOR, LOGO_MIN_PX, NAME_MAX, PALETTE, STEP_LABELS, wizardSteps,
+    DEFAULT_COLOR, LOGO_MIN_PX, NAME_MAX, PALETTE, STEP_LABELS, parsePhoneList, wizardSteps,
     type Collection, type PackChoice, type StepKey,
 } from "@/lib/org-setup";
-import { amountOwed, formatShekels, formatWhen, shekelsToMinor, type CelebrationSettings, type MoneyMode, type Per } from "@/lib/celebration";
+import { MAX_INVITED, amountOwed, formatShekels, formatWhen, shekelsToMinor, type Access, type CelebrationSettings, type MoneyMode, type Per } from "@/lib/celebration";
 import { finishCelebration, finishSetup, invitePhones, saveAccountStep, saveCollection, saveLook, saveMoney, saveName, saveType, saveWhen } from "./actions";
 
 // The org setup wizard, one decision per screen (decided with Tommy 14.10.2026, docs/open-questions.he.md,
@@ -91,6 +91,8 @@ export function Wizard({ draft }: { draft: Draft }) {
     const [honoree, setHonoree] = useState(c0.surprise.honoree ?? "");
     const [honoreePhone, setHonoreePhone] = useState(c0.surprise.phone ?? "");
     const [kidsInvited, setKidsInvited] = useState(c0.kids);
+    const [access, setAccess] = useState<Access>(c0.access);
+    const [invitedRaw, setInvitedRaw] = useState(c0.invited.join("\n"));
     const [error, setError] = useState("");
     const [pending, start] = useTransition();
 
@@ -154,7 +156,7 @@ export function Wizard({ draft }: { draft: Draft }) {
                 return go("access");
             }
             if (step === "access") {
-                const r = await finishCelebration(orgId, { surprise, honoree, phone: honoreePhone });
+                const r = await finishCelebration(orgId, { surprise, honoree, phone: honoreePhone, access, invited: invitedRaw });
                 if (r?.error) return setError(r.error);
             }
         });
@@ -423,8 +425,9 @@ export function Wizard({ draft }: { draft: Draft }) {
             <>
                 <Head refEl={heading} title="מי יכול להיכנס להזמנה?" text="בכל מקרה, הכתובת ורשימת המגיעים נפתחות רק למי שאישר הגעה." />
                 <div role="radiogroup" aria-label="מי יכול להיכנס" className="flex flex-col gap-3">
-                    <Choice name="access" checked onPick={() => undefined} title="כל מי שקיבל את הקישור" tag="הכי קל" line="שולחים בווטסאפ, ומי שנכנס עונה עם השם שלו, בלי הרשמה." />
-                    <Choice name="access" checked={false} disabled onPick={() => undefined} title="רק מי שהזמנתי" tag="בקרוב" line="קישור אישי לכל אורח, וכניסה עם קוד לטלפון." />
+                    <Choice name="access" checked={access === "link"} onPick={() => setAccess("link")} title="כל מי שקיבל את הקישור" tag="הכי קל" line="שולחים בווטסאפ, ומי שנכנס עונה עם השם שלו, בלי הרשמה." />
+                    <Choice name="access" checked={access === "invited"} onPick={() => setAccess("invited")} title="רק מי שהזמנתי" line="אותו קישור לכולם, אבל נכנסים רק המספרים שברשימה, עם קוד לטלפון." />
+                    {access === "invited" && <InvitedList raw={invitedRaw} onChange={setInvitedRaw} />}
                 </div>
                 <Switch on={surprise} onChange={setSurprise} tone="bg-[var(--mh-tint-pink)]" title="זו מסיבת הפתעה?" line="כל האורחים יראו תזכורת לא לספר.">
                     <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
@@ -438,7 +441,7 @@ export function Wizard({ draft }: { draft: Draft }) {
         side = (
             <Side title="כך ההזמנה תיראה">
                 <InvitePreview name={name} color={shownColor} when={formatWhen(date ? `${date}${time ? `T${time}` : ""}` : null)} city={city.trim()} surprise={surprise} honoree={honoree.trim()} />
-                <Info>אחרי הפתיחה תקבלו קישור לשלוח בווטסאפ, ודף שבו רואים מי מגיע ומי שילם.</Info>
+                <Info>{access === "invited" ? "שולחים את אותו קישור לכולם. מי שנכנס מקליד את הטלפון ומקבל קוד, ורק המספרים שברשימה רואים את ההזמנה." : "אחרי הפתיחה תקבלו קישור לשלוח בווטסאפ, ודף שבו רואים מי מגיע ומי שילם."}</Info>
             </Side>
         );
     } else {
@@ -507,7 +510,7 @@ export function Wizard({ draft }: { draft: Draft }) {
                                 type="button"
                                 onClick={next}
                                 disabled={pending || (step === "name" && name.trim().length < 2) || (step === "type" && !packId) || (step === "when" && !date)}
-                                className={`${primary} min-w-[140px] max-sm:flex-1`}
+                                className={`${primary} min-w-[140px] whitespace-nowrap max-sm:flex-1`}
                             >
                                 {step === "access" ? "לפתוח את החגיגה" : "המשך"}
                             </button>
@@ -562,6 +565,24 @@ function Switch({ on, onChange, title, line, tone = "bg-[var(--mh-tint-sun)]", c
                 </span>
             </label>
             {on && children}
+        </div>
+    );
+}
+
+// The invited phones, pasted in any form. The count and the unreadable entries update as you type.
+function InvitedList({ raw, onChange }: { raw: string; onChange: (v: string) => void }) {
+    const { phones, invalid } = parsePhoneList(raw, MAX_INVITED);
+    return (
+        <div className="flex flex-col gap-2 rounded-[18px] border-[2.5px] border-[var(--mh-ink)] bg-white p-3">
+            <label className="flex flex-col gap-2">
+                <span className={label}>מספרי הטלפון של המוזמנים</span>
+                <textarea value={raw} onChange={(e) => onChange(e.target.value)} rows={5} dir="ltr" placeholder={"050-1234567\n052-7654321"} className={`${field} py-3 text-end`} />
+            </label>
+            <span className="text-[14px] font-semibold" aria-live="polite">
+                {phones.length ? `נקלטו ${phones.length} מספרים.` : "כל מספר בשורה, או מופרדים בפסיק. אפשר להדביק מרשימה."}{" "}
+                {invalid.length > 0 && <span className="font-extrabold text-[var(--mh-danger)]">לא הצלחנו לקרוא: <bdi dir="ltr">{invalid.join(", ")}</bdi></span>}
+            </span>
+            <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">אפשר להוסיף עוד מוזמנים אחר כך מדף המארגנים.</span>
         </div>
     );
 }

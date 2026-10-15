@@ -25,7 +25,13 @@ export default async function OrgOverviewPage({ params }: { params: Promise<{ or
     if (!link) notFound();
     const org = link.org;
     if (org.status === "setup") redirect("/orgs/new");
-    if (org.packId === "celebration") return <CelebrationView org={org} rsvps={await db.rsvp.findMany({ where: { orgId } })} />;
+    if (org.packId === "celebration") {
+        const rsvps = await db.rsvp.findMany({ where: { orgId } });
+        const ids = rsvps.flatMap((r) => (r.userId ? [r.userId] : []));
+        const contacts = ids.length ? await db.userContact.findMany({ where: { userId: { in: ids }, kind: "phone" }, select: { userId: true, value: true } }) : [];
+        const byPhone = Object.fromEntries(contacts.map((c) => [c.value, rsvps.find((r) => r.userId === c.userId)?.id ?? ""]));
+        return <CelebrationView org={org} rsvps={rsvps} replyByPhone={byPhone} />;
+    }
     const settings = (org.settings ?? {}) as { collection?: string; account?: string; inviteWith?: string };
     const [requests, invites, members] = await Promise.all([
         db.joinRequest.count({ where: { orgId, status: "pending" } }),

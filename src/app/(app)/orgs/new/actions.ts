@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { normalizePhone } from "@/lib/auth/contact";
 import { getSession } from "@/lib/auth/session-server";
 import { getPack } from "@/packs";
-import { cleanPayLink, readCelebration, shekelsToMinor, type CelebrationSettings } from "@/lib/celebration";
+import { MAX_INVITED, cleanPayLink, readCelebration, shekelsToMinor, type CelebrationSettings } from "@/lib/celebration";
 import {
     DEFAULT_COLOR, cleanCity, cleanName, isCollection, isLogoDataUrl, isPackChoice, isPaletteColor, parsePhoneList, randomToken,
     type Collection, type StepKey,
@@ -179,11 +179,15 @@ export async function saveMoney(orgId: string, input: { mode: string; per: strin
     return {};
 }
 
-export async function finishCelebration(orgId: string, input: { surprise: boolean; honoree: string; phone: string }): Promise<{ error?: string }> {
+export async function finishCelebration(orgId: string, input: { surprise: boolean; honoree: string; phone: string; access: string; invited: string }): Promise<{ error?: string }> {
     const honoree = input.surprise ? input.honoree.replace(/\s+/g, " ").trim().slice(0, 40) || null : null;
     const phone = input.surprise && input.phone.trim() ? normalizePhone(input.phone) : null;
     if (input.surprise && input.phone.trim() && !phone) return { error: "מספר הטלפון לא נקלט" };
-    await saveCelebration(orgId, { access: "link", surprise: { on: input.surprise, honoree, phone } }, "access");
+    const access = input.access === "invited" ? "invited" : "link";
+    const list = parsePhoneList(input.invited, MAX_INVITED);
+    if (access === "invited" && list.invalid.length) return { error: `לא הצלחנו לקרוא: ${list.invalid.join(", ")}` };
+    if (access === "invited" && !list.phones.length) return { error: "הדביקו לפחות מספר טלפון אחד של מוזמן" };
+    await saveCelebration(orgId, { access, invited: access === "invited" ? list.phones : [], surprise: { on: input.surprise, honoree, phone } }, "access");
     await db.organization.update({ where: { id: orgId }, data: { status: "active" } });
     redirect(`/orgs/${orgId}`);
 }

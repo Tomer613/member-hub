@@ -15,6 +15,9 @@ export type CelebrationSettings = {
     money: { mode: MoneyMode; per: Per; amountMinor: number | null; kidAmountMinor: number | null; payLink: string | null; goalMinor: number | null };
     kids: boolean; // "ילדים מוזמנים?" When off, guests are not asked how many kids and there is no kid price.
     access: Access;
+    // "רק מי שהזמנתי" (decided with Tommy 15.10.2026): one shared link, and only these phones (E.164) get in,
+    // after one sign-in code. A forwarded link does not help someone whose number is not on the list.
+    invited: string[];
     // phone: the honoree's number (E.164). Signed in with it, the invitation shows as inactive and is never saved.
     surprise: { on: boolean; honoree: string | null; phone: string | null };
 };
@@ -26,6 +29,7 @@ export const EMPTY_CELEBRATION: CelebrationSettings = {
     money: { mode: "none", per: "person", amountMinor: null, kidAmountMinor: null, payLink: null, goalMinor: null },
     kids: true,
     access: "link",
+    invited: [],
     surprise: { on: false, honoree: null, phone: null },
 };
 
@@ -130,4 +134,18 @@ export function collectionTarget(money: CelebrationSettings["money"], coming: { 
         return sum > 0 ? sum : null;
     }
     return money.mode === "free" && money.goalMinor ? money.goalMinor : null;
+}
+
+export const MAX_INVITED = 500;
+
+// Who may open an invitation: anyone when it is open to the link; otherwise the organizers and the invited phones.
+export function mayEnter(c: CelebrationSettings, viewerPhones: string[], organizer: boolean): boolean {
+    if (c.access === "link" || organizer) return true;
+    return viewerPhones.some((p) => c.invited.includes(p));
+}
+
+// "+972501234567" -> "050-1234567" for showing an Israeli number; other countries stay as they are.
+export function localPhone(e164: string): string {
+    const m = e164.match(/^\+972(\d{2})(\d{7})$/);
+    return m ? `0${m[1]}-${m[2]}` : e164;
 }

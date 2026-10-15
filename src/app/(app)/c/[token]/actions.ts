@@ -3,9 +3,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { getSession } from "@/lib/auth/session-server";
+import { endSession, getSession } from "@/lib/auth/session-server";
 import { randomToken } from "@/lib/org-setup";
-import { cookieName, findReply, hiddenFrom } from "./reply";
+import { cookieName, entryFor, findReply } from "./reply";
 import { MAX_PEOPLE, MAX_REPLIES, amountOwed, clampCount, cleanGuestName, isRsvpStatus, readCelebration, shekelsToMinor } from "@/lib/celebration";
 
 // The invitation's actions. Replying needs only a name (decided with Tommy 14.10.2026): the reply is
@@ -16,7 +16,7 @@ async function openCelebration(token: string) {
     const org = await db.organization.findFirst({ where: { joinToken: token, status: "active", packId: "celebration" } });
     if (!org) redirect(`/c/${token}`);
     const session = await getSession();
-    if (await hiddenFrom(org.settings, session?.userId ?? null)) redirect(`/c/${token}`);
+    if ((await entryFor(org.id, org.settings, session?.userId ?? null)).entry !== "ok") redirect(`/c/${token}`);
     return org;
 }
 
@@ -78,4 +78,10 @@ export async function keepInWallet(token: string): Promise<void> {
     const reply = await findReply(org.id, session.userId, jar.get(cookieName(org.id))?.value);
     if (reply) await attach(org.id, reply.id, session.userId);
     redirect(`/c/${token}`);
+}
+
+// Signed in with a number that is not on the list: sign out and come back here with another phone.
+export async function signInAgain(token: string): Promise<void> {
+    await endSession();
+    redirect(`/login?next=${encodeURIComponent(`/c/${token}`)}`);
 }

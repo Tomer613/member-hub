@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { EMPTY_CELEBRATION, cleanGuestName, collectionTarget, guestLabel, isHonoree, amountOwed, cleanPayLink, formatShekels, formatWhen, readCelebration, shekelsToMinor, totals } from "./celebration.ts";
+import { EMPTY_CELEBRATION, cleanGuestName, localPhone, mayEnter, collectionTarget, guestLabel, isHonoree, amountOwed, cleanPayLink, formatShekels, formatWhen, readCelebration, shekelsToMinor, totals } from "./celebration.ts";
 
 const money = (m: Partial<typeof EMPTY_CELEBRATION.money>) => ({ ...EMPTY_CELEBRATION.money, ...m });
 
@@ -64,4 +64,18 @@ test("the bar fills toward what everyone coming owes, or toward the organizer's 
     assert.equal(collectionTarget(money({ mode: "free", goalMinor: 120000 }), []), 120000);
     assert.equal(collectionTarget(money({ mode: "free" }), []), null);
     assert.equal(collectionTarget(money({ mode: "none", goalMinor: 5 }), []), null);
+});
+
+test("an invited-only celebration opens to the invited phones and the organizers", () => {
+    const c = { ...EMPTY_CELEBRATION, access: "invited" as const, invited: ["+972501234567"] };
+    assert.ok(mayEnter(c, ["+972501234567"], false));
+    assert.ok(!mayEnter(c, ["+972521112222"], false));
+    assert.ok(!mayEnter(c, [], false));
+    assert.ok(mayEnter(c, [], true));
+    assert.ok(mayEnter(EMPTY_CELEBRATION, [], false));
+});
+
+test("Israeli numbers are shown the local way", () => {
+    assert.equal(localPhone("+972501234567"), "050-1234567");
+    assert.equal(localPhone("+14155550100"), "+14155550100");
 });

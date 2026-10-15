@@ -6,11 +6,11 @@ import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session-server";
 import { onColor } from "@/lib/color";
 import { amountOwed, formatShekels, formatWhen, guestLabel, isRsvpStatus, readCelebration } from "@/lib/celebration";
-import { keepInWallet, markPaid } from "./actions";
+import { keepInWallet, markPaid, signInAgain } from "./actions";
 import { CollectBar } from "@/components/collect-bar";
 import { WalletArt } from "@/components/wallet-art";
 import { ReplyForm } from "./reply-form";
-import { cookieName, findReply, hiddenFrom } from "./reply";
+import { cookieName, entryFor, findReply } from "./reply";
 
 // The invitation a celebration's link opens (decided with Tommy 14.10.2026, docs/open-questions.he.md
 // 'ערכת "חגיגה ואירוע"'). Anyone with the link sees the name, the day and the city and can reply with a
@@ -25,7 +25,8 @@ async function load(token: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const org = await load((await params).token);
     // A surprise keeps its name out of the tab title and link previews.
-    const named = org && !readCelebration(org.settings).surprise.on;
+    const c = org ? readCelebration(org.settings) : null;
+    const named = org && c && !c.surprise.on && c.access === "link";
     return { title: named ? `${org.name} · הזמנה` : "הזמנה · PIRI", robots: { index: false } };
 }
 
@@ -39,7 +40,8 @@ export default async function InvitationPage({ params, searchParams }: Props) {
     const found = await load(token);
     const session = await getSession();
     // The honoree sees exactly what anyone sees for a dead link, so nothing gives the surprise away.
-    const org = found && !(await hiddenFrom(found.settings, session?.userId ?? null)) ? found : null;
+    const entry = found ? (await entryFor(found.id, found.settings, session?.userId ?? null)).entry : "dead";
+    const org = found && entry !== "dead" ? found : null;
     if (!org)
         return (
             <main className="mx-auto flex min-h-dvh max-w-[480px] flex-col justify-center gap-3 bg-[var(--mh-sun)] px-4">
@@ -49,10 +51,13 @@ export default async function InvitationPage({ params, searchParams }: Props) {
         );
 
     const c = readCelebration(org.settings);
+    if (entry === "signin" || entry === "notInvited") return <Gate token={token} color={org.brandColor ?? "#FF5A36"} notInvited={entry === "notInvited"} />;
     const reply = await findReply(org.id, session?.userId ?? null, (await cookies()).get(cookieName(org.id))?.value);
     const link = session ? await db.orgUser.findUnique({ where: { orgId_userId: { orgId: org.id, userId: session.userId } } }) : null;
     const organizer = link?.role === "owner" || link?.role === "admin";
     const coming = reply?.status === "yes" || organizer;
+    // A signed-in guest does not retype their name.
+    const me = session && !reply ? await db.user.findUnique({ where: { id: session.userId }, select: { firstName: true, lastName: true } }) : null;
     const guests = coming ? await db.rsvp.findMany({ where: { orgId: org.id, status: "yes" }, orderBy: { createdAt: "asc" }, select: { id: true, name: true, people: true } }) : [];
     const headcount = guests.reduce((n, g) => n + g.people, 0);
     const color = org.brandColor ?? "#FF5A36";
@@ -109,7 +114,7 @@ export default async function InvitationPage({ params, searchParams }: Props) {
                                     </div>
                                 </details>
                             ) : (
-                                <ReplyForm token={token} kids={c.kids} initial={{ name: "", status: null, people: 1, kids: 0 }} />
+                                <ReplyForm token={token} kids={c.kids} initial={{ name: me ? `${me.firstName ?? ""} ${me.lastName ?? ""}`.trim() : "", status: null, people: 1, kids: 0 }} />
                             )}
                         </section>
                     </div>
@@ -200,5 +205,34 @@ function Line({ icon, children }: { icon: "cal" | "pin"; children: ReactNode }) 
             </svg>
             <span className="min-w-0">{children}</span>
         </span>
+    );
+}
+
+// An invited-only celebration before the phone check: nothing about the event is shown yet.
+function Gate({ token, color, notInvited }: { token: string; color: string; notInvited: boolean }) {
+    const next = `/login?next=${encodeURIComponent(`/c/${token}`)}`;
+    return (
+        <main className="flex min-h-dvh items-center justify-center bg-[var(--mh-sun)] px-4 py-6">
+            <div className="flex w-full max-w-[480px] flex-col overflow-hidden rounded-[28px] border-[2.5px] border-[var(--mh-ink)] bg-white shadow-[0_5px_0_var(--mh-ink)]">
+                <div className="flex flex-col gap-1 p-6" style={{ background: color, color: onColor(color) }}>
+                    <span className="text-[34px]" aria-hidden="true">{notInvited ? "🔒" : "💌"}</span>
+                    <h1 className="m-0 font-display text-[clamp(26px,6vw,34px)] leading-tight">{notInvited ? "ההזמנה הזו רק למוזמנים" : "הוזמנתם לחגיגה"}</h1>
+                </div>
+                <div className="flex flex-col gap-3 p-6">
+                    {notInvited ? (
+                        <>
+                            <p className="m-0 font-semibold">המספר שאיתו נכנסתם לא ברשימת המוזמנים. אם הוזמנתם במספר אחר, צריך להיכנס איתו.</p>
+                            <form action={signInAgain.bind(null, token)}><button className="min-h-[52px] w-full rounded-full border-[2.5px] border-[var(--mh-ink)] bg-white text-[17px] font-extrabold shadow-[var(--mh-shadow)]">כניסה עם מספר אחר</button></form>
+                            <p className="m-0 text-[14px] font-semibold text-[var(--mh-ink-soft)]">חושבים שזו טעות? כדאי לבקש מהמארגנים להוסיף את המספר שלכם.</p>
+                        </>
+                    ) : (
+                        <>
+                            <p className="m-0 font-semibold">ההזמנה פתוחה רק למוזמנים. נכנסים עם הטלפון שקיבל את ההזמנה, ומקבלים קוד אחד. בלי סיסמה.</p>
+                            <Link href={next} className="flex min-h-[52px] items-center justify-center rounded-full border-[2.5px] border-[var(--mh-ink)] bg-[var(--mh-org-violet)] text-[17px] font-extrabold text-white shadow-[var(--mh-shadow)]">כניסה עם הטלפון</Link>
+                        </>
+                    )}
+                </div>
+            </div>
+        </main>
     );
 }
