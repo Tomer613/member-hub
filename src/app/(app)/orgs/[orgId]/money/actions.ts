@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session-server";
-import { allocate, chargeView, ilDate, isRecordMethod, methodLabel, NOTE_MAX, openCharges, TITLE_MAX } from "@/lib/billing/account";
+import { allocate, chargeView, ilDate, isRecordMethod, methodLabel, NOTE_MAX, openCharges } from "@/lib/billing/account";
+import { pickRecipients, readChargeInput, type ChargeInput } from "@/lib/billing/charge-plan";
+import { loadRecipients } from "@/lib/billing/charge-server";
 import { chargeInclude, ensureMember, memberCharges, nextReceiptNo, settleLeaver, toChargeIn } from "@/lib/billing/member-money";
 import { emailOf } from "@/lib/billing/pay-server";
 import { sendEmail } from "@/lib/email";
@@ -31,42 +33,56 @@ async function tellMember(memberId: string, subject: string, text: string) {
 const dayOf = (raw: string) => (/^\d{4}-\d{2}-\d{2}$/.test(raw) ? new Date(`${raw}T00:00:00Z`) : null);
 const todayIL = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem" }).format(new Date());
 
-export type ChargeFormState = { error?: string; done?: string; title?: string; amount?: string; due?: string; note?: string; to?: string; picked?: string[] };
+export type ChargeResult = { ok?: string; error?: string; draftId?: string };
 
-// A new charge to members (board D-AdmCharge). One Charge per member. A sent charge is never deleted, only
-// cancelled.
-export async function createCharges(_prev: ChargeFormState, form: FormData): Promise<ChargeFormState> {
-    const orgId = String(form.get("orgId") ?? "");
-    const title = String(form.get("title") ?? "").trim();
-    const amountRaw = String(form.get("amount") ?? "");
-    const dueRaw = String(form.get("due") ?? "");
-    const note = String(form.get("note") ?? "").trim();
-    const to = String(form.get("to") ?? "all");
-    const picked = form.getAll("members").map(String);
-    const typed = { title, amount: amountRaw, due: dueRaw, note, to, picked };
+function checkCharge(input: ChargeInput): string | null {
+    if (!input.title.trim()) return "כתבו כותרת קצרה לחיוב.";
+    if (!shekelsToMinor(input.amount)) return "הסכום לא תקין.";
+    if (!input.due || input.due < todayIL()) return "תאריך התשלום צריך להיות היום או אחריו.";
+    return null;
+}
+
+// "שליחה לחברים" (board D-AdmCharge): one Charge per member. A sent charge is never deleted, only cancelled.
+export async function sendCharge(orgId: string, raw: unknown, draftId?: string): Promise<ChargeResult> {
     const a = await moneyAdmin(orgId);
-    if (!a) return { ...typed, error: "אין לך הרשאה לחייב בארגון הזה." };
-    if (!title || title.length > TITLE_MAX) return { ...typed, error: "כתבו כותרת קצרה לחיוב." };
-    const amount = shekelsToMinor(amountRaw);
-    if (!amount) return { ...typed, error: "הסכום לא תקין." };
-    const due = dayOf(dueRaw);
-    if (!due || dueRaw < todayIL()) return { ...typed, error: "תאריך התשלום צריך להיות היום או אחריו." };
-    if (note.length > NOTE_MAX) return { ...typed, error: "ההסבר ארוך מדי." };
-    const links = await db.orgUser.findMany({
-        where: { orgId, status: "active", role: { not: "guest" }, ...(to === "picked" ? { id: { in: picked } } : {}) },
-        select: { id: true },
-    });
-    if (!links.length) return { ...typed, error: to === "picked" ? "בחרו לפחות חבר אחד." : "אין עדיין חברים פעילים." };
-    const notify = form.get("notify") === "on";
-    for (const l of links) {
-        const m = await ensureMember(l.id);
-        const c = await db.charge.create({ data: { orgId, memberId: m.id, kind: "one_time", description: title, note: note || null, amountMinor: amount, dueOn: due } });
+    if (!a) return { error: "אין לך הרשאה לחייב בארגון הזה." };
+    const input = readChargeInput(raw);
+    const bad = checkCharge(input);
+    if (bad) return { error: bad };
+    const to = pickRecipients(await loadRecipients(orgId), input.audience);
+    if (!to.length) return { error: input.audience.to === "picked" ? "בחרו לפחות חבר אחד." : "אין חברים שמתאימים לבחירה הזו." };
+    const amount = shekelsToMinor(input.amount)!;
+    const due = dayOf(input.due)!;
+    const title = input.title.trim();
+    const note = input.note.trim();
+    for (const r of to) {
+        const m = await ensureMember(r.linkId);
+        const c = await db.charge.create({ data: { orgId, memberId: m.id, kind: input.kind, description: title, note: note || null, amountMinor: amount, dueOn: due, allowPartial: input.partial, remindAuto: input.remind, createdById: a.userId } });
         await notifyMember(m.id, { orgId, kind: "action", topic: "charge", refId: c.id, text: `${title} · ${formatShekels(amount)}, לתשלום עד ${ilDate(due)}`, href: `/pay/${orgId}`, actionLabel: "לתשלום" });
-        if (notify) await tellMember(m.id, `חיוב חדש מ${a.org.name}: ${title}`, `${title}\nסכום: ${formatShekels(amount)}\nלתשלום עד ${ilDate(due)}${note ? `\n${note}` : ""}\nאפשר לשלם בכרטיס החבר שבארנק.`);
+        if (input.notify) await tellMember(m.id, `חיוב חדש מ${a.org.name}: ${title}`, `${title}\nסכום: ${formatShekels(amount)}\nלתשלום עד ${ilDate(due)}${note ? `\n${note}` : ""}\nאפשר לשלם בכרטיס החבר שבארנק.`);
     }
+    if (draftId) await db.chargeDraft.deleteMany({ where: { id: draftId, orgId } });
+    revalidatePath(`/orgs/${orgId}`, "layout");
+    return { ok: to.length === 1 ? "החיוב נשלח לחבר אחד." : `החיוב נשלח ל-${to.length} חברים.` };
+}
+
+// "שמירה כטיוטה": nothing is sent; the draft waits on the money page.
+export async function saveChargeDraft(orgId: string, raw: unknown, draftId?: string): Promise<ChargeResult> {
+    const a = await moneyAdmin(orgId);
+    if (!a) return { error: "אין לך הרשאה." };
+    const input = readChargeInput(raw);
+    if (!input.title.trim() && !input.amount.trim()) return { error: "כתבו לפחות כותרת או סכום כדי לשמור טיוטה." };
+    const data = input as unknown as Prisma.InputJsonValue;
+    const existing = draftId ? await db.chargeDraft.findFirst({ where: { id: draftId, orgId }, select: { id: true } }) : null;
+    const d = existing ? await db.chargeDraft.update({ where: { id: existing.id }, data: { data } }) : await db.chargeDraft.create({ data: { orgId, data, createdById: a.userId } });
     revalidatePath(`/orgs/${orgId}/money`);
-    revalidatePath(`/orgs/${orgId}/members`, "layout");
-    return { done: links.length === 1 ? "החיוב נשלח לחבר אחד." : `החיוב נשלח ל-${links.length} חברים.` };
+    return { ok: "הטיוטה נשמרה. היא מחכה במסך הקופה.", draftId: d.id };
+}
+
+export async function deleteChargeDraft(orgId: string, draftId: string): Promise<void> {
+    if (!(await moneyAdmin(orgId))) return;
+    await db.chargeDraft.deleteMany({ where: { id: draftId, orgId } });
+    revalidatePath(`/orgs/${orgId}/money`);
 }
 
 export type RecordState = { error?: string; done?: boolean };
@@ -113,8 +129,7 @@ export async function recordPayment(_prev: RecordState, form: FormData): Promise
     await settleLeaver(charge.orgId, charge.memberId);
     await notifyMember(charge.memberId, { orgId: charge.orgId, kind: "update", topic: "payment", refId: paymentId, text: `נרשם תשלום של ${formatShekels(amount)} (${methodLabel(method, null)}). הקבלה שמורה בארנק.`, href: `/pay/receipt/${paymentId}` });
     if (form.get("notify") === "on") await tellMember(charge.memberId, `${a.org.name} קיבל את התשלום`, `נרשם תשלום של ${formatShekels(amount)} (${methodLabel(method, null)}) מתאריך ${ilDate(date)}.\nהקבלה שמורה בארנק, בהיסטוריית התשלומים.`);
-    revalidatePath(`/orgs/${charge.orgId}/money`);
-    revalidatePath(`/orgs/${charge.orgId}/members`, "layout");
+    revalidatePath(`/orgs/${charge.orgId}`, "layout");
     return { done: true };
 }
 
@@ -147,8 +162,7 @@ export async function reviewReport(paymentId: string, ok: boolean): Promise<void
             ok ? `התשלום של ${formatShekels(pay.amountMinor)} אושר. הקבלה שמורה בארנק.` : `הדיווח על ${formatShekels(pay.amountMinor)} לא אושר, והחיוב חזר להיות פתוח. אפשר לשלם בכרטיס החבר או לדבר עם הארגון.`,
         );
     }
-    revalidatePath(`/orgs/${pay.orgId}/money`);
-    revalidatePath(`/orgs/${pay.orgId}/members`, "layout");
+    revalidatePath(`/orgs/${pay.orgId}`, "layout");
 }
 
 // Cancels a charge that nothing was paid on yet.
@@ -161,6 +175,5 @@ export async function voidCharge(chargeId: string): Promise<void> {
     if (!v || v.leftMinor !== v.amountMinor || v.state !== "open") return;
     await db.charge.update({ where: { id: chargeId }, data: { voidedAt: new Date() } });
     await settleLeaver(charge.orgId, charge.memberId);
-    revalidatePath(`/orgs/${charge.orgId}/money`);
-    revalidatePath(`/orgs/${charge.orgId}/members`, "layout");
+    revalidatePath(`/orgs/${charge.orgId}`, "layout");
 }

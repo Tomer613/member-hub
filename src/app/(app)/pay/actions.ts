@@ -4,12 +4,12 @@ import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session-server";
-import { allocate, ilDateTime, isReportMethod, methodLabel, NOTE_MAX, openCharges } from "@/lib/billing/account";
+import { allocate, ilDateTime, isReportMethod, methodLabel, NOTE_MAX, openCharges, payAmount } from "@/lib/billing/account";
 import { memberCharges, nextReceiptNo, settleLeaver } from "@/lib/billing/member-money";
 import { emailOf, payer } from "@/lib/billing/pay-server";
 import { chargeCard } from "@/lib/payments/provider";
 import { sendEmail } from "@/lib/email";
-import { formatShekels } from "@/lib/money";
+import { formatShekels, shekelsToMinor } from "@/lib/money";
 
 // The charges this payment is for: the ones asked for, if they are still open and the member's own;
 // otherwise everything open, soonest due first.
@@ -48,7 +48,10 @@ export async function payNow(_prev: PayState, form: FormData): Promise<PayState>
     if (!p) return { error: "אין לך כרטיס בארגון הזה." };
     const charges = await chosenCharges(orgId, p.member.id, idsOf(form));
     if (!charges.length) redirect(`/pay/history?org=${orgId}`);
-    const total = charges.reduce((t, c) => t + c.leftMinor, 0);
+    const left = charges.reduce((t, c) => t + c.leftMinor, 0);
+    const typed = form.get("amount");
+    const total = payAmount(typed === null ? null : (shekelsToMinor(String(typed)) ?? -1), left, charges);
+    if (total === null) return { error: `הסכום צריך להיות בין ₪1 ל־${formatShekels(left)}.` };
     const outcome = await chargeCard(String(form.get("method") ?? ""), total);
     const parts = allocate(total, charges);
     const base = { orgId, memberId: p.member.id, amountMinor: total, method: "card", source: "app", payerName: `${p.link.user.firstName ?? ""} ${p.link.user.lastName ?? ""}`.trim() || null };

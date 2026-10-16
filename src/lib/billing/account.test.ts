@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { accountShown, allocate, chargeViews, ilDate, ilDateTime, ilShortDate, memberNumber, moneySummary, moneyTileText, noticeText } from "./account.ts";
+import { accountShown, allocate, chargeViews, ilDate, ilDateTime, ilShortDate, memberNumber, moneySummary, moneyTileText, noticeText, payAmount } from "./account.ts";
 import { formatShekels } from "../money.ts";
 
 const day = (s: string) => new Date(`${s}T09:00:00Z`);
@@ -74,4 +74,14 @@ test("the card shows the flat in a house committee, the member number elsewhere"
     assert.deepEqual(accountShown("hoa", "4", 12), { label: "דירה", value: "4" });
     assert.deepEqual(accountShown("hoa", null, 12), { label: "מספר חבר", value: "0012" });
     assert.deepEqual(accountShown("gym", "4", 418), { label: "מספר חבר", value: "0418" });
+});
+
+test("part of a charge only when every chosen charge allows it", () => {
+    const yes = [{ partial: true }], no = [{ partial: true }, { partial: false }];
+    assert.equal(payAmount(null, 30000, no), 30000);
+    assert.equal(payAmount(30000, 30000, no), 30000);
+    assert.equal(payAmount(10000, 30000, no), null);
+    assert.equal(payAmount(10000, 30000, yes), 10000);
+    assert.equal(payAmount(50, 30000, yes), null);
+    assert.equal(payAmount(40000, 30000, yes), null);
 });

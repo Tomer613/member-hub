@@ -13,9 +13,10 @@ export type ChargeIn = {
     createdAt: Date;
     voidedAt: Date | null;
     allocations: AllocIn[];
+    allowPartial?: boolean; // the org lets the member pay part of it (board D-AdmCharge)
 };
 export type ChargeState = "open" | "pending" | "paid";
-export type ChargeView = { id: string; description: string; amountMinor: number; leftMinor: number; due: Date; state: ChargeState };
+export type ChargeView = { id: string; description: string; amountMinor: number; leftMinor: number; due: Date; state: ChargeState; partial: boolean };
 
 export const DUE_AFTER_DAYS = 14;
 
@@ -28,7 +29,7 @@ export function chargeView(c: ChargeIn): ChargeView | null {
     const sum = (s: string) => c.allocations.filter((a) => a.status === s).reduce((t, a) => t + a.amountMinor, 0);
     const left = Math.max(0, c.amountMinor - sum("succeeded"));
     const state: ChargeState = left === 0 ? "paid" : sum("pending") >= left ? "pending" : "open";
-    return { id: c.id, description: c.description, amountMinor: c.amountMinor, leftMinor: left, due: dueDate(c), state };
+    return { id: c.id, description: c.description, amountMinor: c.amountMinor, leftMinor: left, due: dueDate(c), state, partial: !!c.allowPartial };
 }
 
 export function chargeViews(charges: ChargeIn[]): ChargeView[] {
@@ -142,4 +143,12 @@ export function nextLine(packId: string, s: MoneySummary, renewal: Date | null):
 export function accountShown(packId: string, homeLabel: string | null, number: number): { label: string; value: string } {
     if (packId === "hoa" && homeLabel) return { label: "דירה", value: homeLabel };
     return { label: "מספר חבר", value: memberNumber(number) };
+}
+
+// How much the member pays now: everything left, or, when every chosen charge allows it, the part they typed
+// (at least ₪1). Null when the typed amount is not acceptable.
+export function payAmount(typedMinor: number | null, totalMinor: number, charges: Pick<ChargeView, "partial">[]): number | null {
+    if (typedMinor === null || typedMinor === totalMinor) return totalMinor;
+    if (!charges.length || !charges.every((c) => c.partial)) return null;
+    return typedMinor >= 100 && typedMinor < totalMinor ? typedMinor : null;
 }

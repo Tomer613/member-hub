@@ -44,7 +44,7 @@ export async function requestJoin(orgId: string): Promise<{ ok: boolean; orgName
     const member = await db.orgUser.findUnique({ where: { orgId_userId: { orgId, userId } } });
     const open = await db.joinRequest.findFirst({ where: { orgId, userId, status: "pending" } });
     if (!member && !open) {
-        const req = await db.joinRequest.create({ data: { orgId, userId } });
+        const req = await db.joinRequest.create({ data: { orgId, userId, source: "search" } });
         await notifyJoinRequest(orgId, req.id, userId);
     }
     return { ok: true, orgName: org.name };

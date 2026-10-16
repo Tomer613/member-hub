@@ -131,7 +131,7 @@ export function MemberFile({ orgId, linkId, r, charges, held, manual, plans, pla
                         <h2 id="charges-title" className="m-0 font-display text-[19px]">חיובים ותשלומים</h2>
                         <div className="flex flex-wrap gap-2">
                             {charges.some((c) => c.state === "open") && <button type="button" aria-expanded={recording} onClick={() => setRecording((v) => !v)} className={`${btn} bg-white`}>רישום תשלום ידני</button>}
-                            {active && <Link href={`/orgs/${orgId}/money?for=${linkId}`} className={`${btn} bg-[var(--mh-sun)]`}>חיוב חדש</Link>}
+                            {active && <Link href={`/orgs/${orgId}/money/new?for=${linkId}`} className={`${btn} bg-[var(--mh-sun)]`}>חיוב חדש</Link>}
                         </div>
                     </div>
                     {!charges.length ? (

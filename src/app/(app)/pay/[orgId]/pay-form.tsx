@@ -6,20 +6,31 @@ import { useFormStatus } from "react-dom";
 import { payNow, type PayState } from "../actions";
 import { Hint, LOCK, primaryBtn } from "@/components/pay/parts";
 import type { SavedMethod } from "@/lib/payments/provider";
+import { formatShekels, shekelsToMinor } from "@/lib/money";
 
 const CARD = "M2 6h20v12H2zM2 10h20M6 15h4";
 
 // The payment method row, its bottom sheet (board D-PayOrgSheet), and the pay button (board D-PayCharge).
-export function PayForm({ orgId, charges, total, methods, mode, openSheet }: { orgId: string; charges: string; total: string; methods: SavedMethod[]; mode: "test" | "off"; openSheet: boolean }) {
+export function PayForm({ orgId, charges, total, partialMax, methods, mode, openSheet }: { orgId: string; charges: string; total: string; partialMax: number | null; methods: SavedMethod[]; mode: "test" | "off"; openSheet: boolean }) {
     const [state, act] = useActionState<PayState, FormData>(payNow, {});
     const [method, setMethod] = useState(methods[0]?.id ?? "");
     const [sheet, setSheet] = useState(openSheet && methods.length > 1);
     const chosen = methods.find((m) => m.id === method);
+    // The org allowed paying part of this charge (board D-AdmCharge): the amount can be changed.
+    const [part, setPart] = useState(partialMax ? String(partialMax / 100) : "");
+    const partMinor = shekelsToMinor(part);
     return (
         <form action={act} className="flex flex-1 flex-col gap-3">
             <input type="hidden" name="orgId" value={orgId} />
             <input type="hidden" name="charges" value={charges} />
             <input type="hidden" name="method" value={method} />
+            {partialMax !== null && (
+                <label className="flex flex-col gap-1">
+                    <span className="text-[17px] font-extrabold">כמה לשלם עכשיו</span>
+                    <input name="amount" inputMode="decimal" dir="ltr" value={part} onChange={(e) => setPart(e.target.value)} className="min-h-12 rounded-[14px] border-2 border-[var(--mh-ink)] bg-white px-3 text-end text-[17px] font-extrabold outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--mh-ink)]" />
+                    <span className="text-[13px] font-semibold text-[var(--mh-ink-soft)]">הארגון מאפשר לשלם חלק עכשיו ואת השאר אחר כך. מינימום ₪1.</span>
+                </label>
+            )}
             <h2 className="m-0 text-[17px] font-extrabold">אמצעי תשלום</h2>
             {chosen ? (
                 <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" className="group flex min-h-[60px] items-center gap-3 rounded-[16px] border-2 border-[var(--mh-ink)] bg-white px-[14px] text-start transition-transform duration-150 hover:-translate-y-px">
@@ -39,7 +50,7 @@ export function PayForm({ orgId, charges, total, methods, mode, openSheet }: { o
             {mode === "test" && chosen && <p className="m-0 text-[13px] font-bold text-[var(--mh-ink-soft)]">מצב בדיקה: לא עובר כסף אמיתי.</p>}
             {state.error && <p role="alert" className="m-0 text-[14px] font-extrabold text-[#B0182F]">{state.error}</p>}
             <span className="flex-1" />
-            <PayButton total={total} disabled={!chosen} />
+            <PayButton total={partialMax !== null && partMinor ? formatShekels(partMinor) : total} disabled={!chosen} />
             <Hint icon={LOCK}>התשלום מאובטח ועובר לקופת הארגון</Hint>
             <Link href={`/pay/${orgId}/report?c=${charges}`} className="mx-auto inline-flex min-h-11 items-center text-[15px] font-extrabold underline underline-offset-4">שילמתי מחוץ לאפליקציה</Link>
             {sheet && <MethodSheet methods={methods} value={method} onClose={() => setSheet(false)} onSave={(id) => { setMethod(id); setSheet(false); }} />}
@@ -51,7 +62,7 @@ function PayButton({ total, disabled }: { total: string; disabled: boolean }) {
     const { pending } = useFormStatus();
     return (
         <button type="submit" disabled={disabled || pending} aria-disabled={disabled || pending} className={primaryBtn}>
-            {pending ? "מעבירים את התשלום…" : <>לתשלום{" "}<bdi>{total}</bdi></>}
+            {pending ? "מעבירים את התשלום…" : <span>לתשלום <bdi>{total}</bdi></span>}
         </button>
     );
 }

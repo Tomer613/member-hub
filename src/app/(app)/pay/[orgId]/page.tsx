@@ -47,7 +47,7 @@ export default async function PayPage({ params, searchParams }: { params: Promis
                         <Link href="/settings" className="inline-flex min-h-11 min-w-11 items-center underline underline-offset-4">{email ? "שינוי" : "בהגדרות"}</Link>
                     </Hint>
                 </div>
-                <PayForm orgId={orgId} charges={ids} total={formatShekels(total)} methods={await savedMethods()} mode={paymentsMode()} openSheet={pick === "1"} />
+                <PayForm orgId={orgId} charges={ids} total={formatShekels(total)} partialMax={charges.every((x) => x.partial) ? total : null} methods={await savedMethods()} mode={paymentsMode()} openSheet={pick === "1"} />
             </div>
         </PayScreen>
     );

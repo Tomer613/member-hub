@@ -18,7 +18,7 @@ export async function requestJoinByLink(token: string, form: FormData) {
     if (!member && !open && last?.status !== "rejected") {
         // "כמה מילים עליכם": optional, up to 300 characters, seen by the admins (ux-spec 14.9).
         const note = String(form.get("message") ?? "").trim().slice(0, 300) || null;
-        const req = await db.joinRequest.create({ data: { orgId: org.id, userId: s.userId, message: note } });
+        const req = await db.joinRequest.create({ data: { orgId: org.id, userId: s.userId, message: note, source: "link" } });
         await notifyJoinRequest(org.id, req.id, s.userId);
     }
     redirect(`/join/${encodeURIComponent(token)}`);

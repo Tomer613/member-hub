@@ -81,6 +81,7 @@ model Organization {
   rsvps            Rsvp[]
   posts            ChannelPost[]
   importBatches ImportBatch[]
+  chargeDrafts  ChargeDraft[]
 }
 
 // A person with an account in the app. Global, not per org: one person holds memberships in many orgs
@@ -490,6 +491,11 @@ model Charge {
   // Set by the billing engine to make generation idempotent, e.g. "<subscriptionId>|<memberId>|2026-10|recurring".
   // Null for hand-entered charges (Postgres allows many NULLs in a unique index).
   dedupeKey      String?
+  // Choices from "חיוב חדש" (board D-AdmCharge): the member may pay part of it, and automatic reminders
+  // 3 days before and on the day (sent once the scheduler exists, docs/waiting-for-services.he.md).
+  allowPartial   Boolean       @default(false)
+  remindAuto     Boolean       @default(false)
+  createdById    String? // User.id of the admin who sent it
   createdAt      DateTime      @default(now())
 
   allocations PaymentAllocation[]
@@ -697,6 +703,7 @@ model JoinRequest {
   userId      String
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   message     String?
+  source      String? // link (the org's join link or its code, incl. posters) | search (found in the app). Older rows: null
   status      String       @default("pending") // pending | approved | rejected | withdrawn | blocked
   decidedById String? // User.id of the admin
   decidedAt   DateTime?
@@ -908,4 +915,17 @@ model ImportBatch {
   invitations Invitation[]
 
   @@index([orgId, createdAt])
+}
+
+// "שמירה כטיוטה" on a new charge (board D-AdmCharge): what the admin filled in, not yet sent to anyone.
+model ChargeDraft {
+  id          String       @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  data        Json // ChargeInput, see src/lib/billing/charge-plan.ts
+  createdById String
+  updatedAt   DateTime     @updatedAt
+  createdAt   DateTime     @default(now())
+
+  @@index([orgId])
 }
