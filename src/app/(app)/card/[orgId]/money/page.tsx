@@ -36,7 +36,8 @@ export default async function MemberFinancePage({ params }: { params: Promise<{ 
     const money = moneySummary(charges);
     const debt = debtState(money.open, new Date());
     const waiting = charges.filter((c) => c.state === "pending");
-    const next = money.open[0] ?? null;
+    // "החיוב הבא" is the soonest charge not yet late; late ones are the debt above it.
+    const next = money.open.find((c) => !debt.ids.includes(c.id)) ?? null;
     const method = methods[0] ? `${methods[0].label}${paymentsMode() === "test" ? " · בדיקה" : ""}` : "עוד לא נשמר";
     const year = paymentsThisYear(paid.map((p) => p.receivedAt), new Date());
     const rows: { label: string; sub: string; href: string | null; tag?: string }[] = [
@@ -74,7 +75,7 @@ export default async function MemberFinancePage({ params }: { params: Promise<{ 
                         </div>
                         <dl className="m-0 flex flex-col gap-[10px] px-4 py-[14px]">
                             {debt.owes && <Line label="מועד התשלום עבר">{debt.count === 1 ? "חיוב אחד" : `${debt.count} חיובים`}</Line>}
-                            <Line label="החיוב הבא">{next ? `${formatShekels(next.leftMinor)} · ${ilDate(next.due)}` : "אין חיוב פתוח"}</Line>
+                            <Line label="החיוב הבא">{next ? `${formatShekels(next.leftMinor)} · ${ilDate(next.due)}` : debt.owes ? "אין חיוב נוסף" : "אין חיוב פתוח"}</Line>
                             <Line label="אמצעי תשלום">{method}</Line>
                             <Line label="חיוב אוטומטי">כבוי</Line>
                         </dl>
