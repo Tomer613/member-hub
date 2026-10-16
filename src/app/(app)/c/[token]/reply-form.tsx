@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { MAX_PEOPLE, type RsvpStatus } from "@/lib/celebration";
+import { ANSWER_MAX, MAX_PEOPLE, type Question, type RsvpStatus } from "@/lib/celebration";
 import { answer } from "./actions";
 
 // The reply: a name, coming / maybe / not, and how many. "מתוכם ילדים?" stays folded until opened
@@ -15,12 +15,13 @@ const STATUSES: { id: RsvpStatus; label: string; on: string }[] = [
 
 const field = "min-h-[var(--mh-hit)] w-full rounded-[14px] border-2 border-[var(--mh-ink)] bg-white px-[14px] font-semibold outline-none placeholder:text-[var(--mh-ink-soft)] focus-visible:ring-[3px] focus-visible:ring-[var(--mh-ink)]";
 
-export function ReplyForm({ token, kids: kidsInvited, initial }: { token: string; kids: boolean; initial: { name: string; status: RsvpStatus | null; people: number; kids: number } }) {
+export function ReplyForm({ token, kids: kidsInvited, question, initial }: { token: string; kids: boolean; question: Question | null; initial: { name: string; status: RsvpStatus | null; people: number; kids: number; answer: string | null } }) {
     const [state, action, pending] = useActionState(answer.bind(null, token), undefined);
     const [status, setStatus] = useState<RsvpStatus | null>(initial.status);
     const [people, setPeople] = useState(initial.people);
     const [kids, setKids] = useState(initial.kids);
     const [kidsOpen, setKidsOpen] = useState(initial.kids > 0);
+    const [picked, setPicked] = useState(initial.answer ?? "");
     const counting = status === "yes" || status === "maybe";
 
     return (
@@ -49,6 +50,27 @@ export function ReplyForm({ token, kids: kidsInvited, initial }: { token: string
                         <button type="button" onClick={() => setKidsOpen(true)} className="min-h-10 self-start font-extrabold underline">+ מתוכם ילדים?</button>
                     )}
                 </div>
+            )}
+            {counting && question && (
+                question.options.length ? (
+                    <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
+                        <legend className="mb-2 text-[14px] font-extrabold">{question.text} <span className="font-semibold text-[var(--mh-ink-soft)]">(לא חובה)</span></legend>
+                        <div role="radiogroup" aria-label={question.text} className="flex flex-wrap gap-2">
+                            {question.options.map((o) => (
+                                <label key={o} className={`flex min-h-11 cursor-pointer items-center rounded-full border-2 border-[var(--mh-ink)] px-4 font-extrabold transition-[transform,background-color] duration-150 has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-[var(--mh-ink)] has-[:focus-visible]:ring-offset-2 ${picked === o ? "bg-[var(--mh-sun)] shadow-[0_2px_0_var(--mh-ink)]" : "bg-white hover:-translate-y-px hover:bg-[var(--mh-ticket)]"}`}>
+                                    {/* Tapping the picked option again clears it, since answering is optional. */}
+                                    <input type="radio" name="answer" value={o} checked={picked === o} onChange={() => setPicked(o)} onClick={() => picked === o && setPicked("")} className="sr-only" />
+                                    <bdi>{o}</bdi>
+                                </label>
+                            ))}
+                        </div>
+                    </fieldset>
+                ) : (
+                    <label className="flex flex-col gap-2">
+                        <span className="text-[14px] font-extrabold">{question.text} <span className="font-semibold text-[var(--mh-ink-soft)]">(לא חובה)</span></span>
+                        <input name="answer" defaultValue={initial.answer ?? ""} maxLength={ANSWER_MAX} className={field} />
+                    </label>
+                )
             )}
             {state?.error && <p role="alert" className="m-0 font-extrabold text-[var(--mh-danger)]">{state.error}</p>}
             <button disabled={pending || !status} className="min-h-[52px] w-full rounded-full border-[2.5px] border-[var(--mh-ink)] bg-[var(--mh-org-violet)] text-[18px] font-extrabold text-white shadow-[var(--mh-shadow)] transition-transform duration-150 hover:-translate-y-px active:translate-y-[2px] active:shadow-none disabled:cursor-not-allowed disabled:border-[#B8AFC7] disabled:bg-[#EDE6D6] disabled:text-[var(--mh-ink-soft)] disabled:shadow-none">

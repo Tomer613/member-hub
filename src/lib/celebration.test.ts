@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { EMPTY_CELEBRATION, cleanGuestName, localPhone, mayEnter, collectionTarget, guestLabel, isHonoree, amountOwed, cleanPayLink, formatShekels, formatWhen, readCelebration, shekelsToMinor, totals } from "./celebration.ts";
+import { EMPTY_CELEBRATION, answerCounts, cleanAnswer, cleanQuestion, celebrationStage, nextYear, stillOwes, cleanGuestName, cleanWhatsAppGroup, localPhone, mayEnter, collectionTarget, guestLabel, isHonoree, amountOwed, cleanPayLink, formatShekels, formatWhen, readCelebration, shekelsToMinor, totals } from "./celebration.ts";
 
 const money = (m: Partial<typeof EMPTY_CELEBRATION.money>) => ({ ...EMPTY_CELEBRATION.money, ...m });
 
@@ -78,4 +78,54 @@ test("an invited-only celebration opens to the invited phones and the organizers
 test("Israeli numbers are shown the local way", () => {
     assert.equal(localPhone("+972501234567"), "050-1234567");
     assert.equal(localPhone("+14155550100"), "+14155550100");
+});
+
+test("only a WhatsApp group invite link is accepted for the group button", () => {
+    assert.equal(cleanWhatsAppGroup(" https://chat.whatsapp.com/AbC123 "), "https://chat.whatsapp.com/AbC123");
+    assert.equal(cleanWhatsAppGroup("https://evil.example/chat.whatsapp.com"), null);
+    assert.equal(cleanWhatsAppGroup("http://chat.whatsapp.com/x"), null);
+    assert.deepEqual(readCelebration({ celebration: {} }).links, { whatsapp: null, album: null });
+});
+
+test("a celebration moves to past a week after, and locks once every payment is in", () => {
+    const c = { ...EMPTY_CELEBRATION, startsAt: "2026-11-01T20:00", money: money({ mode: "fixed" as const, amountMinor: 5000 }) };
+    const rows = [{ status: "yes", people: 2, kids: 0, paid: "confirmed" }, { status: "yes", people: 1, kids: 0, paid: "claimed" }, { status: "no", people: 1, kids: 0, paid: "none" }];
+    assert.equal(celebrationStage(c, "active", rows, new Date("2026-11-05T12:00")), "upcoming");
+    assert.equal(celebrationStage(c, "active", rows, new Date("2026-11-09T12:00")), "past");
+    rows[1].paid = "confirmed";
+    assert.equal(celebrationStage(c, "active", rows, new Date("2026-11-09T12:00")), "closed");
+    assert.equal(celebrationStage({ ...c, money: money({ mode: "none" }) }, "active", [], new Date("2026-11-09T12:00")), "closed");
+    assert.equal(celebrationStage({ ...c, money: money({ mode: "free" }) }, "active", [], new Date("2027-11-09T12:00")), "past");
+    const goal = { ...c, money: money({ mode: "free" as const, goalMinor: 30000 }) };
+    const gifts = [{ status: "yes", people: 1, kids: 0, paid: "confirmed", paidMinor: 20000 }, { status: "yes", people: 1, kids: 0, paid: "claimed", paidMinor: 15000 }];
+    assert.equal(celebrationStage(goal, "active", gifts, new Date("2026-11-09T12:00")), "past");
+    gifts[1].paid = "confirmed";
+    assert.equal(celebrationStage(goal, "active", gifts, new Date("2026-11-09T12:00")), "closed");
+    assert.equal(celebrationStage(c, "closed", [], new Date("2026-10-01T12:00")), "closed");
+    assert.equal(celebrationStage({ ...c, startsAt: null }, "active", [], new Date("2030-01-01")), "upcoming");
+});
+
+test("who still owes, and the same day next year", () => {
+    const m = money({ mode: "fixed", amountMinor: 5000 });
+    assert.equal(stillOwes(m, { status: "yes", people: 1, kids: 0, paid: "claimed" }), true);
+    assert.equal(stillOwes(m, { status: "yes", people: 1, kids: 0, paid: "confirmed" }), false);
+    assert.equal(stillOwes(m, { status: "maybe", people: 1, kids: 0, paid: "none" }), false);
+    assert.equal(stillOwes(money({ mode: "free" }), { status: "yes", people: 1, kids: 0, paid: "none" }), false);
+    assert.equal(nextYear("2026-11-20T19:00"), "2027-11-20T19:00");
+    assert.equal(nextYear("2028-02-29T10:00"), "2029-02-28T10:00");
+    assert.equal(nextYear(null), null);
+});
+
+test("the organizer's own question and its answers", () => {
+    assert.deepEqual(cleanQuestion("  מה  תרצו לאכול? ", ["בשרי", " צמחוני ", "בשרי", ""]), { question: { text: "מה תרצו לאכול?", options: ["בשרי", "צמחוני"] } });
+    assert.deepEqual(cleanQuestion("שירים שתרצו לשמוע?", []), { question: { text: "שירים שתרצו לשמוע?", options: [] } });
+    assert.ok("error" in cleanQuestion("א", []));
+    assert.ok("error" in cleanQuestion("מה תרצו?", ["רק אחת"]));
+    assert.ok("error" in cleanQuestion("מה תרצו?", ["1", "2", "3", "4", "5", "6", "7"]));
+    const food = { text: "מה תרצו לאכול?", options: ["בשרי", "צמחוני"] };
+    assert.equal(cleanAnswer(food, "צמחוני"), "צמחוני");
+    assert.equal(cleanAnswer(food, "פיצה"), null);
+    assert.equal(cleanAnswer({ text: "שירים?", options: [] }, "  ריקוד   הדבורה "), "ריקוד הדבורה");
+    assert.equal(cleanAnswer(null, "משהו"), null);
+    assert.deepEqual(answerCounts(food, ["בשרי", "צמחוני", "בשרי", null, "ישן"]), [{ option: "בשרי", count: 2 }, { option: "צמחוני", count: 1 }]);
 });

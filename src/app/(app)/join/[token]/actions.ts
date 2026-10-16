@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session-server";
+import { notifyJoinRequest } from "@/lib/notify-server";
 
 // Opening the org's join link sends a request; an admin approves it (joining is always two-sided).
 export async function requestJoinByLink(token: string, form: FormData) {
@@ -17,7 +18,8 @@ export async function requestJoinByLink(token: string, form: FormData) {
     if (!member && !open && last?.status !== "rejected") {
         // "כמה מילים עליכם": optional, up to 300 characters, seen by the admins (ux-spec 14.9).
         const note = String(form.get("message") ?? "").trim().slice(0, 300) || null;
-        await db.joinRequest.create({ data: { orgId: org.id, userId: s.userId, message: note } });
+        const req = await db.joinRequest.create({ data: { orgId: org.id, userId: s.userId, message: note } });
+        await notifyJoinRequest(org.id, req.id, s.userId);
     }
     redirect(`/join/${encodeURIComponent(token)}`);
 }

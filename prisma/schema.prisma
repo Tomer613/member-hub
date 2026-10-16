@@ -53,6 +53,8 @@ model Organization {
 
   orgUsers         OrgUser[]
   members          Member[]
+  labels           MembershipLabel[]
+  memberLabels     MemberLabel[]
   households       Household[]
   householdMembers HouseholdMember[]
   funds            Fund[]
@@ -66,6 +68,7 @@ model Organization {
   events           Event[]
   requests         Request[]
   joinRequests     JoinRequest[]
+  notifications    Notification[]
   invitations      Invitation[]
   dataPolicies     OrgDataPolicy[]
   disputes         ChargeDispute[]
@@ -76,6 +79,8 @@ model Organization {
   yahrzeits        Yahrzeit[]
   parkingSpots     ParkingSpot[]
   rsvps            Rsvp[]
+  posts            ChannelPost[]
+  importBatches ImportBatch[]
 }
 
 // A person with an account in the app. Global, not per org: one person holds memberships in many orgs
@@ -96,6 +101,9 @@ model User {
   locale             String   @default("he") // UI language; the member's choice, independent of the org's
   passwordHash       String?
   mustChangePassword Boolean  @default(false)
+  // The permanent profile code (board D-QrMyCode, ux-spec 14.29): /p/<code>. An org manager scans it to
+  // send a join invitation; it shows only the first name until the person accepts. Replaceable.
+  profileCode        String?  @unique
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
@@ -103,6 +111,7 @@ model User {
   authSessions   AuthSession[]
   orgUsers       OrgUser[]
   joinRequests   JoinRequest[]
+  notifications  Notification[]
   disputesOpened ChargeDispute[]
 }
 
@@ -237,6 +246,8 @@ model OrgUser {
   walletGroup String? // the member's own grouping ("home", "health", "community")
   walletOrder Int     @default(0)
   isPinned    Boolean @default(false)
+  hiddenAt    DateTime? // the member moved the card to the wallet archive (board D-WalletArchive)
+  deletedAt   DateTime? // the member deleted the card from the archive (board D-WalletDelete); gone from their wallet
 
   createdAt DateTime @default(now())
 
@@ -280,6 +291,13 @@ model Invitation {
   linkToken        String?      @unique // random token in the invitation link (/login?invite=...); also typed as an invite code
   respondedAt      DateTime?
   acceptedByUserId String?
+  // Chosen by the admin when inviting (boards D-MAdmInvite, D-AdmImport3); applied when the person accepts.
+  name             String? // how the admin wrote the name; "שלום" alone when empty
+  planId           String?
+  labelIds         String[]     @default([])
+  channel          String? // whatsapp | sms | email | link: how the admin chose to send it
+  batchId          String? // the file import it came from
+  batch            ImportBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
   createdAt        DateTime     @default(now())
 
   // Application rule: at most one pending invitation per org + kind + value.
@@ -309,6 +327,8 @@ model Member {
   // Directory privacy, generalized from d3teman's showPhone/showAddress/receiveNewsletter.
   privacy      Json         @default("{}")
   notes        String?
+  // The member number on the card (board D-Badge), given in order of joining, once, never reused.
+  number       Int?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
@@ -321,7 +341,9 @@ model Member {
   requests       Request[]
   yahrzeits      Yahrzeit[]
   debtReminders  DebtReminder[]
+  labels         MemberLabel[]
 
+  @@unique([orgId, number])
   @@index([orgId, lastName, firstName])
   @@index([orgId, phone])
   @@index([orgId, email])
@@ -412,6 +434,7 @@ model Plan {
   createdAt   DateTime     @default(now())
 
   subscriptions Subscription[]
+  labels        MembershipLabel[]
 
   @@index([orgId])
 }
@@ -458,9 +481,11 @@ model Charge {
   periodMonth    DateTime?     @db.Date // first day of the billed month, null for non-periodic
   kind           String        @default("recurring") // recurring | special | one_time | adjustment
   description    String
+  note           String? // the org's explanation to members, shown on the charge (board D-AdmCharge)
   amountMinor    Int
   currency       String        @default("ILS")
   fraction       Decimal?      @db.Decimal(6, 5) // share of the month when pro-rated (1/3 -> 0.33333)
+  dueOn          DateTime?     @db.Date // "לתשלום עד"; null = two weeks after it was created
   voidedAt       DateTime?
   // Set by the billing engine to make generation idempotent, e.g. "<subscriptionId>|<memberId>|2026-10|recurring".
   // Null for hand-entered charges (Postgres allows many NULLs in a unique index).
@@ -531,8 +556,18 @@ model Payment {
   method           String       @default("card") // card | cash | bank | standing_order | other
   provider         String? // e.g. "nedarim", "cardcom", "stripe"
   providerTxId     String? // external id; unique per org+provider so webhooks are idempotent
-  status           String       @default("succeeded") // pending | succeeded | failed | refunded
-  source           String       @default("manual") // webhook | manual | import
+  // pending (a member's report waiting for the org) | succeeded | failed | refunded | rejected (report not confirmed)
+  status           String       @default("succeeded")
+  source           String       @default("manual") // webhook | manual | import | app (paid in the app) | report (member reported)
+  cardLabel        String? // "Visa ••4242" as the provider reports it; never card data
+  failureReason    String? // the provider's reason in plain words, for a failed payment
+  note             String? // the member's note on a report, or the admin's on a manual record
+  // A photo of the transfer confirmation, downscaled in the browser. Moves to file storage when we have it
+  // (docs/waiting-for-services.he.md).
+  proof            String?
+  receiptNo        Int? // our running number per org for the in-app receipt; the official one is the Invoice
+  reviewedById     String? // User.id of the admin who confirmed or rejected a report
+  reviewedAt       DateTime?
   isRecurring      Boolean      @default(false)
   recurringRef     String? // groups installments of one standing order, when the provider tells us
   platformFeeMinor Int          @default(0) // our cut, computed from Organization.platformFeeBps
@@ -544,6 +579,7 @@ model Payment {
   invoice     Invoice?
 
   @@unique([orgId, provider, providerTxId])
+  @@unique([orgId, receiptNo])
   @@index([orgId, receivedAt])
   @@index([orgId, householdId])
 }
@@ -756,9 +792,120 @@ model Rsvp {
   paid      String       @default("none") // none | claimed | confirmed
   paidMinor Int? // what the guest says they paid, in agorot
   paidAt    DateTime?
+  answer    String? // to the organizer's own question, if there is one
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 
   @@unique([orgId, userId])
   @@index([orgId, status])
+}
+
+// The updates channel (core, every org type; boards D-Channel, D-ChannelReact). The organizers write,
+// everyone else reacts with an icon only: there is no chat (decided with Tommy 14.10.2026).
+model ChannelPost {
+  id        String         @id @default(cuid())
+  orgId     String
+  org       Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  authorId  String? // the organizer's user id
+  title     String
+  body      String
+  pinned    Boolean        @default(false) // an important change, also shown at the top of the invitation
+  reactable Boolean        @default(true) // "לאפשר תגובות"
+  dislike   Boolean        @default(true) // "לאפשר 'לא אהבתי'"
+  createdAt DateTime       @default(now())
+  reactions PostReaction[]
+
+  @@index([orgId, createdAt])
+}
+
+model PostReaction {
+  id        String      @id @default(cuid())
+  postId    String
+  post      ChannelPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  actorKey  String // "u:<userId>" for an account, "r:<rsvpId>" for a celebration guest without one
+  kind      String // heart | bravo | like | dislike | funny | got
+  createdAt DateTime    @default(now())
+
+  @@unique([postId, actorKey])
+}
+
+// Labels (תוויות, ux-spec 14.9/14.10, boards D-Labels, D-AdmLabels): a sign of a contribution, not a rank.
+// A member may hold any number of them. Given by hand, or automatically to whoever holds an active
+// subscription to a plan. "admins" labels are never shown to the member.
+model MembershipLabel {
+  id         String       @id @default(cuid())
+  orgId      String
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name       String // up to 14 characters
+  color      String // one of the six label colors
+  visibility String       @default("all") // all | admins
+  assignment String       @default("manual") // manual | auto_plan
+  planId     String?
+  plan       Plan?        @relation(fields: [planId], references: [id], onDelete: SetNull)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  holders MemberLabel[]
+
+  @@unique([orgId, name])
+  @@index([orgId])
+}
+
+// A label given by hand to a member.
+model MemberLabel {
+  id           String          @id @default(cuid())
+  orgId        String
+  org          Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  labelId      String
+  label        MembershipLabel @relation(fields: [labelId], references: [id], onDelete: Cascade)
+  memberId     String
+  member       Member          @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  assignedById String? // the admin's user id
+  since        DateTime        @default(now())
+
+  @@unique([labelId, memberId])
+  @@index([orgId, memberId])
+}
+
+// What the member's "הודעות" screen and the bells show (boards D-Notifications, D-NotificationsDone).
+// "action" waits for something to be done (a charge to pay, a request to answer) and is closed when it is
+// handled; "update" is closed when read. Delivery by push, SMS or email waits for the messages service
+// (docs/waiting-for-services.he.md).
+model Notification {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orgId       String? // null: from the wallet itself
+  org         Organization? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  kind        String // action | update
+  topic       String // charge | payment | report | join_request | join_answer | label
+  refId       String? // what it is about (a charge, a join request), to close it when handled
+  text        String
+  href        String?
+  actionLabel String?
+  createdAt   DateTime      @default(now())
+  readAt      DateTime?
+  doneAt      DateTime?
+
+  @@index([userId, createdAt])
+  @@index([topic, refId])
+}
+
+// One "ייבוא חברים מקובץ" run (boards D-AdmImport1-3), for the "ייבואים אחרונים" list and its report.
+model ImportBatch {
+  id          String       @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  fileName    String
+  rows        Int // rows in the file
+  imported    Int // people taken in (invited, or listed only)
+  mode        String // invite | list
+  channel     String? // whatsapp | sms | email, for mode invite
+  remind      Boolean      @default(true) // one reminder after 3 days to whoever did not accept
+  createdById String
+  createdAt   DateTime     @default(now())
+
+  invitations Invitation[]
+
+  @@index([orgId, createdAt])
 }

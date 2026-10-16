@@ -43,3 +43,29 @@ body{zoom:var(--z)}
 @keyframes wl-hop { 0%, 55%, 100% { transform: translateY(0) rotate(-4deg); } 70% { transform: translateY(-14px) rotate(3deg); } 85% { transform: translateY(-4px) rotate(-2deg); } }
 @keyframes wl-twinkle { 0%, 100% { transform: scale(.6); opacity: .5; } 50% { transform: scale(1.15); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .wl-card, .wl-spark { animation: none; } }
+
+/* The reaction picker pops up with a small bounce. */
+.ch-pop { animation: ch-pop .22s cubic-bezier(.3,1.6,.5,1) both; transform-origin: 50% 100%; }
+@keyframes ch-pop { from { transform: scale(.7) translateY(8px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .ch-pop { animation: none; } }
+
+/* Wallet cards: the board's alternating tilt, a playful lift on hover or focus, and a staggered drop-in. */
+.wl-stackcard { transform: rotate(var(--tilt, 0deg)); transition: transform .28s cubic-bezier(.3,1.6,.5,1); animation: wl-drop .5s cubic-bezier(.3,1.4,.5,1) both; animation-delay: calc(var(--i, 0) * 60ms); }
+a.wl-stackcard:hover, a.wl-stackcard:focus-visible { transform: translateY(-8px) rotate(calc(var(--tilt, 0deg) * -2)); }
+@keyframes wl-drop { from { opacity: 0; transform: translateY(-18px) rotate(var(--tilt, 0deg)); } }
+@media (prefers-reduced-motion: reduce) { .wl-stackcard { animation: none; transition: none; } a.wl-stackcard:hover, a.wl-stackcard:focus-visible { transform: rotate(var(--tilt, 0deg)); } }
+
+/* Member card: the turn, and the lanyard swaying with it (board D-BadgeFlip; mirrored on the way back). */
+.bd-turn { transition: transform .9s cubic-bezier(.3,1.25,.5,1); }
+.bd-sway-a { animation: bd-sway-a 1.4s ease-out; }
+.bd-sway-b { animation: bd-sway-b 1.4s ease-out; }
+@keyframes bd-sway-a { 0% { transform: rotate(0); } 20% { transform: rotate(5deg); } 40% { transform: rotate(-3.5deg); } 60% { transform: rotate(2deg); } 80% { transform: rotate(-1deg); } 100% { transform: rotate(0); } }
+@keyframes bd-sway-b { 0% { transform: rotate(0); } 20% { transform: rotate(-5deg); } 40% { transform: rotate(3.5deg); } 60% { transform: rotate(-2deg); } 80% { transform: rotate(1deg); } 100% { transform: rotate(0); } }
+@media (prefers-reduced-motion: reduce) { .bd-turn { transition: none; } .bd-sway-a, .bd-sway-b { animation: none; } }
+
+/* The scanner (board D-QrScan): a slow line across the picture while it looks for a code, and the result
+   card that drops in. */
+.scan-line { animation: scan-line 2.4s ease-in-out infinite alternate; }
+@keyframes scan-line { from { transform: translateY(-95px); } to { transform: translateY(95px); } }
+.scan-pop { animation: ch-pop .35s cubic-bezier(.3,1.5,.5,1); }
+@media (prefers-reduced-motion: reduce) { .scan-line, .scan-pop { animation: none; } }

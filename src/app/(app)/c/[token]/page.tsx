@@ -6,11 +6,13 @@ import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session-server";
 import { onColor } from "@/lib/color";
 import { amountOwed, formatShekels, formatWhen, guestLabel, isRsvpStatus, readCelebration } from "@/lib/celebration";
-import { keepInWallet, markPaid, signInAgain } from "./actions";
+import { keepInWallet, markPaid, reactOnPost, signInAgain } from "./actions";
+import { PostCard } from "@/components/channel/post-card";
+import { loadPosts } from "@/lib/channel-server";
 import { CollectBar } from "@/components/collect-bar";
 import { WalletArt } from "@/components/wallet-art";
 import { ReplyForm } from "./reply-form";
-import { cookieName, entryFor, findReply } from "./reply";
+import { cookieName, entryFor, findReply, stageOf } from "./reply";
 
 // The invitation a celebration's link opens (decided with Tommy 14.10.2026, docs/open-questions.he.md
 // 'ערכת "חגיגה ואירוע"'). Anyone with the link sees the name, the day and the city and can reply with a
@@ -19,7 +21,7 @@ import { cookieName, entryFor, findReply } from "./reply";
 type Props = { params: Promise<{ token: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 async function load(token: string) {
-    return db.organization.findFirst({ where: { joinToken: token, status: "active", packId: "celebration" } });
+    return db.organization.findFirst({ where: { joinToken: token, status: { in: ["active", "closed"] }, packId: "celebration" } });
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -52,6 +54,8 @@ export default async function InvitationPage({ params, searchParams }: Props) {
 
     const c = readCelebration(org.settings);
     if (entry === "signin" || entry === "notInvited") return <Gate token={token} color={org.brandColor ?? "#FF5A36"} notInvited={entry === "notInvited"} />;
+    const stage = await stageOf(org);
+    const locked = stage === "closed";
     const reply = await findReply(org.id, session?.userId ?? null, (await cookies()).get(cookieName(org.id))?.value);
     const link = session ? await db.orgUser.findUnique({ where: { orgId_userId: { orgId: org.id, userId: session.userId } } }) : null;
     const organizer = link?.role === "owner" || link?.role === "admin";
@@ -66,6 +70,10 @@ export default async function InvitationPage({ params, searchParams }: Props) {
     const showMoney = c.money.mode !== "none" && reply && reply.status !== "no";
     // Guests see the shared progress toward the organizer's goal (only "any amount" with a goal).
     const goal = showMoney && c.money.mode === "free" ? c.money.goalMinor : null;
+    // Updates and the group/album buttons are for whoever replied (and the organizers).
+    const insider = !!reply || organizer;
+    const posts = insider ? await loadPosts(org.id, session ? `u:${session.userId}` : reply ? `r:${reply.id}` : null) : [];
+    const pinned = posts.filter((p) => p.post.pinned);
     const collected = goal ? (await db.rsvp.aggregate({ where: { orgId: org.id, paid: "confirmed" }, _sum: { paidMinor: true } }))._sum.paidMinor ?? 0 : 0;
 
     return (
@@ -85,11 +93,22 @@ export default async function InvitationPage({ params, searchParams }: Props) {
                                 <h1 className="m-0 font-display text-[clamp(30px,4vw,46px)] leading-[1.1] [text-wrap:balance]">{org.name}</h1>
                             </div>
                             <div className="flex flex-col gap-2 p-[clamp(16px,2.4vw,24px)]">
-                                {c.surprise.on && (
+                                {stage !== "upcoming" && (
+                                    <p className="m-0 rounded-[16px] border-2 border-[var(--mh-ink)] bg-[var(--mh-tint-ok)] p-3 text-[17px] font-extrabold">
+                                        <span aria-hidden="true">🎉 </span>{locked ? "החגיגה הסתיימה. תודה שחגגתם! ההזמנה נשארת לזיכרון, ואי אפשר לשנות בה יותר." : "החגיגה כבר הייתה. אם נשאר לסדר תשלום, אפשר עדיין לעשות את זה כאן."}
+                                    </p>
+                                )}
+                                {c.surprise.on && stage === "upcoming" && (
                                     <p className="m-0 rounded-[16px] border-2 border-[var(--mh-ink)] bg-[var(--mh-tint-pink)] p-3 text-[17px] font-extrabold">
                                         <span aria-hidden="true">🤫 </span>מסיבת הפתעה. {c.surprise.honoree ? `לא לספר ל${c.surprise.honoree}!` : "לא לספר!"}
                                     </p>
                                 )}
+                                {pinned.map((p) => (
+                                    <div key={p.post.id} className="rounded-[16px] border-2 border-[var(--mh-ink)] bg-[var(--mh-tint-sun)] p-3">
+                                        <b className="block text-[16px]"><span aria-hidden="true">📌 </span>{p.post.title}</b>
+                                        <span className="block whitespace-pre-line font-semibold">{p.post.body}</span>
+                                    </div>
+                                ))}
                                 {when && <Line icon="cal">{when}</Line>}
                                 {coming && c.place ? <Line icon="pin">{c.place}{c.city ? `, ${c.city}` : ""}</Line> : c.city && <Line icon="pin">{c.city}</Line>}
                                 {!coming && c.place && <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">הכתובת המדויקת תופיע אחרי שתאשרו הגעה.</span>}
@@ -98,28 +117,37 @@ export default async function InvitationPage({ params, searchParams }: Props) {
 
                         <section className={box} aria-labelledby="reply-h">
                             <h2 id="reply-h" className="m-0 font-display text-[24px]">
-                                {reply ? `התשובה שלכם: ${STATUS_TEXT[isRsvpStatus(reply.status) ? reply.status : "no"]}` : "מגיעים?"}
+                                {reply ? `התשובה שלכם: ${STATUS_TEXT[isRsvpStatus(reply.status) ? reply.status : "no"]}` : locked ? "ההזמנה נסגרה" : "מגיעים?"}
                             </h2>
                             {reply && reply.status !== "no" && (
                                 <p className="m-0 font-semibold">
-                                    {reply.people === 1 ? "רק אתם" : `${reply.people} אנשים`}{reply.kids > 0 ? `, מתוכם ${reply.kids === 1 ? "ילד אחד" : `${reply.kids} ילדים`}` : ""}. אפשר לשנות בכל רגע.
+                                    {reply.people === 1 ? "רק אתם" : `${reply.people} אנשים`}{reply.kids > 0 ? `, מתוכם ${reply.kids === 1 ? "ילד אחד" : `${reply.kids} ילדים`}` : ""}.{locked ? "" : " אפשר לשנות בכל רגע."}
                                 </p>
                             )}
-                            {!reply && <p className="m-0 font-semibold text-[var(--mh-ink-soft)]">בלי הרשמה. רק השם שלכם, כדי שהמארגנים ידעו מי מגיע.</p>}
-                            {reply ? (
+                            {reply && reply.status !== "no" && c.question && reply.answer && (
+                                <p className="m-0 font-semibold"><span className="text-[var(--mh-ink-soft)]">{c.question.text}</span> <b><bdi>{reply.answer}</bdi></b></p>
+                            )}
+                            {!reply && <p className="m-0 font-semibold text-[var(--mh-ink-soft)]">{locked ? "החגיגה כבר הסתיימה, ואי אפשר לענות עליה." : "בלי הרשמה. רק השם שלכם, כדי שהמארגנים ידעו מי מגיע."}</p>}
+                            {locked ? null : reply ? (
                                 <details className="group">
                                     <summary className="min-h-10 cursor-pointer content-center font-extrabold underline marker:content-none">לשנות את התשובה</summary>
                                     <div className="pt-3">
-                                        <ReplyForm token={token} kids={c.kids} initial={{ name: reply.name, status: isRsvpStatus(reply.status) ? reply.status : null, people: reply.people, kids: reply.kids }} />
+                                        <ReplyForm token={token} kids={c.kids} question={c.question} initial={{ name: reply.name, status: isRsvpStatus(reply.status) ? reply.status : null, people: reply.people, kids: reply.kids, answer: reply.answer }} />
                                     </div>
                                 </details>
                             ) : (
-                                <ReplyForm token={token} kids={c.kids} initial={{ name: me ? `${me.firstName ?? ""} ${me.lastName ?? ""}`.trim() : "", status: null, people: 1, kids: 0 }} />
+                                <ReplyForm token={token} kids={c.kids} question={c.question} initial={{ name: me ? `${me.firstName ?? ""} ${me.lastName ?? ""}`.trim() : "", status: null, people: 1, kids: 0, answer: null }} />
                             )}
                         </section>
                     </div>
 
                     <div className="flex flex-col gap-4">
+                        {insider && (c.links.whatsapp || c.links.album) && (
+                            <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)] xl:grid-cols-2">
+                                {c.links.whatsapp && <a href={c.links.whatsapp} target="_blank" rel="noopener noreferrer" className={`${button} bg-[var(--mh-ok)]`}>לקבוצת הווטסאפ</a>}
+                                {c.links.album && <a href={c.links.album} target="_blank" rel="noopener noreferrer" className={`${button} bg-white`}>לאלבום התמונות</a>}
+                            </div>
+                        )}
                         {showMoney && reply && (
                             <section className={box} aria-labelledby="pay-h">
                                 <h2 id="pay-h" className="m-0 font-display text-[24px]">
@@ -128,7 +156,7 @@ export default async function InvitationPage({ params, searchParams }: Props) {
                                 {goal && <CollectBar collected={collected} target={goal} />}
                                 {reply.paid === "confirmed" && <p className="m-0 font-semibold">המארגנים אישרו שהגיעו {formatShekels(reply.paidMinor ?? 0)}. תודה!</p>}
                                 {reply.paid === "claimed" && <p className="m-0 font-semibold">שילמתם <bdi>{formatShekels(reply.paidMinor ?? 0)}</bdi>, וזה מחכה לאישור של המארגנים.</p>}
-                                {reply.paid === "none" && (
+                                {reply.paid === "none" && !locked && (
                                     <>
                                         <p className="m-0 font-semibold text-[var(--mh-ink-soft)]">
                                             {c.money.mode === "fixed"
@@ -176,7 +204,19 @@ export default async function InvitationPage({ params, searchParams }: Props) {
                             </section>
                         )}
 
-                        {reply && !link && (
+                        {insider && !(locked && posts.length === 0) && (
+                            <section className="flex flex-col gap-3" aria-labelledby="updates-h">
+                                <h2 id="updates-h" className="m-0 font-display text-[24px]">עדכונים מהמארגנים</h2>
+                                {posts.length ? posts.map((p) => (
+                                    <PostCard key={p.post.id} post={p.post} counts={p.counts} mine={p.mine} react={reply && !locked ? reactOnPost.bind(null, token) : null} />
+                                )) : null}
+                                {!locked && <p className="m-0 flex items-center gap-2 rounded-[18px] border-2 border-dashed border-[var(--mh-ink)] bg-white/60 p-3 text-[14px] font-bold">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0"><path d="M4 5h16v11H8l-4 4z" /></svg>
+                                    {posts.length ? "כאן המארגנים כותבים. אפשר להגיב באייקון." : "כשהמארגנים יעדכנו משהו, זה יופיע כאן."}
+                                </p>}
+                            </section>
+                        )}
+                        {reply && !link && !locked && (
                             <section className="wl-tile flex flex-col items-center gap-3 overflow-hidden rounded-[24px] border-[2.5px] border-[var(--mh-ink)] bg-[var(--mh-tint-sun)] p-[clamp(16px,2vw,24px)] text-center shadow-[0_4px_0_var(--mh-ink)]">
                                 <WalletArt color={color} />
                                 <h2 className="m-0 font-display text-[clamp(22px,2.2vw,26px)]">לשמור את ההזמנה בארנק</h2>

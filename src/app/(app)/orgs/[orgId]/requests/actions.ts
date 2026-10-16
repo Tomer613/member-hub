@@ -3,7 +3,9 @@
 import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { listedMember } from "@/lib/billing/member-money";
 import { getSession } from "@/lib/auth/session-server";
+import { notifyUsers } from "@/lib/notify-server";
 
 // The admin's half of a join request (joining is always two-sided). Approving creates the person's
 // record in the org (Member) and their membership (OrgUser), so the card appears in their wallet.
@@ -27,11 +29,14 @@ async function approveOne(orgId: string, requestId: string, adminId: string) {
         if (existing) {
             await tx.orgUser.update({ where: { id: existing.id }, data: { status: "active", leftAt: null } });
         } else {
-            const member = await tx.member.create({ data: { orgId, firstName: user.firstName ?? "", lastName: user.lastName ?? "", phone, email } });
-            await tx.orgUser.create({ data: { orgId, userId: user.id, role: "member", memberId: member.id } });
+            const listed = await listedMember(orgId, phone, email);
+            const memberId = listed ?? (await tx.member.create({ data: { orgId, firstName: user.firstName ?? "", lastName: user.lastName ?? "", phone, email } })).id;
+            await tx.orgUser.create({ data: { orgId, userId: user.id, role: "member", memberId } });
         }
         await tx.joinRequest.update({ where: { id: req.id }, data: { status: "approved", decidedById: adminId, decidedAt: new Date() } });
     });
+    const org = await db.organization.findUnique({ where: { id: orgId }, select: { name: true } });
+    await notifyUsers([user.id], { orgId, kind: "update", topic: "join_answer", refId: req.id, text: `הבקשה להצטרף ל${org?.name ?? "ארגון"} אושרה. הכרטיס כבר בארנק.`, href: `/card/${orgId}` });
 }
 
 export async function approveRequest(orgId: string, requestId: string): Promise<void> {
@@ -51,9 +56,11 @@ export async function approveAll(orgId: string): Promise<void> {
 export async function declineRequest(orgId: string, requestId: string, reason: string): Promise<void> {
     const adminId = await requireAdmin(orgId);
     const note = reason.trim().slice(0, 300) || null;
-    await db.joinRequest.updateMany({
+    const r = await db.joinRequest.updateMany({
         where: { id: requestId, orgId, status: "pending" },
         data: { status: "rejected", decidedById: adminId, decidedAt: new Date(), adminNotes: note },
     });
+    const req = r.count ? await db.joinRequest.findUnique({ where: { id: requestId }, include: { org: { select: { name: true } } } }) : null;
+    if (req) await notifyUsers([req.userId], { orgId, kind: "update", topic: "join_answer", refId: req.id, text: `הבקשה להצטרף ל${req.org.name} לא אושרה.` });
     revalidatePath(`/orgs/${orgId}/requests`);
 }

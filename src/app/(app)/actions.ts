@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { endSession, getSession } from "@/lib/auth/session-server";
 import { MAX_ATTEMPTS_PER_CODE, codeMatches } from "@/lib/auth/code";
 import { normalizeContact, type ContactKind } from "@/lib/auth/contact";
+import { notifyJoinRequest } from "@/lib/notify-server";
 
 async function requireUser() {
     const s = await getSession();
@@ -42,7 +43,10 @@ export async function requestJoin(orgId: string): Promise<{ ok: boolean; orgName
     if (!org) return { ok: false };
     const member = await db.orgUser.findUnique({ where: { orgId_userId: { orgId, userId } } });
     const open = await db.joinRequest.findFirst({ where: { orgId, userId, status: "pending" } });
-    if (!member && !open) await db.joinRequest.create({ data: { orgId, userId } });
+    if (!member && !open) {
+        const req = await db.joinRequest.create({ data: { orgId, userId } });
+        await notifyJoinRequest(orgId, req.id, userId);
+    }
     return { ok: true, orgName: org.name };
 }
 

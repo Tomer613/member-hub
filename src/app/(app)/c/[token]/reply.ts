@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { isHonoree, mayEnter, readCelebration } from "@/lib/celebration";
+import { celebrationStage, isHonoree, mayEnter, readCelebration, type Stage } from "@/lib/celebration";
 
 // Which reply belongs to whoever is looking: the one tied to their account when signed in, otherwise the
 // one this browser made (its random key is kept in a cookie per celebration).
@@ -26,4 +26,10 @@ export async function entryFor(orgId: string, settings: unknown, userId: string 
     const link = await db.orgUser.findUnique({ where: { orgId_userId: { orgId, userId } } });
     const organizer = link?.role === "owner" || link?.role === "admin";
     return { entry: mayEnter(c, phones, organizer) ? "ok" : "notInvited", phones };
+}
+
+// Where the celebration stands now: before, after (a week on, still open for payments) or closed.
+export async function stageOf(org: { id: string; settings: unknown; status: string }): Promise<Stage> {
+    const rows = await db.rsvp.findMany({ where: { orgId: org.id }, select: { status: true, people: true, kids: true, paid: true, paidMinor: true } });
+    return celebrationStage(readCelebration(org.settings), org.status, rows, new Date());
 }
