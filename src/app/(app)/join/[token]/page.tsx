@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session-server";
 import { OrgCard } from "@/components/org-card";
+import { readPublicText } from "@/lib/org-settings";
 import { requestJoinByLink } from "./actions";
 
 export const metadata: Metadata = { title: "הצטרפות · PIRI" };
@@ -31,11 +32,18 @@ export default async function JoinLinkPage({ params }: { params: Promise<{ token
     const last = await db.joinRequest.findFirst({ where: { orgId: org.id, userId: session.userId }, orderBy: { createdAt: "desc" } });
     const declined = !member && !open && last?.status === "rejected";
     const color = org.brandColor ?? "#5B3DF5";
+    const text = readPublicText(org.settings);
 
     return (
         <main className={shell}>
             <h1 className="m-0 text-[30px]">{member ? "אתם כבר חברים כאן" : open ? "הבקשה נשלחה" : declined ? "הבקשה לא אושרה" : "בקשה להצטרף"}</h1>
             <OrgCard name={org.name} city={org.city} color={color} logo={org.logoUrl} />
+            {!member && (text.tagline || text.about) && (
+                <div className="flex flex-col gap-1 rounded-[18px] border-2 border-[var(--mh-ink)] bg-white p-4">
+                    {text.tagline && <b className="text-[17px]">{text.tagline}</b>}
+                    {text.about && <p className="m-0 whitespace-pre-line font-semibold text-[var(--mh-ink-soft)]">{text.about}</p>}
+                </div>
+            )}
             {member ? (
                 <Link href="/wallet" className="flex min-h-[52px] items-center justify-center rounded-full border-[2.5px] border-[var(--mh-ink)] bg-white text-[18px] font-extrabold shadow-[var(--mh-shadow)]">לארנק</Link>
             ) : declined ? (

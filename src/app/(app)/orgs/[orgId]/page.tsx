@@ -9,8 +9,7 @@ import { CopyLink } from "@/components/copy-link";
 import { onColor } from "@/lib/color";
 import { pastDue } from "@/lib/billing/kupa-server";
 import { loadPosts } from "@/lib/channel-server";
-import { loadMsgRecipients } from "@/lib/messages-server";
-import { membersAdmin } from "@/lib/members-server";
+import { loadMemberRows, membersAdmin } from "@/lib/members-server";
 import { formatShekels } from "@/lib/money";
 import { hebrewAgo } from "@/lib/relative-time";
 import { CelebrationView } from "./celebration-view";
@@ -47,16 +46,17 @@ export default async function OrgOverviewPage({ params }: { params: Promise<{ or
     if (!a) notFound();
     const settings = (org.settings ?? {}) as { collection?: string; account?: string; inviteWith?: string };
     const now = new Date();
-    const [pending, members, reports, due, recipients, paidRecent] = await Promise.all([
+    const [pending, members, reports, due, rows, paidRecent] = await Promise.all([
         db.joinRequest.findMany({ where: { orgId, status: "pending" }, select: { createdAt: true }, orderBy: { createdAt: "asc" } }),
         db.orgUser.count({ where: { orgId, status: "active", role: { not: "guest" } } }),
         db.payment.count({ where: { orgId, status: "pending", source: "report" } }),
         pastDue(orgId),
-        loadMsgRecipients(orgId),
+        loadMemberRows(orgId, org.packId),
         db.payment.findMany({ where: { orgId, status: "succeeded", receivedAt: { gte: new Date(now.getTime() - 32 * 86_400_000) } }, select: { amountMinor: true, receivedAt: true } }),
     ]);
     const collected = paidRecent.filter((p) => ilMonth(p.receivedAt) === ilMonth(now)).reduce((t, p) => t + p.amountMinor, 0);
-    const debtors = recipients.filter((r) => r.owes);
+    // Same rule as the members table and its reminders: the member (or the household they pay for) is past due.
+    const debtors = rows.filter((r) => r.facts.kind === "member" && r.owedMinor > 0 && r.linkId);
     const color = org.brandColor ?? "#5B3DF5";
     const first = a.me.firstName?.trim();
     const stats = [
@@ -74,7 +74,7 @@ export default async function OrgOverviewPage({ params }: { params: Promise<{ or
     );
     if (debtors.length) tasks.push(
         <Task key="debt" title={debtors.length === 1 ? "חבר אחד בחוב" : `${debtors.length} חברים בחוב`} line={`${formatShekels(due.owedMinor)} סך הכול`}>
-            <RemindAll orgId={orgId} linkIds={debtors.map((d) => d.linkId)} />
+            <RemindAll orgId={orgId} linkIds={debtors.map((d) => d.linkId!)} />
         </Task>,
     );
     if (reports) tasks.push(

@@ -7,6 +7,7 @@ import { endSession, getSession } from "@/lib/auth/session-server";
 import { MAX_ATTEMPTS_PER_CODE, codeMatches } from "@/lib/auth/code";
 import { normalizeContact, type ContactKind } from "@/lib/auth/contact";
 import { notifyJoinRequest } from "@/lib/notify-server";
+import { readPublicText, shortLine } from "@/lib/org-settings";
 
 async function requireUser() {
     const s = await getSession();
@@ -14,14 +15,14 @@ async function requireUser() {
     return s;
 }
 
-export type OrgHit = { id: string; name: string; city: string | null; packId: string };
+export type OrgHit = { id: string; name: string; city: string | null; packId: string; line: string | null };
 
 // Only orgs that chose to be found (visibility "listed", decided 13.10.2026: hidden by default).
 export async function searchOrgs(q: string, packId?: string): Promise<OrgHit[]> {
     await requireUser();
     const text = q.trim();
     if (text.length < 2 && !packId) return [];
-    return db.organization.findMany({
+    const found = await db.organization.findMany({
         where: {
             visibility: "listed",
             status: "active",
@@ -30,10 +31,12 @@ export async function searchOrgs(q: string, packId?: string): Promise<OrgHit[]> 
                 ? { OR: text.split(/\s+/).map((w) => ({ OR: [{ name: { contains: w, mode: "insensitive" as const } }, { city: { contains: w, mode: "insensitive" as const } }] })) }
                 : {}),
         },
-        select: { id: true, name: true, city: true, packId: true },
+        select: { id: true, name: true, city: true, packId: true, settings: true },
         take: 20,
         orderBy: { name: "asc" },
     });
+    // The invitation sentence from "הגדרות הארגון", cut short as on the board.
+    return found.map(({ settings, ...o }) => ({ ...o, line: readPublicText(settings).tagline ? shortLine(readPublicText(settings).tagline) : null }));
 }
 
 // Joining from search is a request an admin approves (joining is always two-sided).

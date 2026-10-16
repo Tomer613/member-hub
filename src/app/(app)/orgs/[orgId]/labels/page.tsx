@@ -1,9 +1,10 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session-server";
+import { AdminShell } from "@/components/admin/admin-shell";
 import { holderCounts } from "@/lib/labels-server";
+import { membersAdmin } from "@/lib/members-server";
 import { LabelsAdmin } from "./labels-admin";
 
 export const metadata: Metadata = { title: "תוויות · PIRI" };
@@ -14,8 +15,10 @@ export default async function LabelsPage({ params }: { params: Promise<{ orgId: 
     const { orgId } = await params;
     const session = await getSession();
     if (!session) redirect("/login");
-    const link = await db.orgUser.findFirst({ where: { orgId, userId: session.userId, role: { in: ["owner", "admin"] }, status: "active" }, include: { org: true } });
-    if (!link || link.org.status !== "active" || link.org.packId === "celebration") notFound();
+    const a = await membersAdmin(orgId);
+    // Labels are managed by the owner and admins; the treasurer does not see this item in the menu.
+    if (!a || !a.canManage || a.org.status !== "active" || a.org.packId === "celebration") notFound();
+    const link = { org: a.org };
     const [labels, counts, plans, links] = await Promise.all([
         db.membershipLabel.findMany({ where: { orgId }, include: { plan: { select: { name: true } }, holders: { include: { member: { select: { firstName: true, lastName: true } } }, orderBy: { since: "asc" } } }, orderBy: { createdAt: "asc" } }),
         holderCounts(orgId),
@@ -24,11 +27,9 @@ export default async function LabelsPage({ params }: { params: Promise<{ orgId: 
     ]);
     const full = (f: string | null, l: string | null) => `${f ?? ""} ${l ?? ""}`.trim() || "חבר/ה";
     return (
-        <main className="min-h-dvh bg-[var(--mh-sun)]">
-            <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4 px-[clamp(12px,3vw,32px)] py-[clamp(14px,2.5vw,28px)]">
-                <header className="flex flex-wrap items-baseline justify-between gap-3">
-                    <h1 className="m-0 font-display text-[clamp(26px,2.6vw,34px)]">תוויות</h1>
-                    <Link href={`/orgs/${orgId}`} className="min-h-10 content-center font-extrabold underline">לסקירה</Link>
+        <AdminShell orgId={orgId} org={a.org} me={{ ...a.me, role: a.role }} active="labels">
+                <header className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <h1 className="m-0 font-display text-[28px] leading-tight">תוויות</h1>
                 </header>
                 <LabelsAdmin
                     orgId={orgId}
@@ -47,7 +48,6 @@ export default async function LabelsPage({ params }: { params: Promise<{ orgId: 
                     plans={plans}
                     members={links.map((m) => ({ linkId: m.id, memberId: m.memberId, name: full(m.user.firstName, m.user.lastName) }))}
                 />
-            </div>
-        </main>
+        </AdminShell>
     );
 }

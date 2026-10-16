@@ -26,7 +26,7 @@ export type MemberRow = {
     role: string;
     facts: RowFacts;
     status: RowStatus;
-    owedMinor: number; // open and not disputed: what a reminder is about
+    owedMinor: number; // past due and not disputed: what a reminder is about
     balanceMinor: number; // everything still open, disputed charges included
     paidYearMinor: number;
     since: string; // ISO
@@ -70,6 +70,7 @@ export async function loadMemberRows(orgId: string, packId: string, onlyLinkId?:
     ]);
 
     const views = charges.map((c) => ({ c, v: chargeView(toChargeIn(c)) }));
+    const ilToday = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem" }).format(now);
     const paidYear = new Map(payments.map((p) => [p.memberId!, p._sum.amountMinor ?? 0]));
     const lastReminder = new Map(reminders.map((r) => [r.memberId, r._max.sentAt]));
     const labelsOf = new Map<string, MemberRow["labels"]>();
@@ -95,7 +96,8 @@ export async function loadMemberRows(orgId: string, packId: string, onlyLinkId?:
             if (!v || v.state !== "open") continue;
             balance += v.leftMinor;
             if (c.disputes.length) disputes++;
-            else owed += v.leftMinor;
+            // A debt only once its last day to pay has passed (as in the kupa and the member's "כספים").
+            else if (v.due.toISOString().slice(0, 10) < ilToday) owed += v.leftMinor;
         }
         const home = homes[0] ?? null;
         const name = `${m?.firstName || link.user.firstName || ""} ${m?.lastName || link.user.lastName || ""}`.trim() || "חבר/ה";

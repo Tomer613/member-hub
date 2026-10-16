@@ -72,7 +72,7 @@ export function JoinSheet({ open, onClose, packId }: { open: boolean; onClose: (
                                 <span className="inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border-2 border-[var(--mh-ink)] bg-[var(--mh-pastel-teal)] font-display">{o.name.slice(0, 1)}</span>
                                 <span>
                                     <b className="block">{o.name}</b>
-                                    {o.city && <span className="text-[13px] font-semibold text-[var(--mh-ink-soft)]">{o.city}</span>}
+                                    {(o.city || o.line) && <span className="block text-[13px] font-semibold text-[var(--mh-ink-soft)]">{[o.city, o.line].filter(Boolean).join(" · ")}</span>}
                                 </span>
                             </button>
                         ))}

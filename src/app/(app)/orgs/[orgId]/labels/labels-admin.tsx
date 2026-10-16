@@ -31,7 +31,7 @@ export function LabelsAdmin({ orgId, orgName, labels, plans, members }: { orgId:
         });
     };
     return (
-        <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-4 lg:grid-cols-[minmax(0,1fr)_420px] min-[1800px]:grid-cols-[minmax(0,1fr)_520px]">
+        <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-4 xl:grid-cols-[minmax(0,1fr)_400px] min-[1800px]:grid-cols-[minmax(0,1fr)_500px]">
             <section className={box} aria-labelledby="labels-title">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <h2 id="labels-title" className="m-0 font-display text-[22px]">תוויות הארגון</h2>
