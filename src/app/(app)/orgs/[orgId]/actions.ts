@@ -73,7 +73,8 @@ export async function publishPost(orgId: string, _prev: { error?: string; ok?: n
 
 export async function deletePost(orgId: string, postId: string): Promise<void> {
     if (!(await organizerOf(orgId))) return;
-    await db.channelPost.deleteMany({ where: { id: postId, orgId } });
+    // Only celebration updates; a message to members is never deleted, so "who read it" stays true.
+    await db.channelPost.deleteMany({ where: { id: postId, orgId, recipients: { none: {} } } });
     revalidatePath(`/orgs/${orgId}`);
 }
 

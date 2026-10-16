@@ -35,7 +35,6 @@ export default async function MessagesPage({ params, searchParams }: { params: P
     const rows = msg ? (filter === "unread" ? msg.rows.filter((r) => !r.readAgo) : msg.rows) : [];
     const unread = msg ? msg.rows.length - msg.read : 0;
     const href = (m: string | null, f = filter) => `/orgs/${orgId}/messages?${new URLSearchParams({ ...(m ? { m } : {}), ...(f === "unread" ? { f } : {}) })}`;
-    const canWrite = a.canManage;
 
     return (
         <AdminShell orgId={orgId} org={a.org} me={{ ...a.me, role: a.role }} active="messages">
@@ -51,7 +50,7 @@ export default async function MessagesPage({ params, searchParams }: { params: P
 
             <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-[14px] lg:grid-cols-[340px_minmax(0,1fr)]">
                 <nav aria-label="הודעות שנשלחו" className={`flex flex-col gap-2 ${asked ? "max-lg:hidden" : ""}`}>
-                    {canWrite && <Link href={`/orgs/${orgId}/messages/new`} className={`${btn} w-full`} style={{ background: color, color: onColor(color) }}>+ הודעה חדשה</Link>}
+                    {<Link href={`/orgs/${orgId}/messages/new`} className={`${btn} w-full`} style={{ background: color, color: onColor(color) }}>+ הודעה חדשה</Link>}
                     {!list.length && <p className="m-0 rounded-[16px] border-2 border-dashed border-[var(--mh-ink)] bg-white p-4 font-bold">עוד לא נשלחו הודעות. הודעה שתשלחו תופיע אצל החברים בכרטיס שבארנק.</p>}
                     <ul className="m-0 flex list-none flex-col gap-2 p-0">
                         {list.map((m) => {
@@ -62,7 +61,7 @@ export default async function MessagesPage({ params, searchParams }: { params: P
                                         <b className="truncate">{m.title}</b>
                                         <span className="truncate text-[13px] font-bold text-[var(--mh-ink-soft)]">{m.draft ? "טיוטה · להמשך כתיבה" : m.line}</span>
                                     </Link>
-                                    {m.draft && canWrite && <DraftRemove orgId={orgId} id={m.id} />}
+                                    {m.draft && <DraftRemove orgId={orgId} id={m.id} />}
                                 </li>
                             );
                         })}
@@ -81,7 +80,7 @@ export default async function MessagesPage({ params, searchParams }: { params: P
                                 {msg.reactable && <span className={chip} style={{ background: "#E3DDFF" }}>{reactedText(msg.reacted)}</span>}
                                 {msg.channels.includes("email") && <span className="text-[13px] font-bold text-[var(--mh-ink-soft)]">נשלחה באפליקציה ובמייל</span>}
                             </div>
-                            {canWrite && unread > 0 && <RemindButton orgId={orgId} id={msg.id} label={remindLabel(unread)} done={msg.reminded} />}
+                            {unread > 0 && <RemindButton orgId={orgId} id={msg.id} label={remindLabel(unread)} done={msg.reminded} />}
                             {msg.reactable && (
                                 <ul className="m-0 flex list-none flex-wrap gap-x-4 gap-y-2 p-0" aria-label="סיכום תגובות">
                                     {REACTIONS.map((r) => {

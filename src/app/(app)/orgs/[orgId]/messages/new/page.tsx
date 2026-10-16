@@ -23,7 +23,6 @@ export default async function NewMessagePage({ params, searchParams }: {
     if (!(await getSession())) redirect("/login");
     const a = await membersAdmin(orgId);
     if (!a) notFound();
-    if (!a.canManage) redirect(`/orgs/${orgId}/messages`);
     const [recipients, plans, labels, draft] = await Promise.all([
         loadMsgRecipients(orgId),
         db.plan.findMany({ where: { orgId, isActive: true }, select: { id: true, name: true }, orderBy: { amountMinor: "asc" } }),

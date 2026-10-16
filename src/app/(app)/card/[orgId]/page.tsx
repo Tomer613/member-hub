@@ -39,7 +39,7 @@ export default async function CardPage({ params }: { params: Promise<{ orgId: st
     ]);
     const money = moneySummary(charges);
     const notice = noticeText(money);
-    const tiles: TileView[] = [{ kind: "money", href: `/pay/history?org=${org.id}`, label: "כספים", sub: moneyTileText(money) }];
+    const tiles: TileView[] = [{ kind: "money", href: `/card/${org.id}/money`, label: "כספים", sub: moneyTileText(money) }];
     tiles.push({ kind: "messages", href: `/card/${org.id}/messages`, label: "הודעות", sub: unread === 1 ? "הודעה אחת חדשה" : unread > 1 ? `${unread} הודעות חדשות` : "מה ההנהלה כתבה" });
     if (admin) tiles.push({ kind: "manage", href: `/orgs/${org.id}`, label: "ניהול הארגון", sub: requests === 1 ? "בקשת הצטרפות אחת" : requests > 1 ? `${requests} בקשות הצטרפות` : "סקירה, חיובים ובקשות" });
     const color = link.cardColor ?? org.brandColor ?? "#5B3DF5";
@@ -62,7 +62,7 @@ export default async function CardPage({ params }: { params: Promise<{ orgId: st
             account={accountShown(org.packId, home, member.number)}
             next={nextLine(org.packId, money, sub ? nextRenewal(sub.startsOn, sub.plan.interval, new Date()) : null)}
             canEnter={link.status === "active"}
-            notice={notice ? { text: notice, href: money.openMinor > 0 ? `/pay/${org.id}` : `/pay/history?org=${org.id}` } : null}
+            notice={notice ? { text: notice, href: money.openMinor > 0 ? `/pay/${org.id}` : `/card/${org.id}/money` } : null}
             tiles={tiles}
             labels={newestFirst(labels).map((l) => ({ id: l.id, name: l.name, color: l.color, granted: grantedText(l) }))}
             pay={money.openMinor > 0 ? { label: `לתשלום ${formatShekels(money.openMinor)}`, href: `/pay/${org.id}` } : null}

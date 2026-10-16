@@ -10,11 +10,8 @@ import { cleanPost } from "@/lib/reactions";
 
 export type MessageResult = { ok?: string; error?: string; draftId?: string; sentId?: string };
 
-// The admins who write to members are the ones who manage them: owner and admins (not the treasurer).
-async function writer(orgId: string) {
-    const a = await membersAdmin(orgId);
-    return a?.canManage ? a : null;
-}
+// Who writes to members: owner, admins and the treasurer (who also sends debt reminders), as in the members table.
+const writer = membersAdmin;
 
 async function groupName(orgId: string, a: ReturnType<typeof readMessageInput>["audience"]) {
     if (a.to === "plan") return (await db.plan.findFirst({ where: { id: a.planId, orgId }, select: { name: true } }))?.name ?? null;

@@ -61,7 +61,7 @@ export async function sendReminders(orgId: string, linkIds: string[]): Promise<B
 // any other (board D-AdmMessages): in their channel, in "הודעות", and by email, with who read it.
 export async function sendMessage(orgId: string, linkIds: string[], raw: string): Promise<BulkResult> {
     const a = await membersAdmin(orgId);
-    if (!a?.canManage) return { error: "אין לכם הרשאה לשלוח הודעות בארגון הזה." };
+    if (!a) return { error: "אין לכם הרשאה לשלוח הודעות בארגון הזה." };
     const text = raw.trim();
     if (!text) return { error: "כתבו את ההודעה." };
     if (text.length > MESSAGE_MAX) return { error: "ההודעה ארוכה מדי." };
