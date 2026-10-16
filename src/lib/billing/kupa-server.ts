@@ -30,22 +30,30 @@ export async function loadMovements(orgId: string, take = 300): Promise<Movement
     });
 }
 
+// Open charges whose last day to pay has passed (board D-MemberFinance: before that it is not a debt), and who
+// owes them: a member, or a household.
+export async function pastDue(orgId: string) {
+    const charges = await db.charge.findMany({ where: { orgId, voidedAt: null }, include: chargeInclude });
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem" }).format(new Date());
+    let owedMinor = 0;
+    const members = new Set<string>();
+    const households = new Set<string>();
+    for (const c of charges) {
+        const v = chargeView(toChargeIn(c));
+        if (!v || v.state !== "open" || v.due.toISOString().slice(0, 10) >= today) continue;
+        owedMinor += v.leftMinor;
+        if (c.memberId) members.add(c.memberId);
+        else if (c.householdId) households.add(c.householdId);
+    }
+    return { owedMinor, members, households };
+}
+
 // The four numbers at the top of the page. Until a payment provider is connected nothing is transferred into
 // the org's balance: what members paid in the app stays "בדרך לקופה".
 export async function kupaNumbers(orgId: string) {
-    const [inApp, charges] = await Promise.all([
+    const [inApp, due] = await Promise.all([
         db.payment.aggregate({ where: { orgId, status: "succeeded", source: "app" }, _sum: { amountMinor: true } }),
-        db.charge.findMany({ where: { orgId, voidedAt: null }, include: chargeInclude }),
+        pastDue(orgId),
     ]);
-    const now = new Date();
-    let owed = 0;
-    const owers = new Set<string>();
-    for (const c of charges) {
-        const v = chargeView(toChargeIn(c));
-        // A charge whose date has not come yet is not a debt (board D-MemberFinance).
-        if (!v || v.state !== "open" || v.due > now) continue;
-        owed += v.leftMinor;
-        owers.add(c.memberId ?? c.householdId ?? c.id);
-    }
-    return { balanceMinor: 0, availableMinor: 0, transitMinor: inApp._sum.amountMinor ?? 0, owedMinor: owed, owers: owers.size };
+    return { balanceMinor: 0, availableMinor: 0, transitMinor: inApp._sum.amountMinor ?? 0, owedMinor: due.owedMinor, owers: due.members.size + due.households.size };
 }

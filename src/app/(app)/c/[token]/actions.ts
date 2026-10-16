@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
@@ -101,4 +102,5 @@ export async function reactOnPost(token: string, postId: string, kind: ReactionK
     const reply = await findReply(org.id, session?.userId ?? null, (await cookies()).get(cookieName(org.id))?.value);
     if (!reply) return;
     await setReaction(postId, org.id, session ? `u:${session.userId}` : `r:${reply.id}`, kind);
+    revalidatePath(`/c/${token}`);
 }

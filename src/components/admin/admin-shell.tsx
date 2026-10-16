@@ -6,12 +6,13 @@ import { db } from "@/lib/db";
 // The shared admin frame (boards D-Admin and D-Adm*): a 232px side menu in the org's color on a computer, and
 // a top bar with a scrolling row of the same items on a phone and tablet. Text on the org color is picked by
 // contrast (pickOn). The active item is white with an ink frame and aria-current.
-export type AdminSection = "overview" | "members" | "money" | "requests" | "labels" | "door";
+export type AdminSection = "overview" | "members" | "money" | "messages" | "requests" | "labels" | "door";
 
 const ICONS: Record<AdminSection, string> = {
     overview: "M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z",
     members: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8",
     money: "M2 6h20v12H2zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 12h.01M18 12h.01",
+    messages: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
     requests: "M15 3h6v6M10 14L21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
     labels: "M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01",
     door: "M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10",
@@ -36,6 +37,7 @@ export async function AdminShell({ orgId, org, me, active, children }: {
                 { id: "overview", label: "סקירה", href: `/orgs/${orgId}` },
                 { id: "members", label: "חברים", href: `/orgs/${orgId}/members` },
                 { id: "money", label: "כספים וחיובים", href: `/orgs/${orgId}/money` },
+                { id: "messages", label: "הודעות", href: `/orgs/${orgId}/messages` },
                 { id: "requests", label: "בקשות הצטרפות", href: `/orgs/${orgId}/requests`, count: joins ? { n: joins, aria: joins === 1 ? "בקשת הצטרפות אחת מחכה" : `${joins} בקשות הצטרפות מחכות` } : undefined },
             ],
         },

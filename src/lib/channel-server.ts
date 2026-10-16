@@ -7,7 +7,7 @@ export type LoadedPost = { post: PostView; counts: Partial<Record<ReactionKind, 
 
 // An org's updates, newest first, with reaction counts and the viewer's own reaction.
 export async function loadPosts(orgId: string, actorKey: string | null): Promise<LoadedPost[]> {
-    const posts = await db.channelPost.findMany({ where: { orgId }, orderBy: { createdAt: "desc" }, take: 100, include: { reactions: { select: { kind: true, actorKey: true } } } });
+    const posts = await db.channelPost.findMany({ where: { orgId, status: "sent" }, orderBy: { createdAt: "desc" }, take: 100, include: { reactions: { select: { kind: true, actorKey: true } } } });
     return posts.map((p) => {
         const counts: Partial<Record<ReactionKind, number>> = {};
         for (const r of p.reactions) if (isReaction(r.kind)) counts[r.kind] = (counts[r.kind] ?? 0) + 1;

@@ -55,13 +55,18 @@ export async function sendCharge(orgId: string, raw: unknown, draftId?: string):
     const due = dayOf(input.due)!;
     const title = input.title.trim();
     const note = input.note.trim();
-    for (const r of to) {
-        const m = await ensureMember(r.linkId);
-        const c = await db.charge.create({ data: { orgId, memberId: m.id, kind: input.kind, description: title, note: note || null, amountMinor: amount, dueOn: due, allowPartial: input.partial, remindAuto: input.remind, createdById: a.userId } });
-        await notifyMember(m.id, { orgId, kind: "action", topic: "charge", refId: c.id, text: `${title} · ${formatShekels(amount)}, לתשלום עד ${ilDate(due)}`, href: `/pay/${orgId}`, actionLabel: "לתשלום" });
-        if (input.notify) await tellMember(m.id, `חיוב חדש מ${a.org.name}: ${title}`, `${title}\nסכום: ${formatShekels(amount)}\nלתשלום עד ${ilDate(due)}${note ? `\n${note}` : ""}\nאפשר לשלם בכרטיס החבר שבארנק.`);
-    }
+    const members = [];
+    for (const r of to) members.push(await ensureMember(r.linkId));
+    // All the charges are created together, so a failure halfway never leaves some members charged and others not.
+    const made = await db.$transaction(members.map((m) => db.charge.create({ data: { orgId, memberId: m.id, kind: input.kind, description: title, note: note || null, amountMinor: amount, dueOn: due, allowPartial: input.partial, remindAuto: input.remind, createdById: a.userId }, select: { id: true, memberId: true } })));
     if (draftId) await db.chargeDraft.deleteMany({ where: { id: draftId, orgId } });
+    // "לשלוח הודעה לחברים" off: the charge still waits in the member's wallet, with no bell and no email.
+    if (input.notify) {
+        for (const c of made) {
+            await notifyMember(c.memberId, { orgId, kind: "action", topic: "charge", refId: c.id, text: `${title} · ${formatShekels(amount)}, לתשלום עד ${ilDate(due)}`, href: `/pay/${orgId}`, actionLabel: "לתשלום" });
+            if (c.memberId) await tellMember(c.memberId, `חיוב חדש מ${a.org.name}: ${title}`, `${title}\nסכום: ${formatShekels(amount)}\nלתשלום עד ${ilDate(due)}${note ? `\n${note}` : ""}\nאפשר לשלם בכרטיס החבר שבארנק.`);
+        }
+    }
     revalidatePath(`/orgs/${orgId}`, "layout");
     return { ok: to.length === 1 ? "החיוב נשלח לחבר אחד." : `החיוב נשלח ל-${to.length} חברים.` };
 }

@@ -26,12 +26,13 @@ type Props = {
     pay: { label: string; href: string } | null;
     labels: { id: string; name: string; color: string; granted: string }[];
 };
-export type TileView = { kind: "money" | "manage"; href: string; label: string; sub: string };
+export type TileView = { kind: "money" | "manage" | "messages"; href: string; label: string; sub: string };
 
 // Each tile keeps one tint and icon (board D-Badge).
 const TILE_LOOK: Record<TileView["kind"], { tint: string; icon: string }> = {
     money: { tint: "#FFD84A", icon: "M3 7h18v12H3zM3 7l2-3h14l2 3M16 13h2" },
     manage: { tint: "#E3DDFF", icon: "M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z" },
+    messages: { tint: "#CFF0FC", icon: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" },
 };
 
 const INK = "#1E1633";

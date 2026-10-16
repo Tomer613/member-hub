@@ -9,6 +9,9 @@ import { DISPUTE_REASON_MAX, MESSAGE_MAX, reminderSummary } from "@/lib/members-
 import { fileCharges, loadMemberRows, membersAdmin } from "@/lib/members-server";
 import { formatShekels } from "@/lib/money";
 import { notifyMember, notifyUsers } from "@/lib/notify-server";
+import { audienceText } from "@/lib/messages-admin";
+import { deliverMessage } from "@/lib/messages-server";
+import { POST_TITLE_MAX } from "@/lib/reactions";
 import { getPack } from "@/packs";
 
 export type BulkResult = { ok?: string; error?: string };
@@ -54,19 +57,22 @@ export async function sendReminders(orgId: string, linkIds: string[]): Promise<B
     return { ok: reminderSummary(tally) };
 }
 
-// A short message from the org to the chosen members. In the app and by email for now; the full messages
-// screen (D-AdmMessages) and other channels come later.
+// A short message from the members table or a member file to the chosen members. It becomes a message like
+// any other (board D-AdmMessages): in their channel, in "הודעות", and by email, with who read it.
 export async function sendMessage(orgId: string, linkIds: string[], raw: string): Promise<BulkResult> {
     const a = await membersAdmin(orgId);
-    if (!a) return { error: "אין לכם הרשאה לשלוח הודעות בארגון הזה." };
+    if (!a?.canManage) return { error: "אין לכם הרשאה לשלוח הודעות בארגון הזה." };
     const text = raw.trim();
     if (!text) return { error: "כתבו את ההודעה." };
     if (text.length > MESSAGE_MAX) return { error: "ההודעה ארוכה מדי." };
-    const links = await db.orgUser.findMany({ where: { orgId, id: { in: linkIds }, status: { in: ["active", "left_with_debt"] } }, select: { userId: true } });
+    const links = await db.orgUser.findMany({ where: { orgId, id: { in: linkIds }, status: { in: ["active", "left_with_debt"] } }, select: { userId: true, memberId: true, user: { select: { firstName: true } } } });
     if (!links.length) return { error: "בחרו לפחות חבר אחד." };
-    await notifyUsers(links.map((l) => l.userId), { orgId, kind: "update", topic: "message", text });
-    for (const l of links) await emailUser(l.userId, `הודעה מ${a.org.name}`, text);
+    const title = `הודעה מ${a.org.name}`.slice(0, POST_TITLE_MAX);
+    const audience = { to: "picked" as const, linkIds };
+    const names = links.map((l) => l.user.firstName ?? "חבר/ה");
+    await deliverMessage({ orgId, orgName: a.org.name, authorId: a.userId, input: { title, body: text, audience, email: true, reactable: true, dislike: true }, audienceText: audienceText(audience, { picked: names, group: null }), to: links });
     done(orgId);
+    revalidatePath(`/orgs/${orgId}/messages`);
     return { ok: links.length === 1 ? "ההודעה נשלחה." : `ההודעה נשלחה ל-${links.length} חברים.` };
 }
 

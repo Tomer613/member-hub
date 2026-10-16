@@ -9,7 +9,8 @@ import { ReactionIcon } from "./reaction-icon";
 // Decided for the board's open point: tapping your own reaction removes it, and tapping a chip in the row
 // picks that reaction directly.
 
-export type PostView = { id: string; title: string; body: string; ago: string; pinned: boolean; reactable: boolean; dislike: boolean };
+// personal: a message to this member alone (board D-Channel: cream card with "אישית, רק לכם").
+export type PostView = { id: string; title: string; body: string; ago: string; pinned: boolean; reactable: boolean; dislike: boolean; personal?: boolean };
 type Counts = Partial<Record<ReactionKind, number>>;
 
 export function PostCard({ post, counts, mine, react }: {
@@ -46,11 +47,12 @@ export function PostCard({ post, counts, mine, react }: {
 
     const shown = REACTIONS.filter((r) => (state.counts[r.kind] ?? 0) > 0);
     return (
-        <article className={`relative flex flex-col gap-2 rounded-[22px] border-[2.5px] border-[var(--mh-ink)] p-[clamp(14px,1.8vw,18px)] shadow-[0_4px_0_var(--mh-ink)] ${post.pinned ? "bg-[var(--mh-tint-pink)]" : "bg-white"} ${open ? "z-40" : ""}`}>
+        <article className={`relative flex flex-col gap-2 rounded-[22px] border-[2.5px] border-[var(--mh-ink)] p-[clamp(14px,1.8vw,18px)] shadow-[0_4px_0_var(--mh-ink)] ${post.pinned ? "bg-[var(--mh-tint-pink)]" : post.personal ? "bg-[#FFF9EC]" : "bg-white"} ${open ? "z-40" : ""}`}>
             <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                 <h3 className="m-0 font-display text-[18px] leading-tight">{post.title}</h3>
                 <span className="flex items-center gap-2 text-[13px] font-extrabold text-[var(--mh-ink-soft)]">
                     {post.pinned && <span className="rounded-full border-2 border-[var(--mh-ink)] bg-white px-2 text-[12px] text-[var(--mh-ink)]">חשוב</span>}
+                    {post.personal && <span className="rounded-full border-2 border-[var(--mh-ink)] bg-white px-2 text-[12px] text-[var(--mh-ink)]">אישית, רק לכם</span>}
                     {post.ago}
                 </span>
             </header>

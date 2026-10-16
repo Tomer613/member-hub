@@ -80,8 +80,8 @@ model Organization {
   parkingSpots     ParkingSpot[]
   rsvps            Rsvp[]
   posts            ChannelPost[]
-  importBatches ImportBatch[]
-  chargeDrafts  ChargeDraft[]
+  importBatches    ImportBatch[]
+  chargeDrafts     ChargeDraft[]
 }
 
 // A person with an account in the app. Global, not per org: one person holds memberships in many orgs
@@ -245,8 +245,8 @@ model OrgUser {
   // Wallet personalization, per user, invisible to the org.
   cardColor   String? // overrides Organization.brandColor; picked from a curated palette
   walletGroup String? // the member's own grouping ("home", "health", "community")
-  walletOrder Int     @default(0)
-  isPinned    Boolean @default(false)
+  walletOrder Int       @default(0)
+  isPinned    Boolean   @default(false)
   hiddenAt    DateTime? // the member moved the card to the wallet archive (board D-WalletArchive)
   deletedAt   DateTime? // the member deleted the card from the archive (board D-WalletDelete); gone from their wallet
 
@@ -810,19 +810,40 @@ model Rsvp {
 // The updates channel (core, every org type; boards D-Channel, D-ChannelReact). The organizers write,
 // everyone else reacts with an icon only: there is no chat (decided with Tommy 14.10.2026).
 model ChannelPost {
-  id        String         @id @default(cuid())
-  orgId     String
-  org       Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  authorId  String? // the organizer's user id
-  title     String
-  body      String
-  pinned    Boolean        @default(false) // an important change, also shown at the top of the invitation
-  reactable Boolean        @default(true) // "לאפשר תגובות"
-  dislike   Boolean        @default(true) // "לאפשר 'לא אהבתי'"
-  createdAt DateTime       @default(now())
-  reactions PostReaction[]
+  id           String          @id @default(cuid())
+  orgId        String
+  org          Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  authorId     String? // the organizer's user id
+  title        String
+  body         String
+  pinned       Boolean         @default(false) // an important change, also shown at the top of the invitation
+  reactable    Boolean         @default(true) // "לאפשר תגובות"
+  dislike      Boolean         @default(true) // "לאפשר 'לא אהבתי'"
+  // Messages to members (boards D-AdmMessage, D-AdmMessages). A celebration update has none of these: everyone
+  // who answered sees it. A message has recipients, and only they see it.
+  status       String          @default("sent") // draft | sent
+  audience     Json? // what the admin chose, to reopen a draft
+  audienceText String? // "לכולם", "אישית לדנה", "לפי תווית: מתנדבים"
+  channels     String[]        @default([]) // app | email | sms
+  remindedAt   DateTime? // "שליחת תזכורת למי שלא קראו", once
+  createdAt    DateTime        @default(now())
+  reactions    PostReaction[]
+  recipients   PostRecipient[]
 
   @@index([orgId, createdAt])
+}
+
+// Who a message went to, and when they read it (board D-AdmMessages). Only admins see this.
+model PostRecipient {
+  id       String      @id @default(cuid())
+  postId   String
+  post     ChannelPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId   String
+  memberId String?
+  readAt   DateTime?
+
+  @@unique([postId, userId])
+  @@index([userId])
 }
 
 model PostReaction {

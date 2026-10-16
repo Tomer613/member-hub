@@ -11,6 +11,7 @@ import { currentHome, ensureMember, memberCharges } from "@/lib/billing/member-m
 import { formatShekels } from "@/lib/money";
 import { heldLabels } from "@/lib/labels-server";
 import { grantedText, newestFirst } from "@/lib/labels";
+import { unreadMessages } from "@/lib/messages-server";
 
 export const metadata: Metadata = { title: "כרטיס חבר · PIRI" };
 
@@ -27,17 +28,19 @@ export default async function CardPage({ params }: { params: Promise<{ orgId: st
     if (org.packId === "celebration") redirect(link.role === "guest" && org.joinToken ? `/c/${org.joinToken}` : `/orgs/${org.id}`);
     const admin = link.role === "owner" || link.role === "admin";
     const member = await ensureMember(link.id);
-    const [count, requests, charges, sub, home, labels] = await Promise.all([
+    const [count, requests, charges, sub, home, labels, unread] = await Promise.all([
         db.orgUser.count({ where: { orgId, status: "active", role: { not: "guest" } } }),
         admin ? db.joinRequest.count({ where: { orgId, status: "pending" } }) : Promise.resolve(0),
         memberCharges(orgId, member.id),
         db.subscription.findFirst({ where: { orgId, memberId: member.id, status: "active" }, include: { plan: true }, orderBy: { startsOn: "asc" } }),
         org.packId === "hoa" ? currentHome(orgId, member.id) : Promise.resolve(null),
         heldLabels(orgId, member.id, true),
+        unreadMessages(orgId, session.userId),
     ]);
     const money = moneySummary(charges);
     const notice = noticeText(money);
     const tiles: TileView[] = [{ kind: "money", href: `/pay/history?org=${org.id}`, label: "כספים", sub: moneyTileText(money) }];
+    tiles.push({ kind: "messages", href: `/card/${org.id}/messages`, label: "הודעות", sub: unread === 1 ? "הודעה אחת חדשה" : unread > 1 ? `${unread} הודעות חדשות` : "מה ההנהלה כתבה" });
     if (admin) tiles.push({ kind: "manage", href: `/orgs/${org.id}`, label: "ניהול הארגון", sub: requests === 1 ? "בקשת הצטרפות אחת" : requests > 1 ? `${requests} בקשות הצטרפות` : "סקירה, חיובים ובקשות" });
     const color = link.cardColor ?? org.brandColor ?? "#5B3DF5";
     const words = badgeWords(org.packId);
