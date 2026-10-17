@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useOptimistic, useRef, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
 import { REACTIONS, type ReactionKind } from "@/lib/reactions";
@@ -13,8 +14,10 @@ import { ReactionIcon } from "./reaction-icon";
 export type PostView = { id: string; title: string; body: string; ago: string; pinned: boolean; reactable: boolean; dislike: boolean; personal?: boolean };
 type Counts = Partial<Record<ReactionKind, number>>;
 
-export function PostCard({ post, counts, mine, react }: {
+export function PostCard({ post, counts, mine, react, replyHref }: {
     post: PostView;
+    // "להשיב בפנייה": answers go to the org privately, as an inquiry (board D-InquiryNew).
+    replyHref?: string;
     counts: Counts;
     mine: ReactionKind | null;
     // Null when the viewer cannot react (for example an organizer previewing).
@@ -73,6 +76,12 @@ export function PostCard({ post, counts, mine, react }: {
                         </button>
                     )}
                 </div>
+            )}
+            {replyHref && (
+                <Link href={replyHref} className="inline-flex min-h-11 items-center gap-2 self-start rounded-full px-1 font-extrabold underline decoration-2 underline-offset-4 hover:no-underline">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-2" /></svg>
+                    <span>להשיב בפנייה</span>
+                </Link>
             )}
             {open && (
                 <>

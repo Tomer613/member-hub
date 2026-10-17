@@ -66,6 +66,8 @@ export interface PackDefinition {
     customFields: readonly FieldDef[];
     requestKinds: readonly RequestKindDef[];
     eventTypes: readonly { value: string; label: string }[];
+    // "שדות ייעודיים" in a new activity (board D-AdmActivities), on/off switches the pack adds, e.g. "מניין נדרש".
+    activityFields?: readonly { key: string; label: string; line: string }[];
     // Seeded for a new org of this type; the org can rename or add more.
     defaultFunds: readonly { key: string; displayName: string }[];
     // Optional until each pack is filled in; the core falls back to a generic card when missing.

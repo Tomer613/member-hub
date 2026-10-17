@@ -668,29 +668,79 @@ model Event {
   location    String?
   memberId    String? // the celebrating member, if applicable
   member      Member?      @relation(fields: [memberId], references: [id])
+  // "פעילויות ואירועים" (board D-AdmActivities): a draft is seen only by the managers.
+  status      String       @default("published") // draft | published | cancelled
+  signup      Boolean      @default(false) // "הרשמה מראש": members sign up in the app
+  seats       Int? // "מקומות"; null = no limit
+  priceMinor  Int? // "בתשלום": a charge is made when a member signs up
+  payload     Json         @default("{}") // the pack's own fields, e.g. { minyan: true }
+  createdById String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  registrations EventRegistration[]
 
   @@index([orgId, startsAt])
+}
+
+model EventRegistration {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  orgId     String
+  userId    String
+  memberId  String?
+  status    String   @default("going") // going | cancelled
+  chargeId  String? // the charge made for a paid activity
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, userId])
+  @@index([orgId, userId])
 }
 
 // One generic table instead of d3teman's five near-identical request tables
 // (Kiddush, Haftarah, Aliyah, EventNotification, GeneralInquiry). The pack declares the kinds
 // and the payload shape; admins triage them all in one inbox.
+// "פניות" (boards D-Inquiry*, D-AdmInquiries, D-AdmInquiry): one table for every org type; a pack only adds
+// kinds and their fields (requestKinds). The conversation is in RequestMessage.
 model Request {
   id         String       @id @default(cuid())
   orgId      String
   org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   memberId   String
   member     Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  kind       String // pack-defined, e.g. "kiddush_sponsorship", "aliyah", "maintenance_issue"
+  number     Int? // "#1042", per org, from 1001
+  userId     String? // who wrote it
+  kind       String // core: details | charge | general | other; or pack-defined, e.g. "kiddush_sponsorship"
   payload    Json         @default("{}")
-  status     String       @default("pending") // pending | approved | rejected | done
+  // new: no answer yet | answered: the org answered last | replied: the member wrote after an answer | closed
+  status     String       @default("new")
+  assigneeId String? // User.id of the manager handling it; none = the owner's
+  followsId  String? // "בהמשך לפנייה קודמת"
+  postId     String? // "בהמשך להודעה": a message from the org
   adminNotes String?
+  lastAt     DateTime     @default(now()) // last message, for sorting and the 14-day auto close
+  closedAt   DateTime?
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
+  messages   RequestMessage[]
 
+  @@unique([orgId, number])
   @@index([orgId, kind, status])
+  @@index([userId])
+}
+
+model RequestMessage {
+  id        String   @id @default(cuid())
+  requestId String
+  request   Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  authorId  String // User.id
+  side      String // member | org
+  internal  Boolean  @default(false) // "הערה פנימית": managers only
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([requestId, createdAt])
 }
 
 // A signed-in user asks to join a "listed" org; an admin approves or rejects. Never self-service.

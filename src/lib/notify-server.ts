@@ -36,10 +36,16 @@ export async function settleNotes(userId: string): Promise<void> {
         Promise.all([
             ref("join_request").length ? db.joinRequest.findMany({ where: { id: { in: ref("join_request") } }, select: { id: true, status: true } }) : [],
             ref("invitation").length ? db.invitation.findMany({ where: { id: { in: ref("invitation") } }, select: { id: true, status: true, expiresAt: true } }) : [],
+            ref("inquiry").length ? db.request.findMany({ where: { id: { in: ref("inquiry") } }, select: { id: true, status: true } }) : [],
         ]),
     ]);
     const now = new Date();
-    const requests = [...asked[0], ...asked[1].map((i) => ({ id: i.id, status: i.status === "pending" && i.expiresAt < now ? "expired" : i.status }))];
+    // An inquiry is handled once the org answered or it closed; a new reply from the member opens a new note.
+    const requests = [
+        ...asked[0],
+        ...asked[1].map((i) => ({ id: i.id, status: i.status === "pending" && i.expiresAt < now ? "expired" : i.status })),
+        ...asked[2].map((i) => ({ id: i.id, status: i.status === "new" || i.status === "replied" ? "pending" : "done" })),
+    ];
     const closed = new Set<string>();
     for (const c of charges) if (chargeView(toChargeIn(c))?.state !== "open") closed.add(c.id);
     for (const r of requests) if (r.status !== "pending") closed.add(r.id);

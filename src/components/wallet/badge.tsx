@@ -26,13 +26,15 @@ type Props = {
     pay: { label: string; href: string } | null;
     labels: { id: string; name: string; color: string; granted: string }[];
 };
-export type TileView = { kind: "money" | "manage" | "messages"; href: string; label: string; sub: string };
+export type TileView = { kind: "money" | "manage" | "messages" | "activities" | "inquiries"; href: string; label: string; sub: string };
 
 // Each tile keeps one tint and icon (board D-Badge).
 const TILE_LOOK: Record<TileView["kind"], { tint: string; icon: string }> = {
     money: { tint: "#FFD84A", icon: "M3 7h18v12H3zM3 7l2-3h14l2 3M16 13h2" },
     manage: { tint: "#E3DDFF", icon: "M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z" },
     messages: { tint: "#CFF0FC", icon: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" },
+    activities: { tint: "#FFE0EC", icon: "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" },
+    inquiries: { tint: "#D7F5E8", icon: "M4 4h16v12H8l-4 4zM8 9h8M8 12h5" },
 };
 
 const INK = "#1E1633";
@@ -86,7 +88,7 @@ export function Badge(p: Props) {
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
                                 </Link>
                             )}
-                            <section aria-label="מה יש כאן" className="grid grid-cols-2 gap-2">
+                            <section aria-label="מה יש כאן" className="grid grid-cols-2 gap-2 [&>*:last-child:nth-child(odd)]:col-span-2">
                                 {p.tiles.map((t) => <Tile key={t.kind} {...t} />)}
                             </section>
                             {p.labels.length > 0 && <MyLabels orgName={p.orgName} labels={p.labels} />}

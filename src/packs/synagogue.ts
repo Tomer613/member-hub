@@ -81,7 +81,9 @@ export const synagoguePack: PackDefinition = {
         { value: "shabbat_chatan", label: "שבת חתן" },
         { value: "bar_mitzvah", label: "בר מצווה" },
         { value: "wedding", label: "חתונה" },
+        { value: "prayer", label: "תפילה" },
         { value: "general", label: "כללי" },
     ],
+    activityFields: [{ key: "minyan", label: "מניין נדרש", line: "מציג לנרשמים ולהנהלה כמה חסרים למניין של עשרה" }],
     defaultFunds: [{ key: "general", displayName: "כללי" }],
 };

@@ -38,8 +38,8 @@ export default async function MemberMessagesPage({ params }: { params: Promise<{
             </header>
             <div className="mx-auto flex max-w-[760px] flex-col gap-[14px] px-4 py-5">
                 {!posts.length && <p className="m-0 rounded-[20px] border-2 border-[var(--mh-ink)] bg-white p-5 text-[17px] font-bold">עוד אין הודעות מ{link.org.name}. כשההנהלה תכתוב, ההודעות יופיעו כאן.</p>}
-                {posts.map((p) => <PostCard key={p.post.id} post={p.post} counts={p.counts} mine={p.mine} react={reactOnMessage.bind(null, orgId)} />)}
-                <p className="m-0 rounded-[16px] border-2 border-dashed border-[var(--mh-ink)] p-4 text-center font-bold">בערוץ הזה ההנהלה כותבת. אפשר להגיב באייקון.</p>
+                {posts.map((p) => <PostCard key={p.post.id} post={p.post} counts={p.counts} mine={p.mine} react={reactOnMessage.bind(null, orgId)} replyHref={`/card/${orgId}/inquiries/new?post=${p.post.id}`} />)}
+                <p className="m-0 rounded-[16px] border-2 border-dashed border-[var(--mh-ink)] p-4 text-center font-bold">בערוץ הזה ההנהלה כותבת. אפשר להגיב באייקון, או להשיב להנהלה בפנייה.</p>
             </div>
         </main>
     );

@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth/session-server";
 import { chargeView, type ChargeView } from "@/lib/billing/account";
+import { pastDue } from "@/lib/billing/kupa-server";
 import { chargeInclude, toChargeIn } from "@/lib/billing/member-money";
 import { familyText, householdLine, localPhone, memberSince, reminderBlockedUntil, rowStatus, type RowFacts, type RowStatus } from "@/lib/members-admin";
 import { roleLabel } from "@/lib/wallet";
@@ -167,14 +168,16 @@ export async function loadMemberRows(orgId: string, packId: string, onlyLinkId?:
 // The five numbers above the list (board D-AdmOverview style).
 export async function memberMetrics(orgId: string, rows: MemberRow[]) {
     const now = today();
-    const [collected, inquiries] = await Promise.all([
+    const [collected, inquiries, due] = await Promise.all([
         db.payment.aggregate({ where: { orgId, status: "succeeded", receivedAt: { gte: monthStartIL(now) } }, _sum: { amountMinor: true } }),
-        db.request.count({ where: { orgId, status: "pending" } }),
+        db.request.count({ where: { orgId, status: { not: "closed" } } }),
+        pastDue(orgId),
     ]);
     return {
         active: rows.filter((r) => r.facts.kind === "member" && r.facts.linkStatus === "active").length,
         collectedMinor: collected._sum.amountMinor ?? 0,
-        owedMinor: rows.reduce((t, r) => t + r.balanceMinor, 0),
+        // The same number as in the overview and the kupa: only what is past its last day to pay.
+        owedMinor: due.owedMinor,
         inquiries,
         joins: rows.filter((r) => r.facts.kind === "pending").length,
     };

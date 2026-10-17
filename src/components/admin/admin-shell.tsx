@@ -6,13 +6,15 @@ import { db } from "@/lib/db";
 // The shared admin frame (boards D-Admin and D-Adm*): a 232px side menu in the org's color on a computer, and
 // a top bar with a scrolling row of the same items on a phone and tablet. Text on the org color is picked by
 // contrast (pickOn). The active item is white with an ink frame and aria-current.
-export type AdminSection = "overview" | "members" | "money" | "messages" | "requests" | "settings" | "labels" | "door";
+export type AdminSection = "overview" | "members" | "money" | "activities" | "messages" | "inquiries" | "requests" | "settings" | "labels" | "door";
 
 const ICONS: Record<AdminSection, string> = {
     overview: "M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z",
     members: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8",
     money: "M2 6h20v12H2zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 12h.01M18 12h.01",
+    activities: "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM8 15h3",
     messages: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
+    inquiries: "M4 4h16v12H8l-4 4zM8 9h8M8 12h5",
     requests: "M15 3h6v6M10 14L21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
     settings: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z",
     labels: "M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01",
@@ -30,7 +32,10 @@ export async function AdminShell({ orgId, org, me, active, children }: {
 }) {
     const color = org.brandColor ?? "#5B3DF5";
     const on = onColor(color);
-    const joins = await db.joinRequest.count({ where: { orgId, status: "pending" } });
+    const [joins, asks] = await Promise.all([
+        db.joinRequest.count({ where: { orgId, status: "pending" } }),
+        db.request.count({ where: { orgId, status: { in: ["new", "replied"] } } }),
+    ]);
     type Group = { title: string | null; items: { id: AdminSection; label: string; href: string; count?: { n: number; aria: string } }[] };
     const all: Group[] = [
         {
@@ -39,7 +44,9 @@ export async function AdminShell({ orgId, org, me, active, children }: {
                 { id: "overview", label: "סקירה", href: `/orgs/${orgId}` },
                 { id: "members", label: "חברים", href: `/orgs/${orgId}/members` },
                 { id: "money", label: "כספים וחיובים", href: `/orgs/${orgId}/money` },
+                { id: "activities", label: "פעילויות ואירועים", href: `/orgs/${orgId}/activities` },
                 { id: "messages", label: "הודעות", href: `/orgs/${orgId}/messages` },
+                { id: "inquiries", label: "פניות", href: `/orgs/${orgId}/inquiries`, count: asks ? { n: asks, aria: asks === 1 ? "פנייה אחת מחכה" : `${asks} פניות מחכות` } : undefined },
                 { id: "requests", label: "בקשות הצטרפות", href: `/orgs/${orgId}/requests`, count: joins ? { n: joins, aria: joins === 1 ? "בקשת הצטרפות אחת מחכה" : `${joins} בקשות הצטרפות מחכות` } : undefined },
             ],
         },
@@ -52,8 +59,8 @@ export async function AdminShell({ orgId, org, me, active, children }: {
             ],
         },
     ];
-    // The treasurer handles money and messages; settings, labels and the door stay with the owner and admins.
-    const hidden: AdminSection[] = me.role === "treasurer" ? ["settings", "labels", "door"] : [];
+    // The treasurer handles money and messages; activities, settings, labels and the door stay with the owner and admins.
+    const hidden: AdminSection[] = me.role === "treasurer" ? ["activities", "settings", "labels", "door"] : [];
     const groups = all.map((g) => ({ ...g, items: g.items.filter((it) => !hidden.includes(it.id)) })).filter((g) => g.items.length);
     const meName = `${me.firstName ?? ""} ${me.lastName ?? ""}`.trim() || "מנהל";
     const item = (it: (typeof groups)[number]["items"][number], compact: boolean) => {

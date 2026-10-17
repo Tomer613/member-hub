@@ -8,7 +8,10 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import { CopyLink } from "@/components/copy-link";
 import { onColor } from "@/lib/color";
 import { pastDue } from "@/lib/billing/kupa-server";
+import { autoClose, openCount, waitingCount } from "@/lib/inquiries-server";
 import { loadPosts } from "@/lib/channel-server";
+import { goingText, minyanText } from "@/lib/activities";
+import { nextActivities } from "@/lib/activities-server";
 import { loadMemberRows, membersAdmin } from "@/lib/members-server";
 import { formatShekels } from "@/lib/money";
 import { hebrewAgo } from "@/lib/relative-time";
@@ -46,13 +49,17 @@ export default async function OrgOverviewPage({ params }: { params: Promise<{ or
     if (!a) notFound();
     const settings = (org.settings ?? {}) as { collection?: string; account?: string; inviteWith?: string };
     const now = new Date();
-    const [pending, members, reports, due, rows, paidRecent] = await Promise.all([
+    await autoClose(orgId);
+    const [pending, members, reports, due, rows, paidRecent, asks, waiting, soon] = await Promise.all([
         db.joinRequest.findMany({ where: { orgId, status: "pending" }, select: { createdAt: true }, orderBy: { createdAt: "asc" } }),
         db.orgUser.count({ where: { orgId, status: "active", role: { not: "guest" } } }),
         db.payment.count({ where: { orgId, status: "pending", source: "report" } }),
         pastDue(orgId),
         loadMemberRows(orgId, org.packId),
         db.payment.findMany({ where: { orgId, status: "succeeded", receivedAt: { gte: new Date(now.getTime() - 32 * 86_400_000) } }, select: { amountMinor: true, receivedAt: true } }),
+        openCount(orgId),
+        waitingCount(orgId),
+        nextActivities(orgId, org.packId),
     ]);
     const collected = paidRecent.filter((p) => ilMonth(p.receivedAt) === ilMonth(now)).reduce((t, p) => t + p.amountMinor, 0);
     // Same rule as the members table and its reminders: the member (or the household they pay for) is past due.
@@ -63,7 +70,7 @@ export default async function OrgOverviewPage({ params }: { params: Promise<{ or
         { k: "חברים פעילים", v: String(members), bar: color, href: `/orgs/${orgId}/members` },
         { k: "נגבה החודש", v: formatShekels(collected), bar: "#00B67A", href: `/orgs/${orgId}/money` },
         { k: "חובות פתוחים", v: formatShekels(due.owedMinor), bar: "#C4223B", href: `/orgs/${orgId}/members?f=debt` },
-        { k: "פניות פתוחות", v: "0", bar: "#18B8F0", href: null },
+        { k: "פניות פתוחות", v: String(asks), bar: "#18B8F0", href: `/orgs/${orgId}/inquiries` },
         { k: "בקשות הצטרפות", v: String(pending.length), bar: "#FFD84A", href: `/orgs/${orgId}/requests` },
     ];
     const tasks: ReactNode[] = [];
@@ -75,6 +82,11 @@ export default async function OrgOverviewPage({ params }: { params: Promise<{ or
     if (debtors.length) tasks.push(
         <Task key="debt" title={debtors.length === 1 ? "חבר אחד בחוב" : `${debtors.length} חברים בחוב`} line={`${formatShekels(due.owedMinor)} סך הכול`}>
             <RemindAll orgId={orgId} linkIds={debtors.map((d) => d.linkId!)} />
+        </Task>,
+    );
+    if (waiting) tasks.push(
+        <Task key="inq" title={waiting === 1 ? "פנייה אחת מחכה לתשובה" : `${waiting} פניות מחכות לתשובה`} line="חדשות, או שהחבר הגיב שוב">
+            <Link href={`/orgs/${orgId}/inquiries?f=new`} className={`${btn} bg-white`}>לפניות</Link>
         </Task>,
     );
     if (reports) tasks.push(
@@ -115,7 +127,30 @@ export default async function OrgOverviewPage({ params }: { params: Promise<{ or
                 <div className="flex flex-col gap-[14px]">
                 <section className={panel} aria-labelledby="soon-h">
                     <h2 id="soon-h" className="m-0 font-display text-[19px]">בקרוב</h2>
-                    <p className="m-0 rounded-[14px] border-2 border-dashed border-[var(--mh-ink)] p-3 font-bold">כאן יופיעו שלוש הפעילויות הקרובות, עם כמה נרשמו לכל אחת, כשנבנה את כלי הפעילויות והאירועים.</p>
+                    {soon.length ? (
+                        <ul className="m-0 flex list-none flex-col p-0">
+                            {soon.map((e) => {
+                                const inner = (
+                                    <>
+                                        <span className="w-[84px] shrink-0 font-extrabold">{e.when}</span>
+                                        <span className="flex min-w-0 flex-1 flex-col">
+                                            <b className="truncate">{e.title}</b>
+                                            <span className="text-[13px] font-bold text-[var(--mh-ink-soft)]">{e.typeText}{e.fields.minyan && e.signup ? ` · ${minyanText(e.going)}` : ""}</span>
+                                        </span>
+                                        <span className="shrink-0 rounded-full bg-[var(--mh-ticket)] px-3 py-1 text-[13px] font-extrabold">{e.signup ? <>{goingText(e.going)}{e.seats ? <> מתוך <bdi>{e.seats}</bdi></> : null}</> : "בלי הרשמה"}</span>
+                                    </>
+                                );
+                                const row = "flex min-h-12 items-center gap-3 border-b border-[#E6E0D4] py-2 last:border-0";
+                                return <li key={e.id}>{a.canManage ? <Link href={`/orgs/${orgId}/activities?e=${e.id}`} className={`${row} rounded-[10px] transition-colors hover:bg-[var(--mh-ticket)]`}>{inner}</Link> : <div className={row}>{inner}</div>}</li>;
+                            })}
+                        </ul>
+                    ) : <p className="m-0 rounded-[14px] border-2 border-dashed border-[var(--mh-ink)] p-3 font-bold">אין פעילויות קרובות שפורסמו.</p>}
+                    {a.canManage && (
+                        <span className="flex flex-wrap gap-2">
+                            <Link href={`/orgs/${orgId}/activities?e=new`} className={`${btn} bg-white`}>פעילות חדשה</Link>
+                            {soon.length > 0 && <Link href={`/orgs/${orgId}/activities`} className="inline-flex min-h-11 items-center px-2 font-extrabold underline underline-offset-4">לכל הפעילויות</Link>}
+                        </span>
+                    )}
                 </section>
                 <section className={panel} aria-labelledby="join-h">
                     <h2 id="join-h" className="m-0 font-display text-[19px]">להזמין חברים</h2>
