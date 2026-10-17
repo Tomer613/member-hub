@@ -814,6 +814,12 @@ model Yahrzeit {
   hebrewDay    Int
   hebrewMonth  String
   notes        String?
+  // Board D-ModSynYahrzeit: "תזכורת למשפחה" and "הודעה לקהל". remindedFor is the Hebrew year whose reminder
+  // was already sent, so it goes out once a year.
+  remind       Boolean      @default(true)
+  announce     Boolean      @default(false)
+  remindedFor  Int?
+  createdById  String?
   createdAt    DateTime     @default(now())
 
   @@index([orgId, hebrewMonth, hebrewDay])

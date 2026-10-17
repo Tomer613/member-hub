@@ -8,6 +8,7 @@ import { badgeWords, crowdText, roleLabel } from "@/lib/wallet";
 import { Badge, type TileView } from "@/components/wallet/badge";
 import { memberInquiryCounts } from "@/lib/inquiries-server";
 import { openActivityCount } from "@/lib/activities-server";
+import { sendDueYahrzeitReminders } from "@/lib/yahrzeit-server";
 import { accountShown, moneySummary, moneyTileText, nextLine, nextRenewal, noticeText } from "@/lib/billing/account";
 import { currentHome, ensureMember, memberCharges } from "@/lib/billing/member-money";
 import { formatShekels } from "@/lib/money";
@@ -30,6 +31,8 @@ export default async function CardPage({ params }: { params: Promise<{ orgId: st
     if (org.packId === "celebration") redirect(link.role === "guest" && org.joinToken ? `/c/${org.joinToken}` : `/orgs/${org.id}`);
     const admin = link.role === "owner" || link.role === "admin";
     const member = await ensureMember(link.id);
+    // Yahrzeit reminders whose day came go out before the card counts what is new (no scheduled job yet).
+    await sendDueYahrzeitReminders(orgId);
     const [count, requests, charges, sub, home, labels, unread, asked, acts] = await Promise.all([
         db.orgUser.count({ where: { orgId, status: "active", role: { not: "guest" } } }),
         admin ? db.joinRequest.count({ where: { orgId, status: "pending" } }) : Promise.resolve(0),

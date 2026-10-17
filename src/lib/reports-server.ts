@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { chargeView, ilDate } from "@/lib/billing/account";
+import { chargeView, dueDate, ilDate } from "@/lib/billing/account";
 import { kindLabel } from "@/lib/billing/charge-plan";
 import { pastDue } from "@/lib/billing/kupa-server";
 import { chargeInclude, toChargeIn } from "@/lib/billing/member-money";
@@ -22,7 +22,7 @@ async function periodCharges(orgId: string, from: Date) {
         },
         orderBy: [{ dueOn: "asc" }, { createdAt: "asc" }],
     });
-    return charges.filter((c) => c.voidedAt || chargeView(toChargeIn(c))!.due >= from);
+    return charges.filter((c) => dueDate(c) >= from);
 }
 
 // The numbers and the bars on the screen.
