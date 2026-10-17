@@ -2,12 +2,13 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { onColor } from "@/lib/color";
 import { db } from "@/lib/db";
+import { hasDonations } from "@/lib/donations-server";
 import { hasYahrzeit, sendDueYahrzeitReminders } from "@/lib/yahrzeit-server";
 
 // The shared admin frame (boards D-Admin and D-Adm*): a 232px side menu in the org's color on a computer, and
 // a top bar with a scrolling row of the same items on a phone and tablet. Text on the org color is picked by
 // contrast (pickOn). The active item is white with an ink frame and aria-current.
-export type AdminSection = "overview" | "members" | "money" | "activities" | "messages" | "inquiries" | "requests" | "reports" | "settings" | "labels" | "door" | "yahrzeit";
+export type AdminSection = "overview" | "members" | "money" | "activities" | "messages" | "inquiries" | "requests" | "reports" | "settings" | "labels" | "door" | "yahrzeit" | "donations";
 
 const ICONS: Record<AdminSection, string> = {
     overview: "M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z",
@@ -20,6 +21,7 @@ const ICONS: Record<AdminSection, string> = {
     requests: "M15 3h6v6M10 14L21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
     settings: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z",
     labels: "M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01",
+    donations: "M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z",
     yahrzeit: "M12 2c1.5 2.5 3 3.6 3 6a3 3 0 0 1-6 0c0-2.4 1.5-3.5 3-6zM9 13h6v9H9zM6 22h12",
     door: "M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10",
 };
@@ -40,10 +42,14 @@ export async function AdminShell({ orgId, org, me, active, children }: {
         db.request.count({ where: { orgId, status: { in: ["new", "replied"] } } }),
         db.organization.findUnique({ where: { id: orgId }, select: { packId: true } }),
     ]);
+    type Group = { title: string | null; items: { id: AdminSection; label: string; href: string; count?: { n: number; aria: string } }[] };
     const synagogue = !!kind && hasYahrzeit(kind.packId);
+    const tools: Group["items"] = [
+        ...(kind && hasDonations(kind.packId) ? [{ id: "donations" as const, label: "תרומות ונדרים", href: `/orgs/${orgId}/donations` }] : []),
+        ...(synagogue ? [{ id: "yahrzeit" as const, label: "יארצייט", href: `/orgs/${orgId}/yahrzeit` }] : []),
+    ];
     // Yahrzeit reminders go out when the admin area is opened, until there is a scheduled job.
     if (synagogue) await sendDueYahrzeitReminders(orgId);
-    type Group = { title: string | null; items: { id: AdminSection; label: string; href: string; count?: { n: number; aria: string } }[] };
     const all: Group[] = [
         {
             title: null,
@@ -58,7 +64,7 @@ export async function AdminShell({ orgId, org, me, active, children }: {
                 { id: "requests", label: "בקשות הצטרפות", href: `/orgs/${orgId}/requests`, count: joins ? { n: joins, aria: joins === 1 ? "בקשת הצטרפות אחת מחכה" : `${joins} בקשות הצטרפות מחכות` } : undefined },
             ],
         },
-        ...(synagogue ? [{ title: "כלים של בית כנסת", items: [{ id: "yahrzeit" as const, label: "יארצייט", href: `/orgs/${orgId}/yahrzeit` }] }] : []),
+        ...(tools.length ? [{ title: "כלים של בית כנסת", items: tools }] : []),
         {
             title: "ארגון",
             items: [

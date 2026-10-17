@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { HEBREW_DAYS, HEBREW_MONTHS, YAHRZEIT_RELATIONS } from "@/packs/synagogue/yahrzeit";
-import { NAME_MAX, NOTES_MAX, REMIND_DAYS, type YahrzeitInput } from "@/lib/yahrzeit";
-import { deleteYahrzeit, saveRemindDays, saveYahrzeit, type YahrzeitResult } from "./actions";
+import { ADAR_RULES, DEDICATION_LABEL_MAX, DEDICATION_MAX, MISSING30_RULES, NAME_MAX, NOTES_MAX, REMIND_DAYS, type Dedication, type YahrzeitInput, type YahrzeitRules } from "@/lib/yahrzeit";
+import { deleteYahrzeit, saveDedications, saveYahrzeit, saveYahrzeitSettings, type YahrzeitResult } from "./actions";
 
 const panel = "flex flex-col gap-4 rounded-[20px] border-[2.5px] border-[var(--mh-ink)] bg-white p-4 shadow-[0_3px_0_var(--mh-ink)] md:p-5";
 const field = "min-h-11 w-full rounded-[14px] border-2 border-[var(--mh-ink)] bg-white px-[14px] font-semibold outline-none placeholder:text-[var(--mh-ink-soft)] focus-visible:ring-[3px] focus-visible:ring-[var(--mh-ink)]";
@@ -70,7 +70,7 @@ export function YahrzeitForm({ orgId, id, start, families, saved }: { orgId: str
                             {HEBREW_MONTHS.map((m) => <option key={m} value={m}>{m}</option>)}
                         </select>
                     </div>
-                    <span className={hint}>מחושב מחדש כל שנה. באדר בשנה מעוברת: אדר ב׳, אלא אם בוחרים אדר א׳.</span>
+                    <span className={hint}>מחושב מחדש כל שנה. מי שנפטר באדר בשנה רגילה: בשנה מעוברת לפי מנהג הקהילה שבהגדרות.</span>
                 </div>
                 <label className="flex flex-col gap-2">
                     <span className={label}>משפחה</span>
@@ -103,18 +103,38 @@ export function YahrzeitForm({ orgId, id, start, families, saved }: { orgId: str
     );
 }
 
-// "הגדרות תזכורת": when to send. The channel is the app and email until SMS and push are connected.
-export function RemindSettings({ orgId, days }: { orgId: string; days: number }) {
+// A choice between customs: each option with its short line, as radio cards.
+function Custom({ name, title, options, value, onChange, disabled }: { name: string; title: string; options: readonly { value: string; label: string; line: string }[]; value: string; onChange: (v: string) => void; disabled: boolean }) {
+    return (
+        <fieldset disabled={disabled} className="m-0 flex min-w-0 flex-col gap-2 border-0 p-0">
+            <legend className={`${label} mb-2 p-0`}>{title}</legend>
+            {options.map((o) => (
+                <label key={o.value} className={`flex cursor-pointer items-start gap-3 rounded-[14px] border-2 border-[var(--mh-ink)] p-3 transition-colors duration-150 ${value === o.value ? "bg-[var(--mh-tint-sun)]" : "bg-white hover:bg-[var(--mh-ticket)]"}`}>
+                    <input type="radio" name={name} value={o.value} checked={value === o.value} onChange={() => onChange(o.value)} className="mt-1 size-[18px] shrink-0 accent-[var(--mh-ink)]" />
+                    <span className="flex min-w-0 flex-col gap-[2px]">
+                        <b className="leading-tight">{o.label}</b>
+                        <span className={hint}>{o.line}</span>
+                    </span>
+                </label>
+            ))}
+        </fieldset>
+    );
+}
+
+// "הגדרות": when to send, and the org's custom for dates a year may not have. The channel is the app and email
+// until SMS and push are connected.
+export function RemindSettings({ orgId, days, rules }: { orgId: string; days: number; rules: YahrzeitRules }) {
     const router = useRouter();
-    const [d, setD] = useState(days);
+    const [v, setV] = useState({ days, ...rules });
     const [res, setRes] = useState<YahrzeitResult | null>(null);
     const [busy, run] = useTransition();
+    const save = (next: typeof v) => { setV(next); run(async () => { setRes(await saveYahrzeitSettings(orgId, next)); router.refresh(); }); };
     return (
         <section className={panel} aria-labelledby="rs-h">
-            <h2 id="rs-h" className="m-0 font-display text-[20px]">הגדרות תזכורת</h2>
+            <h2 id="rs-h" className="m-0 font-display text-[20px]">הגדרות</h2>
             <label className="flex flex-col gap-2">
-                <span className={label}>מתי לשלוח</span>
-                <select value={d} disabled={busy} onChange={(e) => { const n = Number(e.target.value); setD(n); run(async () => { setRes(await saveRemindDays(orgId, n)); router.refresh(); }); }} className={field}>
+                <span className={label}>מתי לשלוח תזכורת</span>
+                <select value={v.days} disabled={busy} onChange={(e) => save({ ...v, days: Number(e.target.value) })} className={field}>
                     {REMIND_DAYS.map((n) => <option key={n} value={n}>{n === 1 ? "יום לפני" : `${n} ימים לפני`}</option>)}
                 </select>
             </label>
@@ -123,8 +143,55 @@ export function RemindSettings({ orgId, days }: { orgId: string; days: number })
                 <span className="font-bold">התראה באפליקציה ומייל</span>
                 <span className={hint}>הודעות SMS והתראות לטלפון יתווספו כשנחבר את שירות ההודעות.</span>
             </div>
+            <div className="flex flex-col gap-1 rounded-[14px] bg-[var(--mh-ticket)] p-3">
+                <b>מנהג הקהילה</b>
+                <span className={hint}>בשני המקרים האלה יש מנהגים שונים. כדאי שהגבאי והרב יחליטו לפי מנהג המקום.</span>
+            </div>
+            <Custom name="adar" title="מי שנפטר באדר בשנה רגילה, בשנה מעוברת:" options={ADAR_RULES} value={v.adar} onChange={(x) => save({ ...v, adar: x as YahrzeitRules["adar"] })} disabled={busy} />
+            <Custom name="m30" title="מי שנפטר ביום ל׳ בחודש, בשנה שבה לחודש יש רק 29 ימים:" options={MISSING30_RULES} value={v.missing30} onChange={(x) => save({ ...v, missing30: x as YahrzeitRules["missing30"] })} disabled={busy} />
             {res?.ok && <span role="status" className="font-bold text-[#00573A]">{res.ok}</span>}
             {res?.error && <span role="alert" className="font-extrabold text-[#B0182F]">{res.error}</span>}
         </section>
+    );
+}
+
+// "הצעת הקדשה" (synagogue-tools 19): the reminder to the family carries a gentle invitation and one button.
+export function DedicationSettings({ orgId, on, items }: { orgId: string; on: boolean; items: Dedication[] }) {
+    const [v, setV] = useState({ on, items: items.map((x) => ({ label: x.label, price: String(x.priceMinor / 100) })) });
+    const [res, setRes] = useState<YahrzeitResult | null>(null);
+    const [busy, run] = useTransition();
+    const edit = (i: number, k: "label" | "price", x: string) => { setV((o) => ({ ...o, items: o.items.map((it, j) => (j === i ? { ...it, [k]: x } : it)) })); setRes(null); };
+    return (
+        <form className={panel} aria-labelledby="dd-h" onSubmit={(e) => { e.preventDefault(); run(async () => setRes(await saveDedications(orgId, v))); }}>
+            <h2 id="dd-h" className="m-0 font-display text-[20px]">הצעת הקדשה</h2>
+            <fieldset disabled={busy} className="m-0 flex min-w-0 flex-col gap-3 border-0 p-0">
+                <Toggle on={v.on} onChange={(x) => { setV((o) => ({ ...o, on: x })); setRes(null); }} title="להציע הקדשה בתזכורת" line="התזכורת למשפחה כוללת הזמנה עדינה וכפתור אחד: להקדשה. בלי מעקב ובלי תזכורת נוספת." />
+                {v.on && (
+                    <>
+                        <ul className="m-0 flex list-none flex-col gap-2 p-0" aria-label="ההקדשות">
+                            {v.items.map((it, i) => (
+                                <li key={i} className="grid grid-cols-[minmax(0,1fr)_96px_auto] items-center gap-2">
+                                    <input aria-label="שם ההקדשה" value={it.label} maxLength={DEDICATION_LABEL_MAX} onChange={(e) => edit(i, "label", e.target.value)} placeholder="למשל: קידוש לעילוי נשמת" className={field} />
+                                    <input aria-label="מחיר בשקלים" value={it.price} inputMode="decimal" dir="ltr" onChange={(e) => edit(i, "price", e.target.value)} placeholder="₪" className={`${field} text-start`} />
+                                    <button type="button" aria-label={`הסרת ${it.label || "השורה"}`} onClick={() => { setV((o) => ({ ...o, items: o.items.filter((_, j) => j !== i) })); setRes(null); }}
+                                        className="grid size-11 place-items-center rounded-full border-2 border-[var(--mh-ink)] bg-white transition-colors hover:bg-[#FFF0F2]">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                        {v.items.length < DEDICATION_MAX && (
+                            <button type="button" onClick={() => setV((o) => ({ ...o, items: [...o.items, { label: "", price: "" }] }))} className="self-start font-extrabold underline underline-offset-4">הוספת הקדשה</button>
+                        )}
+                        <span className={hint}>המחירים בשקלים. מה שהמשפחה בוחרת נרשם בתרומות ונדרים, ומופיע לה כחיוב בכרטיס.</span>
+                    </>
+                )}
+            </fieldset>
+            <div className="flex flex-wrap items-center gap-3">
+                <button type="submit" disabled={busy} className={`${btn} bg-[var(--mh-sun)]`}>{busy ? "שומרים…" : "שמירה"}</button>
+                {res?.ok && <span role="status" className="font-bold text-[#00573A]">{res.ok}</span>}
+                {res?.error && <span role="alert" className="font-extrabold text-[#B0182F]">{res.error}</span>}
+            </div>
+        </form>
     );
 }

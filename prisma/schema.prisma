@@ -77,6 +77,7 @@ model Organization {
   paymentAccounts  PaymentAccount[]
   auditLogs        AuditLog[]
   yahrzeits        Yahrzeit[]
+  pledges          Pledge[]
   parkingSpots     ParkingSpot[]
   rsvps            Rsvp[]
   posts            ChannelPost[]
@@ -341,6 +342,7 @@ model Member {
   events         Event[]
   requests       Request[]
   yahrzeits      Yahrzeit[]
+  pledges        Pledge[]
   debtReminders  DebtReminder[]
   labels         MemberLabel[]
 
@@ -495,6 +497,9 @@ model Charge {
   // 3 days before and on the day (sent once the scheduler exists, docs/waiting-for-services.he.md).
   allowPartial   Boolean       @default(false)
   remindAuto     Boolean       @default(false)
+  // A charge made by "תרומות ונדרים" (board D-ModSynDonations): one per installment.
+  pledgeId       String?
+  pledge         Pledge?       @relation(fields: [pledgeId], references: [id], onDelete: SetNull)
   createdById    String? // User.id of the admin who sent it
   createdAt      DateTime      @default(now())
 
@@ -504,6 +509,7 @@ model Charge {
   @@unique([orgId, dedupeKey])
   @@index([orgId, householdId, periodMonth])
   @@index([orgId, memberId])
+  @@index([pledgeId])
 }
 
 // Either side may mark a charge as disputed. While a dispute is open, reminders for that charge stop.
@@ -823,6 +829,32 @@ model Yahrzeit {
   createdAt    DateTime     @default(now())
 
   @@index([orgId, hebrewMonth, hebrewDay])
+}
+
+// synagogue pack: "תרומות ונדרים" (board D-ModSynDonations). An aliyah, a pledge or a donation, recorded by the
+// gabbai. Its money lives in the charges it made (one, or one per monthly installment); its state is theirs.
+model Pledge {
+  id           String       @id @default(cuid())
+  orgId        String
+  org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  memberId     String
+  member       Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  kind         String // aliyah | pledge | donation
+  purpose      String // "שמחת תורה", "תיקון ספר תורה", "כללי"
+  amountMinor  Int
+  installments Int          @default(1)
+  note         String?
+  cancelledAt  DateTime?
+  // Where it came from when not typed by the gabbai: "yahrzeit|<yahrzeitId>|<year key>" for a dedication made from
+  // a yahrzeit reminder (one per yahrzeit day).
+  ref          String?
+  createdById  String?
+  createdAt    DateTime     @default(now())
+
+  charges Charge[]
+
+  @@unique([orgId, ref])
+  @@index([orgId, createdAt])
 }
 
 // hoa pack (from the HOA project): parking registry.

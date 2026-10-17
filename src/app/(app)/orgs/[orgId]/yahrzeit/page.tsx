@@ -3,9 +3,10 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/session-server";
 import { AdminShell } from "@/components/admin/admin-shell";
-import { readRemindDays } from "@/lib/yahrzeit";
+import { readDedications, readRemindDays, readRules } from "@/lib/yahrzeit";
+import { hasDonations } from "@/lib/donations-server";
 import { familyOptions, loadYahrzeits, sendDueYahrzeitReminders, yahrzeitAdmin } from "@/lib/yahrzeit-server";
-import { RemindSettings, YahrzeitForm } from "./parts";
+import { DedicationSettings, RemindSettings, YahrzeitForm } from "./parts";
 
 export const metadata: Metadata = { title: "יארצייט · PIRI" };
 
@@ -105,7 +106,7 @@ export default async function YahrzeitPage({ params, searchParams }: { params: P
                                     : { name: "", relation: "father", day: "1", month: "תשרי", memberId: "", notes: "", remind: true, announce: false }} />
                         </>
                     )}
-                    <div className={editing ? "max-xl:hidden" : ""}><RemindSettings orgId={orgId} days={readRemindDays(a.org.settings)} /></div>
+                    <div className={`flex flex-col gap-[14px] ${editing ? "max-xl:hidden" : ""}`}><RemindSettings orgId={orgId} days={readRemindDays(a.org.settings)} rules={readRules(a.org.settings)} />{hasDonations(a.org.packId) && <DedicationSettings orgId={orgId} {...readDedications(a.org.settings)} />}</div>
                 </div>
             </div>
         </AdminShell>
