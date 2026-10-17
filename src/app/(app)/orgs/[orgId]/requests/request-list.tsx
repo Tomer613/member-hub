@@ -169,7 +169,7 @@ function Row({ orgId, r, tab, busy, open, onApprove, onDecline, onCancel, approv
                         </>
                     ) : (
                         <span className="flex flex-col items-start gap-1 text-[13px] font-semibold lg:items-end">
-                            <span>{r.decidedBy ? `${tab === "approved" ? "אושרה" : "נדחתה"} על ידי ${r.decidedBy}` : "—"}</span>
+                            <span>{r.decidedBy ? `${tab === "approved" ? "אושרה" : "נדחתה"} על ידי ${r.decidedBy}` : tab === "approved" ? "הצטרפות מיידית, בלי אישור" : "—"}</span>
                             <span className="text-[var(--mh-ink-soft)] lg:hidden">{r.when}</span>
                             {tab === "approved" && r.linkId && <Link href={`/orgs/${orgId}/members/${r.linkId}`} className="min-h-10 content-center font-extrabold underline">לתיק החבר</Link>}
                         </span>

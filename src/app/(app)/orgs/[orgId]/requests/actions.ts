@@ -2,14 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { listedMember } from "@/lib/billing/member-money";
-import { applyJoinChoices } from "@/lib/join-choices-server";
+import { admitRequest } from "@/lib/join-server";
 import { membersAdmin } from "@/lib/members-server";
 import { notifyUsers } from "@/lib/notify-server";
 import { NOTE_MAX } from "@/lib/requests-admin";
 
-// The admin's half of a join request (joining is always two-sided). Approving creates the person's record
-// in the org (Member) and their membership (OrgUser), so the card appears in their wallet. The plan and
+// The admin's half of a join request. Approving creates the member (src/lib/join-server.ts); the plan and
 // labels chosen on approval are applied right away (board D-AdmRequests). Only the owner and admins decide.
 
 export type RequestResult = { ok?: string; error?: string };
@@ -17,32 +15,6 @@ export type RequestResult = { ok?: string; error?: string };
 async function decider(orgId: string) {
     const a = await membersAdmin(orgId);
     return a?.canManage ? a : null;
-}
-
-async function approveOne(orgId: string, orgName: string, requestId: string, adminId: string, choices: { planId: string | null; labelIds: string[] }): Promise<boolean> {
-    const req = await db.joinRequest.findFirst({ where: { id: requestId, orgId, status: "pending" }, include: { user: { include: { contacts: true } } } });
-    if (!req) return false;
-    const { user } = req;
-    const phone = user.contacts.find((c) => c.kind === "phone")?.value ?? null;
-    const email = user.contacts.find((c) => c.kind === "email")?.value ?? null;
-    const memberId = await db.$transaction(async (tx) => {
-        const existing = await tx.orgUser.findUnique({ where: { orgId_userId: { orgId, userId: user.id } } });
-        let id: string | null;
-        if (existing) {
-            await tx.orgUser.update({ where: { id: existing.id }, data: { status: "active", leftAt: null } });
-            id = existing.memberId;
-        } else {
-            // Someone already on the list (an import "list only") gets their own record.
-            const listed = await listedMember(orgId, phone, email);
-            id = listed ?? (await tx.member.create({ data: { orgId, firstName: user.firstName ?? "", lastName: user.lastName ?? "", phone, email } })).id;
-            await tx.orgUser.create({ data: { orgId, userId: user.id, role: "member", memberId: id } });
-        }
-        await tx.joinRequest.update({ where: { id: req.id }, data: { status: "approved", decidedById: adminId, decidedAt: new Date() } });
-        return id;
-    });
-    if (memberId) await applyJoinChoices(orgId, memberId, choices, adminId);
-    await notifyUsers([user.id], { orgId, kind: "update", topic: "join_answer", refId: req.id, text: `הבקשה להצטרף ל${orgName} אושרה. הכרטיס כבר בארנק.`, href: `/card/${orgId}` });
-    return true;
 }
 
 // One request, the ones a filter shows, or all of them: the same plan and labels go to everyone approved.
@@ -54,7 +26,7 @@ export async function approveRequests(orgId: string, ids: string[] | "all", choi
         : ids.slice(0, 500);
     const choices = { planId: choice.planId || null, labelIds: choice.labelIds.slice(0, 20) };
     let n = 0;
-    for (const id of list) if (await approveOne(orgId, a.org.name, id, a.userId, choices)) n++;
+    for (const id of list) if (await admitRequest(orgId, a.org.name, id, a.userId, choices)) n++;
     revalidatePath(`/orgs/${orgId}`, "layout");
     if (!n) return { error: "הבקשות האלה כבר טופלו." };
     return { ok: n === 1 ? "הבקשה אושרה. הכרטיס כבר בארנק של המבקש." : `${n} בקשות אושרו. הכרטיסים כבר בארנקים.` };

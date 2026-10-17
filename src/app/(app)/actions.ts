@@ -6,8 +6,8 @@ import { db } from "@/lib/db";
 import { endSession, getSession } from "@/lib/auth/session-server";
 import { MAX_ATTEMPTS_PER_CODE, codeMatches } from "@/lib/auth/code";
 import { normalizeContact, type ContactKind } from "@/lib/auth/contact";
-import { notifyJoinRequest } from "@/lib/notify-server";
-import { readPublicText, shortLine } from "@/lib/org-settings";
+import { joinOrRequest } from "@/lib/join-server";
+import { readJoinOpen, readPublicText, shortLine } from "@/lib/org-settings";
 
 async function requireUser() {
     const s = await getSession();
@@ -15,7 +15,7 @@ async function requireUser() {
     return s;
 }
 
-export type OrgHit = { id: string; name: string; city: string | null; packId: string; line: string | null };
+export type OrgHit = { id: string; name: string; city: string | null; packId: string; line: string | null; open: boolean };
 
 // Only orgs that chose to be found (visibility "listed", decided 13.10.2026: hidden by default).
 export async function searchOrgs(q: string, packId?: string): Promise<OrgHit[]> {
@@ -36,21 +36,19 @@ export async function searchOrgs(q: string, packId?: string): Promise<OrgHit[]> 
         orderBy: { name: "asc" },
     });
     // The invitation sentence from "הגדרות הארגון", cut short as on the board.
-    return found.map(({ settings, ...o }) => ({ ...o, line: readPublicText(settings).tagline ? shortLine(readPublicText(settings).tagline) : null }));
+    return found.map(({ settings, ...o }) => ({ ...o, line: readPublicText(settings).tagline ? shortLine(readPublicText(settings).tagline) : null, open: readJoinOpen(settings) }));
 }
 
-// Joining from search is a request an admin approves (joining is always two-sided).
-export async function requestJoin(orgId: string): Promise<{ ok: boolean; orgName?: string }> {
+// Joining from search: a request an admin approves, or a membership at once when the owner opened joining.
+export async function requestJoin(orgId: string): Promise<{ ok: boolean; orgName?: string; joined?: boolean }> {
     const { userId } = await requireUser();
     const org = await db.organization.findFirst({ where: { id: orgId, visibility: "listed", status: "active" } });
     if (!org) return { ok: false };
     const member = await db.orgUser.findUnique({ where: { orgId_userId: { orgId, userId } } });
     const open = await db.joinRequest.findFirst({ where: { orgId, userId, status: "pending" } });
-    if (!member && !open) {
-        const req = await db.joinRequest.create({ data: { orgId, userId, source: "search" } });
-        await notifyJoinRequest(orgId, req.id, userId);
-    }
-    return { ok: true, orgName: org.name };
+    const how = !member && !open ? await joinOrRequest(org, userId, "search", null) : null;
+    if (how === "joined") revalidatePath("/wallet");
+    return { ok: true, orgName: org.name, joined: how === "joined" };
 }
 
 export async function logout() {

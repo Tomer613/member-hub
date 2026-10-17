@@ -25,6 +25,11 @@ export function readPublicText(settings: unknown): PublicText {
     return { tagline: typeof s.tagline === "string" ? s.tagline : "", about: typeof s.about === "string" ? s.about : "" };
 }
 
+// "הצטרפות באישור מנהל" off = "הצטרפות מיידית": whoever joins from search or the link is a member at once.
+// Approval is the default; only the owner changes it.
+export const readJoinOpen = (settings: unknown): boolean =>
+    !!settings && typeof settings === "object" && !Array.isArray(settings) && (settings as Record<string, unknown>).joinMode === "open";
+
 // Whitespace is folded in the one-line sentence; the longer text keeps its line breaks.
 export function cleanPublicText(input: { tagline: unknown; about: unknown }): { ok: true; value: PublicText } | { ok: false; error: string } {
     const tagline = String(input.tagline ?? "").replace(/\s+/g, " ").trim();

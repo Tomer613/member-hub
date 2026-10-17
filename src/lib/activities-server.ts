@@ -63,7 +63,7 @@ export async function loadActivity(orgId: string, id: string) {
 
 // "שמירה כטיוטה" and "פרסום". Publishing for the first time can tell all the members.
 export async function saveActivity(input: { orgId: string; orgName: string; id: string | null; userId: string; values: ActivityValues; publish: boolean; notify: boolean }) {
-    const prev = input.id ? await db.event.findFirst({ where: { id: input.id, orgId: input.orgId }, select: { id: true, status: true, priceMinor: true, _count: { select: { registrations: { where: { status: "going" } } } } } }) : null;
+    const prev = input.id ? await db.event.findFirst({ where: { id: input.id, orgId: input.orgId }, select: { id: true, status: true, priceMinor: true, startsAt: true, _count: { select: { registrations: { where: { status: "going" } } } } } }) : null;
     if (input.id && !prev) return { error: "הפעילות לא נמצאה." };
     if (prev?.status === "cancelled") return { error: "הפעילות בוטלה, ואי אפשר לערוך אותה." };
     const going = prev?._count.registrations ?? 0;
@@ -77,6 +77,16 @@ export async function saveActivity(input: { orgId: string; orgName: string; id: 
     const e = prev
         ? await db.event.update({ where: { id: prev.id }, data: { ...data, ...(input.publish ? { status: "published" } : {}) } })
         : await db.event.create({ data: { ...data, orgId: input.orgId, status: input.publish ? "published" : "draft", createdById: input.userId } });
+    // A new date moves the due date of the sign-up charges with it (paid ones are left alone).
+    if (prev && going && v.priceMinor && prev.startsAt.getTime() !== v.startsAt.getTime()) {
+        const regs = await db.eventRegistration.findMany({ where: { eventId: prev.id, status: "going", chargeId: { not: null } }, select: { chargeId: true } });
+        await db.charge.updateMany({ where: { id: { in: regs.map((r) => r.chargeId!) }, voidedAt: null, allocations: { none: {} } }, data: { dueOn: dayOf(v.startsAt) } });
+    }
+    // Those who signed up hear about a new date.
+    if (prev?.status === "published" && going && prev.startsAt.getTime() !== v.startsAt.getTime()) {
+        const regs = await db.eventRegistration.findMany({ where: { eventId: prev.id, status: "going" }, select: { userId: true } });
+        await notifyUsers(regs.map((r) => r.userId), { orgId: input.orgId, kind: "update", topic: "activity", refId: prev.id, text: `המועד של "${v.title}" השתנה: ${whenLabel(v.startsAt, new Date())}`, href: `/card/${input.orgId}/activities` });
+    }
     if (firstPublish && input.notify) {
         const members = await db.orgUser.findMany({ where: { orgId: input.orgId, status: "active", role: { not: "guest" }, userId: { not: input.userId } }, select: { userId: true } });
         await notifyUsers(members.map((m) => m.userId), { orgId: input.orgId, kind: "update", topic: "activity", refId: e.id, text: `${v.title} · ${whenLabel(v.startsAt, new Date())}${v.signup ? ". אפשר להירשם באפליקציה" : ""}`, href: `/card/${input.orgId}/activities` });

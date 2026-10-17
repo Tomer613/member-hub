@@ -70,10 +70,11 @@ export function DetailsForm({ orgId, name: name0, city: city0, packId, color, lo
     );
 }
 
-export function PublicForm({ orgId, name, city, color, logo, listed: listed0, tagline: tagline0, about: about0 }: {
-    orgId: string; name: string; city: string; color: string; logo: string | null; listed: boolean; tagline: string; about: string;
+export function PublicForm({ orgId, name, city, color, logo, listed: listed0, tagline: tagline0, about: about0, approval: approval0, isOwner }: {
+    orgId: string; name: string; city: string; color: string; logo: string | null; listed: boolean; tagline: string; about: string; approval: boolean; isOwner: boolean;
 }) {
     const [listed, setListed] = useState(listed0);
+    const [approval, setApproval] = useState(approval0);
     const [tagline, setTagline] = useState(tagline0);
     const [about, setAbout] = useState(about0);
     const preview = (
@@ -88,17 +89,19 @@ export function PublicForm({ orgId, name, city, color, logo, listed: listed0, ta
                     <b className="truncate">{name}</b>
                     <span className="text-[13px] font-semibold text-[var(--mh-ink-soft)]">{tagline.trim() ? shortLine(tagline.trim()) : city || "בלי משפט הזמנה"}</span>
                 </span>
-                <span className={`shrink-0 rounded-full border-2 border-[var(--mh-ink)] px-2 text-[12px] font-extrabold ${listed ? "bg-[var(--mh-tint-ok)]" : "bg-white"}`}>{listed ? "ציבורי" : "לא בחיפוש"}</span>
+                <span className={`shrink-0 rounded-full border-2 border-[var(--mh-ink)] px-2 text-[12px] font-extrabold ${listed ? "bg-[var(--mh-tint-ok)]" : "bg-white"}`}>{listed ? (approval ? "בבקשה לאישור" : "הצטרפות מיידית") : "לא בחיפוש"}</span>
             </div>
             <p className="m-0 text-[14px] font-bold">{listed ? "כשהארגון ציבורי, השם, העיר ומשפט ההזמנה נראים לכל מי שמחפש. פרטי חברים לעולם לא." : "הארגון לא מופיע בחיפוש. מצטרפים רק בקישור ההצטרפות או בהזמנה."}</p>
         </>
     );
     return (
         <Frame title="נראות והזמנה" line="האם אנשים שלא הוזמנו יכולים למצוא את הארגון, ומה הם קוראים עליו."
-            dirty={listed !== listed0 || tagline !== tagline0 || about !== about0} onReset={() => { setListed(listed0); setTagline(tagline0); setAbout(about0); }}
-            onSave={() => saveOrgPublic(orgId, { listed, tagline, about })} preview={preview}>
+            dirty={listed !== listed0 || approval !== approval0 || tagline !== tagline0 || about !== about0} onReset={() => { setListed(listed0); setApproval(approval0); setTagline(tagline0); setAbout(about0); }}
+            onSave={() => saveOrgPublic(orgId, { listed, approval, tagline, about })} preview={preview}>
             <Toggle on={listed} onChange={setListed} title="ארגון ציבורי" line="מופיע בחיפוש ארגונים. כבוי: אפשר להצטרף רק בקישור או בהזמנה." />
-            <Toggle on locked title="הצטרפות באישור מנהל" line="תמיד פועל: מי שמבקש להצטרף נכנס לבקשות ההצטרפות, ומצטרף רק אחרי שאישרתם." />
+            <Toggle on={approval} onChange={setApproval} locked={!isOwner} title="הצטרפות באישור מנהל"
+                line={`${approval ? "מי שמבקש להצטרף נכנס לבקשות ההצטרפות, ומצטרף רק אחרי שאישרתם." : "כבוי: הצטרפות מיידית. מי שמצטרף מהחיפוש או מקישור ההצטרפות הופך לחבר מיד, ואתם מקבלים הודעה."}${isOwner ? "" : " רק המנהל הראשי יכול לשנות את זה."}`} />
+            {!approval && approval0 && <p className="m-0 rounded-[14px] bg-[#FFF1D6] p-3 text-[14px] font-bold">שימו לב: כל מי שיש לו את הקישור, או שמוצא את הארגון בחיפוש, ייכנס מיד ויראה את ההודעות והפעילויות של הארגון. בקשות שכבר מחכות נשארות לאישור שלכם. הזמנות אישיות לא משתנות.</p>}
             <label className="flex flex-col gap-2">
                 <span className="flex items-baseline justify-between gap-2"><span className={label}>משפט ההזמנה</span><span className={hint}><bdi>{count(tagline)}</bdi> מתוך {TAGLINE_MAX}</span></span>
                 <input value={tagline} onChange={(e) => setTagline(e.target.value)} maxLength={TAGLINE_MAX} placeholder="למשל: בית כנסת קהילתי בלב השכונה. מזמינים אתכם להצטרף." className={field} />

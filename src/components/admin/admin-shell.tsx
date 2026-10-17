@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 // The shared admin frame (boards D-Admin and D-Adm*): a 232px side menu in the org's color on a computer, and
 // a top bar with a scrolling row of the same items on a phone and tablet. Text on the org color is picked by
 // contrast (pickOn). The active item is white with an ink frame and aria-current.
-export type AdminSection = "overview" | "members" | "money" | "activities" | "messages" | "inquiries" | "requests" | "settings" | "labels" | "door";
+export type AdminSection = "overview" | "members" | "money" | "activities" | "messages" | "inquiries" | "requests" | "reports" | "settings" | "labels" | "door";
 
 const ICONS: Record<AdminSection, string> = {
     overview: "M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z",
@@ -15,6 +15,7 @@ const ICONS: Record<AdminSection, string> = {
     activities: "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM8 15h3",
     messages: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
     inquiries: "M4 4h16v12H8l-4 4zM8 9h8M8 12h5",
+    reports: "M3 3v18h18M7 15v2M11 11v6M15 7v10M19 13v4",
     requests: "M15 3h6v6M10 14L21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
     settings: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z",
     labels: "M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01",
@@ -47,6 +48,7 @@ export async function AdminShell({ orgId, org, me, active, children }: {
                 { id: "activities", label: "פעילויות ואירועים", href: `/orgs/${orgId}/activities` },
                 { id: "messages", label: "הודעות", href: `/orgs/${orgId}/messages` },
                 { id: "inquiries", label: "פניות", href: `/orgs/${orgId}/inquiries`, count: asks ? { n: asks, aria: asks === 1 ? "פנייה אחת מחכה" : `${asks} פניות מחכות` } : undefined },
+                { id: "reports", label: "דוחות", href: `/orgs/${orgId}/reports` },
                 { id: "requests", label: "בקשות הצטרפות", href: `/orgs/${orgId}/requests`, count: joins ? { n: joins, aria: joins === 1 ? "בקשת הצטרפות אחת מחכה" : `${joins} בקשות הצטרפות מחכות` } : undefined },
             ],
         },

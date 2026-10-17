@@ -5,7 +5,7 @@ import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { membersAdmin } from "@/lib/members-server";
 import { cleanCity, cleanName, isLogoDataUrl, isPaletteColor } from "@/lib/org-setup";
-import { cleanPublicText } from "@/lib/org-settings";
+import { cleanPublicText, readJoinOpen } from "@/lib/org-settings";
 
 export type SaveResult = { error?: string; saved?: string };
 
@@ -37,18 +37,22 @@ export async function saveOrgDetails(orgId: string, input: { name: string; city:
     return { saved: "פרטי הארגון נשמרו." };
 }
 
-export async function saveOrgPublic(orgId: string, input: { listed: boolean; tagline: string; about: string }): Promise<SaveResult> {
+export async function saveOrgPublic(orgId: string, input: { listed: boolean; approval: boolean; tagline: string; about: string }): Promise<SaveResult> {
     const a = await settingsAdmin(orgId);
     if (!a) return deny;
+    // "הצטרפות באישור מנהל" is the owner's call (Tommy, 17.10.2026).
+    const wasOpen = readJoinOpen(a.org.settings);
+    if (wasOpen === input.approval && a.role !== "owner") return { error: "רק המנהל הראשי יכול לשנות את ההצטרפות באישור מנהל." };
     const text = cleanPublicText(input);
     if (!text.ok) return { error: text.error };
     const base = (a.org.settings && typeof a.org.settings === "object" && !Array.isArray(a.org.settings) ? a.org.settings : {}) as Prisma.JsonObject;
     await db.organization.update({
         where: { id: orgId },
-        data: { visibility: input.listed ? "listed" : "private", settings: { ...base, tagline: text.value.tagline, about: text.value.about } },
+        data: { visibility: input.listed ? "listed" : "private", settings: { ...base, tagline: text.value.tagline, about: text.value.about, joinMode: input.approval ? "approval" : "open" } },
     });
     done(orgId);
-    return { saved: input.listed ? "נשמר. הארגון מופיע עכשיו בחיפוש." : "נשמר. הארגון לא מופיע בחיפוש." };
+    const join = input.approval ? "" : " מי שמצטרף נכנס מיד, בלי אישור.";
+    return { saved: (input.listed ? "נשמר. הארגון מופיע עכשיו בחיפוש." : "נשמר. הארגון לא מופיע בחיפוש.") + join };
 }
 
 // logo: a new image (data URL), null to remove it, undefined to keep what is there.

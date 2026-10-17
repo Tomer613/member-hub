@@ -21,6 +21,7 @@ export function JoinSheet({ open, onClose, packId }: { open: boolean; onClose: (
     const [q, setQ] = useState("");
     const [hits, setHits] = useState<OrgHit[]>([]);
     const [sentTo, setSentTo] = useState<string | null>(null);
+    const [joined, setJoined] = useState(false);
     const [pending, start] = useTransition();
 
     useEffect(() => {
@@ -33,16 +34,17 @@ export function JoinSheet({ open, onClose, packId }: { open: boolean; onClose: (
 
     function close() {
         setSentTo(null);
+        setJoined(false);
         setQ("");
         setCode("");
         onClose();
     }
 
     return (
-        <Modal open={open} onClose={close} title={sentTo ? "הבקשה נשלחה" : "הצטרפות לארגון"}>
+        <Modal open={open} onClose={close} title={sentTo ? (joined ? "הצטרפתם!" : "הבקשה נשלחה") : "הצטרפות לארגון"}>
             {sentTo ? (
                 <div className="flex flex-col gap-3">
-                    <p className="m-0 font-semibold">הבקשה שלכם נשלחה ל{sentTo}. תקבלו הודעה כשהמנהל יענה.</p>
+                    <p className="m-0 font-semibold">{joined ? `אתם חברים ב${sentTo}. הכרטיס כבר בארנק.` : `הבקשה שלכם נשלחה ל${sentTo}. תקבלו הודעה כשהמנהל יענה.`}</p>
                     <Button variant="secondary" onClick={close}>חזרה לארנק</Button>
                 </div>
             ) : (
@@ -66,13 +68,14 @@ export function JoinSheet({ open, onClose, packId }: { open: boolean; onClose: (
                             <button
                                 key={o.id}
                                 type="button"
-                                onClick={() => start(async () => { const r = await requestJoin(o.id); if (r.ok) setSentTo(r.orgName ?? o.name); })}
+                                onClick={() => start(async () => { const r = await requestJoin(o.id); if (r.ok) { setJoined(!!r.joined); setSentTo(r.orgName ?? o.name); if (r.joined) router.refresh(); } })}
                                 className="flex min-h-[var(--mh-hit)] items-center gap-[10px] rounded-2xl border-2 border-[var(--mh-ink)] bg-white p-3 text-start"
                             >
                                 <span className="inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border-2 border-[var(--mh-ink)] bg-[var(--mh-pastel-teal)] font-display">{o.name.slice(0, 1)}</span>
                                 <span>
                                     <b className="block">{o.name}</b>
                                     {(o.city || o.line) && <span className="block text-[13px] font-semibold text-[var(--mh-ink-soft)]">{[o.city, o.line].filter(Boolean).join(" · ")}</span>}
+                                    <span className="mt-1 inline-block rounded-full border-2 border-[var(--mh-ink)] bg-[var(--mh-tint-sun)] px-2 text-[12px] font-extrabold">{o.open ? "הצטרפות מיידית" : "בבקשה לאישור המנהל"}</span>
                                 </span>
                             </button>
                         ))}

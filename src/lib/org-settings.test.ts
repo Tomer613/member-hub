@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { cleanPublicText, readPublicText, readSection, shortLine, TAGLINE_MAX } from "./org-settings.ts";
+import { cleanPublicText, readJoinOpen, readPublicText, readSection, shortLine, TAGLINE_MAX } from "./org-settings.ts";
 
 test("readSection falls back to the org details", () => {
     assert.equal(readSection("public"), "public");
@@ -24,4 +24,12 @@ test("shortLine cuts at a word", () => {
     assert.equal(shortLine("קצר"), "קצר");
     assert.equal(shortLine("בית כנסת קהילתי בלב השכונה. מזמינים אתכם להצטרף לתפילות", 30), "בית כנסת קהילתי בלב השכונה.…");
     assert.equal(shortLine("מזמינים להצטרף לתפילות, לשיעורים ולאירועים", 26), "מזמינים להצטרף לתפילות…");
+});
+
+test("joining needs approval unless the owner opened it", () => {
+    assert.equal(readJoinOpen(null), false);
+    assert.equal(readJoinOpen({}), false);
+    assert.equal(readJoinOpen({ joinMode: "approval" }), false);
+    assert.equal(readJoinOpen({ joinMode: "open" }), true);
+    assert.equal(readJoinOpen(["open"]), false);
 });

@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/session-server";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { membersAdmin } from "@/lib/members-server";
-import { readPublicText, readSection, SECTIONS } from "@/lib/org-settings";
+import { readJoinOpen, readPublicText, readSection, SECTIONS } from "@/lib/org-settings";
 import { LookForm, DetailsForm, PublicForm } from "./settings-form";
 
 export const metadata: Metadata = { title: "הגדרות הארגון · PIRI" };
@@ -52,7 +52,7 @@ export default async function OrgSettingsPage({ params, searchParams }: { params
                     </ul>
                 </nav>
                 {section === "details" && <DetailsForm key="d" orgId={orgId} name={org.name} city={org.city ?? ""} packId={org.packId} color={org.brandColor ?? "#5B3DF5"} logo={org.logoUrl} />}
-                {section === "public" && <PublicForm key="p" orgId={orgId} name={org.name} city={org.city ?? ""} color={org.brandColor ?? "#5B3DF5"} logo={org.logoUrl} listed={org.visibility === "listed"} tagline={text.tagline} about={text.about} />}
+                {section === "public" && <PublicForm key="p" orgId={orgId} name={org.name} city={org.city ?? ""} color={org.brandColor ?? "#5B3DF5"} logo={org.logoUrl} listed={org.visibility === "listed"} tagline={text.tagline} about={text.about} approval={!readJoinOpen(org.settings)} isOwner={a.role === "owner"} />}
                 {section === "look" && <LookForm key="l" orgId={orgId} name={org.name} city={org.city ?? ""} color={org.brandColor ?? "#5B3DF5"} logo={org.logoUrl} />}
             </div>
         </AdminShell>
