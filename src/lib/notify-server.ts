@@ -28,7 +28,7 @@ export async function notifyAdmins(orgId: string, n: Note): Promise<void> {
 // Closes notes whose matter was handled elsewhere: a charge paid or cancelled, a request answered (by any
 // admin). Runs before the screen and the bells are drawn.
 export async function settleNotes(userId: string): Promise<void> {
-    const open = await db.notification.findMany({ where: { userId, kind: "action", doneAt: null }, select: { id: true, topic: true, refId: true } });
+    const open = await db.notification.findMany({ where: { userId, kind: "action", doneAt: null }, select: { id: true, topic: true, refId: true, createdAt: true } });
     if (!open.length) return;
     const ref = (t: string) => open.filter((o) => o.topic === t && o.refId).map((o) => o.refId!);
     const [charges, asked] = await Promise.all([
@@ -49,8 +49,13 @@ export async function settleNotes(userId: string): Promise<void> {
     const closed = new Set<string>();
     for (const c of charges) if (chargeView(toChargeIn(c))?.state !== "open") closed.add(c.id);
     for (const r of requests) if (r.status !== "pending") closed.add(r.id);
-    const gone = open.filter((o) => o.refId && !charges.some((c) => c.id === o.refId) && !requests.some((r) => r.id === o.refId)).map((o) => o.id);
+    const checked = ["charge", "join_request", "invitation", "inquiry"];
+    const gone = open.filter((o) => o.refId && checked.includes(o.topic) && !charges.some((c) => c.id === o.refId) && !requests.some((r) => r.id === o.refId)).map((o) => o.id);
     const done = open.filter((o) => o.refId && closed.has(o.refId)).map((o) => o.id);
+    // The yahrzeit invitation ("להקדשה") is no demand: it quietly closes once the day has passed (at most two
+    // weeks of reminder ahead), with no follow-up.
+    const DAY = 86_400_000;
+    for (const o of open) if (o.topic === "yahrzeit" && now.getTime() - o.createdAt.getTime() > 15 * DAY) done.push(o.id);
     if (done.length || gone.length) await db.notification.updateMany({ where: { id: { in: [...done, ...gone] } }, data: { doneAt: new Date() } });
 }
 

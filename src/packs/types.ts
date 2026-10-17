@@ -31,7 +31,7 @@ export type ModuleKey =
     | "members" | "households" | "tenancy" | "funds" | "billing" | "payments" | "expenses"
     | "letters" | "access_control_export" | "per_unit_fees"
     | "events" | "requests" | "campaigns" | "directory"
-    | "hebrew_calendar" | "yahrzeit" | "donations"
+    | "hebrew_calendar" | "yahrzeit" | "donations" | "prayers"
     | "visits" | "freeze" | "classes";
 
 export type RoleKey = "owner" | "admin" | "treasurer" | "staff" | "member";

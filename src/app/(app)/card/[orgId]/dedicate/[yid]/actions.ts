@@ -19,7 +19,7 @@ export async function dedicate(orgId: string, yahrzeitId: string, index: number)
     if (!item) return { error: "בחרו הקדשה." };
     const purpose = `${item.label}${/נשמת$/.test(item.label) ? "" : " לעילוי נשמת"} ${d.y.deceasedName}`;
     const r = await createPledge({ userId: m.userId, org: { id: orgId, name: m.link.org.name } },
-        { memberId: m.link.memberId!, kind: "donation", purpose, amountMinor: item.priceMinor, installments: 1, first: d.today, note: null, paidNow: false, notify: false }, "cash", d.ref);
+        { memberId: m.link.memberId!, kind: "donation", purpose, amountMinor: item.priceMinor, installments: 1, first: d.today, note: null, paidNow: false, notify: false, anonymous: false }, "cash", d.ref);
     if ("error" in r && !r.taken) return { error: r.error };
     if ("id" in r) {
         // The gabbai prepares it (a kiddush, a class, a candle); the reminder's button is done.

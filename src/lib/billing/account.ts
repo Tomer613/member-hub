@@ -14,9 +14,12 @@ export type ChargeIn = {
     voidedAt: Date | null;
     allocations: AllocIn[];
     allowPartial?: boolean; // the org lets the member pay part of it (board D-AdmCharge)
+    // Made by "תרומות ונדרים": charity is an invitation, not a collection (hebrew-calendar 40), so it is never a
+    // debt, never in a debt reminder.
+    gift?: boolean;
 };
 export type ChargeState = "open" | "pending" | "paid";
-export type ChargeView = { id: string; description: string; amountMinor: number; leftMinor: number; due: Date; state: ChargeState; partial: boolean };
+export type ChargeView = { id: string; description: string; amountMinor: number; leftMinor: number; due: Date; state: ChargeState; partial: boolean; gift?: boolean };
 
 export const DUE_AFTER_DAYS = 14;
 
@@ -29,7 +32,7 @@ export function chargeView(c: ChargeIn): ChargeView | null {
     const sum = (s: string) => c.allocations.filter((a) => a.status === s).reduce((t, a) => t + a.amountMinor, 0);
     const left = Math.max(0, c.amountMinor - sum("succeeded"));
     const state: ChargeState = left === 0 ? "paid" : sum("pending") >= left ? "pending" : "open";
-    return { id: c.id, description: c.description, amountMinor: c.amountMinor, leftMinor: left, due: dueDate(c), state, partial: !!c.allowPartial };
+    return { id: c.id, description: c.description, amountMinor: c.amountMinor, leftMinor: left, due: dueDate(c), state, partial: !!c.allowPartial, ...(c.gift ? { gift: true } : {}) };
 }
 
 export function chargeViews(charges: ChargeIn[]): ChargeView[] {

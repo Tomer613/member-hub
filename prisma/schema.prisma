@@ -78,6 +78,8 @@ model Organization {
   auditLogs        AuditLog[]
   yahrzeits        Yahrzeit[]
   pledges          Pledge[]
+  prayers          Prayer[]
+  prayerChanges    PrayerChange[]
   parkingSpots     ParkingSpot[]
   rsvps            Rsvp[]
   posts            ChannelPost[]
@@ -844,6 +846,9 @@ model Pledge {
   amountMinor  Int
   installments Int          @default(1)
   note         String?
+  // "בעילום שם" (synagogue-tools 33): every list, report and staff screen shows "בעילום שם"; only the identity
+  // keeper (the treasurer, or the owner when there is none) sees who it was.
+  anonymous    Boolean      @default(false)
   cancelledAt  DateTime?
   // Where it came from when not typed by the gabbai: "yahrzeit|<yahrzeitId>|<year key>" for a dedication made from
   // a yahrzeit reminder (one per yahrzeit day).
@@ -855,6 +860,43 @@ model Pledge {
 
   @@unique([orgId, ref])
   @@index([orgId, createdAt])
+}
+
+// synagogue pack: "תפילות ולוח זמנים" (board D-ModSynSchedule). The regular week, typed once and repeated:
+// day 0 is Sunday and 6 is Shabbat, time is "HH:MM" Israel time.
+model Prayer {
+  id        String       @id @default(cuid())
+  orgId     String
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  day       Int
+  name      String // שחרית, מנחה וערבית, קבלת שבת...
+  time      String
+  place     String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  changes PrayerChange[]
+
+  @@index([orgId, day])
+}
+
+// A one-time change on one date ("שבוע זה"): a regular prayer moved or cancelled that day, or an extra prayer
+// (prayerId null) added for that date only.
+model PrayerChange {
+  id        String       @id @default(cuid())
+  orgId     String
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  prayerId  String?
+  prayer    Prayer?      @relation(fields: [prayerId], references: [id], onDelete: Cascade)
+  date      DateTime     @db.Date
+  cancelled Boolean      @default(false)
+  name      String?
+  time      String?
+  place     String?
+  createdAt DateTime     @default(now())
+
+  @@unique([prayerId, date])
+  @@index([orgId, date])
 }
 
 // hoa pack (from the HOA project): parking registry.

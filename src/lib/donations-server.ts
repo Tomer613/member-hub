@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { chargeView, ilDate, methodLabel } from "@/lib/billing/account";
 import { chargeInclude, nextReceiptNo, settleLeaver, toChargeIn } from "@/lib/billing/member-money";
 import { emailOf } from "@/lib/billing/pay-server";
-import { chargeTitle, installmentDates, kindLabel, pledgeStatus, splitAmount, type PledgeStatus, type PledgeValues } from "@/lib/donations";
+import { ANON, chargeTitle, installmentDates, kindLabel, pledgeStatus, splitAmount, type PledgeStatus, type PledgeValues } from "@/lib/donations";
 import { sendEmail } from "@/lib/email";
 import { membersAdmin } from "@/lib/members-server";
 import { formatShekels } from "@/lib/money";
@@ -19,14 +19,21 @@ export async function donationsAdmin(orgId: string) {
     return a && hasDonations(a.org.packId) ? a : null;
 }
 
+// Who sees the name behind "בעילום שם" (synagogue-tools 33): the treasurer, or the owner when the org has none.
+export async function seesAnonymous(orgId: string, role: string): Promise<boolean> {
+    if (role === "treasurer") return true;
+    if (role !== "owner") return false;
+    return !(await db.orgUser.count({ where: { orgId, role: "treasurer", status: "active" } }));
+}
+
 export type PledgePart = { id: string; title: string; amountMinor: number; leftMinor: number; due: string; state: "open" | "pending" | "paid" | "voided" };
 export type PledgeRow = {
     id: string; memberId: string; name: string; kind: string; kindText: string; purpose: string; amountMinor: number; paidMinor: number;
-    installments: number; status: PledgeStatus; note: string | null; at: Date; parts: PledgePart[];
+    installments: number; status: PledgeStatus; note: string | null; at: Date; parts: PledgePart[]; anonymous: boolean; realName: string | null;
 };
 
 // The board's table, the newest first, with each pledge's charges (one, or one per installment).
-export async function loadPledges(orgId: string, now = new Date()): Promise<PledgeRow[]> {
+export async function loadPledges(orgId: string, seeAnon: boolean): Promise<PledgeRow[]> {
     const list = await db.pledge.findMany({
         where: { orgId },
         include: { member: { select: { firstName: true, lastName: true } }, charges: { include: chargeInclude, orderBy: { dueOn: "asc" } } },
@@ -39,10 +46,11 @@ export async function loadPledges(orgId: string, now = new Date()): Promise<Pled
             return { id: c.id, title: c.description, amountMinor: c.amountMinor, leftMinor: v?.leftMinor ?? 0, due: ilDate(v?.due ?? c.createdAt), state: v ? v.state : "voided" };
         });
         const live = p.charges.map((c) => chargeView(toChargeIn(c))).filter((v) => v !== null);
+        const real = `${p.member.firstName} ${p.member.lastName}`.trim() || "חבר/ה";
         return {
-            id: p.id, memberId: p.memberId, name: `${p.member.firstName} ${p.member.lastName}`.trim() || "חבר/ה", kind: p.kind, kindText: kindLabel(p.kind), purpose: p.purpose,
+            id: p.id, memberId: p.memberId, name: p.anonymous ? ANON : real, anonymous: p.anonymous, realName: !p.anonymous || seeAnon ? real : null, kind: p.kind, kindText: kindLabel(p.kind), purpose: p.purpose,
             amountMinor: p.amountMinor, paidMinor: live.reduce((t, v) => t + v.amountMinor - v.leftMinor, 0), installments: p.installments,
-            status: pledgeStatus(live, !!p.cancelledAt, now), note: p.note, at: p.createdAt, parts,
+            status: pledgeStatus(live, !!p.cancelledAt), note: p.note, at: p.createdAt, parts,
         };
     });
 }
@@ -74,7 +82,7 @@ export async function createPledge(a: { userId: string; org: { id: string; name:
     for (let attempt = 0; !made; attempt++) {
         try {
             made = await db.$transaction(async (tx) => {
-                const p = await tx.pledge.create({ data: { orgId, memberId: v.memberId, kind: v.kind, purpose: v.purpose, amountMinor: v.amountMinor, installments: v.installments, note: v.note, ref, createdById: a.userId } });
+                const p = await tx.pledge.create({ data: { orgId, memberId: v.memberId, kind: v.kind, purpose: v.purpose, amountMinor: v.amountMinor, installments: v.installments, note: v.note, anonymous: v.anonymous, ref, createdById: a.userId } });
                 const chargeIds: string[] = [];
                 for (let i = 0; i < v.installments; i++) {
                     const c = await tx.charge.create({
@@ -108,10 +116,11 @@ export async function createPledge(a: { userId: string; org: { id: string; name:
         await notifyMember(v.memberId, { orgId, kind: "update", topic: "payment", refId: made.paymentId, text: `נרשם תשלום של ${formatShekels(v.amountMinor)} על ${what} (${methodLabel(method, null)}). תודה! הקבלה שמורה בארנק.`, href: `/pay/receipt/${made.paymentId}` });
     } else if (v.notify) {
         const spread = v.installments > 1 ? `, ב-${v.installments} תשלומים חודשיים` : "";
-        await notifyMember(v.memberId, { orgId, kind: "action", topic: "charge", refId: made.chargeIds[0], text: `${what} · ${formatShekels(v.amountMinor)}${spread}. תשלום ראשון עד ${ilDate(firstOf(dates[0]))}`, href: `/pay/${orgId}`, actionLabel: "לתשלום" });
+        // A thank-you, not a demand (synagogue-tools 3).
+        await notifyMember(v.memberId, { orgId, kind: "action", topic: "charge", refId: made.chargeIds[0], text: `תודה על ${what}, ${formatShekels(v.amountMinor)}${spread}. אפשר לשלם מהארנק כשנוח לכם`, href: `/pay/${orgId}`, actionLabel: "לתשלום עכשיו" });
         const link = await db.orgUser.findUnique({ where: { memberId: v.memberId }, include: { user: { include: { contacts: true } } } });
         const email = link ? emailOf(link.user.contacts) : null;
-        if (email) await sendEmail(email, `${what} · ${a.org.name}`, `${what}\nסכום: ${formatShekels(v.amountMinor)}${spread}\nתשלום ראשון עד ${ilDate(firstOf(dates[0]))}\nאפשר לשלם בכרטיס החבר שבארנק.`).catch(() => undefined);
+        if (email) await sendEmail(email, `תודה מ${a.org.name}`, `תודה על ${what}, ${formatShekels(v.amountMinor)}${spread}.\nאפשר לשלם בכרטיס החבר שבארנק, כשנוח לכם.`).catch(() => undefined);
     }
     return { id: made.id };
 }

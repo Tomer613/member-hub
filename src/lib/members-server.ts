@@ -98,7 +98,7 @@ export async function loadMemberRows(orgId: string, packId: string, onlyLinkId?:
             balance += v.leftMinor;
             if (c.disputes.length) disputes++;
             // A debt only once its last day to pay has passed (as in the kupa and the member's "כספים").
-            else if (v.due.toISOString().slice(0, 10) < ilToday) owed += v.leftMinor;
+            else if (!v.gift && v.due.toISOString().slice(0, 10) < ilToday) owed += v.leftMinor;
         }
         const home = homes[0] ?? null;
         const name = `${m?.firstName || link.user.firstName || ""} ${m?.lastName || link.user.lastName || ""}`.trim() || "חבר/ה";
@@ -190,13 +190,14 @@ export async function fileCharges(orgId: string, memberId: string): Promise<File
     const homes = await db.householdMember.findMany({ where: { orgId, memberId, isPayer: true, OR: [{ endsOn: null }, { endsOn: { gte: now } }] }, select: { householdId: true } });
     const rows = await db.charge.findMany({
         where: { orgId, voidedAt: null, OR: [{ memberId }, ...(homes.length ? [{ householdId: { in: homes.map((h) => h.householdId) } }] : [])] },
-        include: { ...chargeInclude, disputes: { where: { status: "open" }, select: { id: true, reason: true, openedBySide: true }, take: 1 } },
+        include: { ...chargeInclude, pledge: { select: { anonymous: true } }, disputes: { where: { status: "open" }, select: { id: true, reason: true, openedBySide: true }, take: 1 } },
         orderBy: { createdAt: "desc" },
     });
     return rows.flatMap((c) => {
         const v = chargeView(toChargeIn(c));
         const d = c.disputes[0] ?? null;
-        return v ? [{ ...v, createdAt: c.createdAt.toISOString(), disputeId: d?.id ?? null, disputeReason: d?.reason ?? null, disputeSide: d?.openedBySide ?? null }] : [];
+        // "בעילום שם": staff screens do not show what it was (synagogue-tools 33).
+        return v ? [{ ...v, description: c.pledge?.anonymous ? "חיוב פרטי" : v.description, createdAt: c.createdAt.toISOString(), disputeId: d?.id ?? null, disputeReason: d?.reason ?? null, disputeSide: d?.openedBySide ?? null }] : [];
     });
 }
 

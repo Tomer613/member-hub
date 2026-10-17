@@ -11,7 +11,7 @@ const nameOf = (m: { firstName: string; lastName: string } | null, fallback: str
 export async function loadMovements(orgId: string, take = 300): Promise<Movement[]> {
     const pays = await db.payment.findMany({
         where: { orgId, status: "succeeded" },
-        include: { member: { select: { firstName: true, lastName: true } }, allocations: { include: { charge: { select: { description: true, kind: true } } } } },
+        include: { member: { select: { firstName: true, lastName: true } }, allocations: { include: { charge: { select: { description: true, kind: true, pledge: { select: { anonymous: true } } } } } } },
         orderBy: { receivedAt: "desc" },
         take,
     });
@@ -21,8 +21,8 @@ export async function loadMovements(orgId: string, take = 300): Promise<Movement
         return {
             id: p.id,
             at: p.receivedAt,
-            what: c ? `${kindLabel(c.kind)} · ${c.description}${more}` : "תשלום",
-            who: nameOf(p.member, p.payerName),
+            what: c ? (c.pledge?.anonymous ? `תרומה${more}` : `${kindLabel(c.kind)} · ${c.description}${more}`) : "תשלום",
+            who: p.allocations.some((x) => x.charge.pledge?.anonymous) ? "בעילום שם" : nameOf(p.member, p.payerName),
             amountMinor: p.amountMinor,
             dir: "in" as const,
             status: p.source === "app" ? ("בדרך" as const) : ("נקלט" as const),
@@ -33,7 +33,7 @@ export async function loadMovements(orgId: string, take = 300): Promise<Movement
 // Open charges whose last day to pay has passed (board D-MemberFinance: before that it is not a debt), and who
 // owes them: a member, or a household.
 export async function pastDue(orgId: string) {
-    const charges = await db.charge.findMany({ where: { orgId, voidedAt: null }, include: chargeInclude });
+    const charges = await db.charge.findMany({ where: { orgId, voidedAt: null, pledgeId: null }, include: chargeInclude });
     const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem" }).format(new Date());
     let owedMinor = 0;
     const members = new Set<string>();

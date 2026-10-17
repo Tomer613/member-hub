@@ -37,8 +37,8 @@ export function installmentDates(firstIso: string, n: number): string[] {
 export const chargeTitle = (kind: string, purpose: string, i: number, n: number) =>
     `${kindLabel(kind)} · ${purpose}${n > 1 ? ` (${i + 1} מתוך ${n})` : ""}`;
 
-export type PledgeInput = { memberId: string; kind: string; purpose: string; amount: string; installments: string; first: string; note: string; paidNow: boolean; method: string; notify: boolean };
-export type PledgeValues = { memberId: string; kind: PledgeKind; purpose: string; amountMinor: number; installments: number; first: string; note: string | null; paidNow: boolean; notify: boolean };
+export type PledgeInput = { memberId: string; kind: string; purpose: string; amount: string; installments: string; first: string; note: string; paidNow: boolean; method: string; notify: boolean; anonymous: boolean };
+export type PledgeValues = { memberId: string; kind: PledgeKind; purpose: string; amountMinor: number; installments: number; first: string; note: string | null; paidNow: boolean; notify: boolean; anonymous: boolean };
 
 export function readPledge(input: PledgeInput, today: string): { ok: true; value: PledgeValues } | { ok: false; error: string } {
     if (!input.memberId) return { ok: false, error: "בחרו מי תרם או נדר." };
@@ -56,33 +56,36 @@ export function readPledge(input: PledgeInput, today: string): { ok: true; value
     if (!input.paidNow && (!/^\d{4}-\d{2}-\d{2}$/.test(input.first) || input.first < today)) return { ok: false, error: "תאריך התשלום צריך להיות היום או אחריו." };
     const note = input.note.trim();
     if ([...note].length > NOTE_MAX) return { ok: false, error: `ההערה ארוכה מ-${NOTE_MAX} תווים.` };
-    return { ok: true, value: { memberId: input.memberId, kind, purpose, amountMinor: amount, installments: n, first: input.paidNow ? today : input.first, note: note || null, paidNow: input.paidNow, notify: input.notify } };
+    return { ok: true, value: { memberId: input.memberId, kind, purpose, amountMinor: amount, installments: n, first: input.paidNow ? today : input.first, note: note || null, paidNow: input.paidNow, notify: input.notify, anonymous: !!input.anonymous } };
 }
 
-export type PledgeStatus = "paid" | "installments" | "late" | "open" | "cancelled";
+// Charity is an invitation, not a collection (hebrew-calendar 40), so a pledge is never "late": it is open,
+// spread over installments, paid, or cancelled.
+export type PledgeStatus = "paid" | "installments" | "open" | "cancelled";
 export const STATUS_TEXT: Record<PledgeStatus, { text: string; tint: string }> = {
     paid: { text: "שולם", tint: "#D7F5E8" },
     installments: { text: "בתשלומים", tint: "#FFF6D1" },
-    late: { text: "באיחור", tint: "#FFE9E6" },
     open: { text: "פתוח", tint: "#FFFFFF" },
     cancelled: { text: "בוטל", tint: "#EEEAE2" },
 };
 
-// Cancelled (what was paid stays paid); else from its charges: paid in full; something past due; spread and partly paid; or still waiting.
-export function pledgeStatus(parts: { leftMinor: number; due: Date }[], cancelled: boolean, now: Date): PledgeStatus {
+export function pledgeStatus(parts: { leftMinor: number }[], cancelled: boolean): PledgeStatus {
     if (cancelled) return "cancelled";
-    const open = parts.filter((p) => p.leftMinor > 0);
-    if (!open.length) return "paid";
-    // Late from the day after the due day.
-    if (open.some((p) => p.due.getTime() + 86_400_000 <= now.getTime())) return "late";
+    if (!parts.some((p) => p.leftMinor > 0)) return "paid";
     return parts.length > 1 ? "installments" : "open";
 }
 
 export const FILTERS = [
     { value: "all", label: "הכל" },
     { value: "open", label: "פתוחים" },
-    { value: "late", label: "באיחור" },
+    { value: "paid", label: "שולמו" },
 ] as const;
 export type PledgeFilter = (typeof FILTERS)[number]["value"];
 export const readFilter = (v: unknown): PledgeFilter => (FILTERS.some((f) => f.value === v) ? (v as PledgeFilter) : "all");
-export const inFilter = (s: PledgeStatus, f: PledgeFilter) => f === "all" || (f === "late" ? s === "late" : s === "late" || s === "installments" || s === "open");
+export const inFilter = (s: PledgeStatus, f: PledgeFilter) => f === "all" || (f === "paid" ? s === "paid" : s === "installments" || s === "open");
+
+// "בעילום שם" (synagogue-tools 33).
+export const ANON = "בעילום שם";
+
+// Quick amounts for the gabbai's fast entry (synagogue-tools 3), in agorot.
+export const QUICK_AMOUNTS = [1_800, 3_600, 18_000, 36_000, 50_000, 100_000];

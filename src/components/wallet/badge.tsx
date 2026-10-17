@@ -26,7 +26,7 @@ type Props = {
     pay: { label: string; href: string } | null;
     labels: { id: string; name: string; color: string; granted: string }[];
 };
-export type TileView = { kind: "money" | "manage" | "messages" | "activities" | "inquiries"; href: string; label: string; sub: string };
+export type TileView = { kind: "money" | "manage" | "messages" | "activities" | "inquiries" | "prayers"; href: string; label: string; sub: string };
 
 // Each tile keeps one tint and icon (board D-Badge).
 const TILE_LOOK: Record<TileView["kind"], { tint: string; icon: string }> = {
@@ -34,6 +34,7 @@ const TILE_LOOK: Record<TileView["kind"], { tint: string; icon: string }> = {
     manage: { tint: "#E3DDFF", icon: "M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z" },
     messages: { tint: "#CFF0FC", icon: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" },
     activities: { tint: "#FFE0EC", icon: "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" },
+    prayers: { tint: "#FFF1D6", icon: "M12 7v5l3 2M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z" },
     inquiries: { tint: "#D7F5E8", icon: "M4 4h16v12H8l-4 4zM8 9h8M8 12h5" },
 };
 

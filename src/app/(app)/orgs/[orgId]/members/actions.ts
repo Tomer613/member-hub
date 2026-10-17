@@ -46,7 +46,7 @@ export async function sendReminders(orgId: string, linkIds: string[]): Promise<B
             continue;
         }
         const link = await db.orgUser.findUniqueOrThrow({ where: { id: r.linkId! }, select: { userId: true } });
-        const oldest = (await fileCharges(orgId, r.memberId)).filter((c) => c.state === "open" && !c.disputeId).sort((x, y) => x.due.getTime() - y.due.getTime())[0];
+        const oldest = (await fileCharges(orgId, r.memberId)).filter((c) => c.state === "open" && !c.disputeId && !c.gift).sort((x, y) => x.due.getTime() - y.due.getTime())[0];
         const text = `תזכורת: יש לך יתרה פתוחה של ${formatShekels(r.owedMinor)} ב${a.org.name}.`;
         await db.debtReminder.create({ data: { orgId, memberId: r.memberId, channel: "push", sentById: a.userId } });
         await notifyUsers([link.userId], { orgId, kind: "action", topic: "charge", refId: oldest?.id ?? null, text, href: `/pay/${orgId}`, actionLabel: "לתשלום" });

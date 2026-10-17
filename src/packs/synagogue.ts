@@ -12,7 +12,7 @@ export const synagoguePack: PackDefinition = {
     terms: { member: "חבר קהילה", household: "משפחה", admin: "גבאי", fund: "קרן" },
     modules: [
         "members", "households", "funds", "payments", "donations", "events", "requests",
-        "campaigns", "directory", "hebrew_calendar", "yahrzeit",
+        "campaigns", "directory", "hebrew_calendar", "yahrzeit", "prayers",
     ],
     customFields: [
         {

@@ -19,6 +19,7 @@ async function periodCharges(orgId: string, from: Date) {
             allocations: { select: { amountMinor: true, payment: { select: { status: true, method: true } } } },
             member: { select: { firstName: true, lastName: true } },
             household: { select: { label: true } },
+            pledge: { select: { anonymous: true } },
         },
         orderBy: [{ dueOn: "asc" }, { createdAt: "asc" }],
     });
@@ -60,9 +61,11 @@ export async function collectionRows(orgId: string, months: Months): Promise<str
     const rows = (await periodCharges(orgId, from)).map((c) => {
         const v = chargeView(toChargeIn(c));
         const due = v?.due ?? c.dueOn ?? c.createdAt;
-        const status = !v ? "בוטל" : v.state === "paid" ? "שולם" : v.state === "pending" ? "בתהליך" : dayKey(v.due) < today ? "בחוב" : "פתוח";
+        // A pledge is never a debt (hebrew-calendar 40), and "בעילום שם" hides who and what (synagogue-tools 33).
+        const status = !v ? "בוטל" : v.state === "paid" ? "שולם" : v.state === "pending" ? "בתהליך" : !c.pledgeId && dayKey(v.due) < today ? "בחוב" : "פתוח";
+        const anon = !!c.pledge?.anonymous;
         const methods = [...new Set(c.allocations.filter((a) => a.payment.status === "succeeded").map((a) => methodLabel(a.payment.method)))].join(" | ");
-        return [ilDate(due), c.member ? nameOf(c.member) : c.household ? `משק בית ${c.household.label}` : "", c.description, kindLabel(c.kind), shekels(c.amountMinor), shekels(v ? v.amountMinor - v.leftMinor : 0), shekels(v?.leftMinor ?? 0), status, methods];
+        return [ilDate(due), anon ? "בעילום שם" : c.member ? nameOf(c.member) : c.household ? `משק בית ${c.household.label}` : "", anon ? "תרומה" : c.description, kindLabel(c.kind), shekels(c.amountMinor), shekels(v ? v.amountMinor - v.leftMinor : 0), shekels(v?.leftMinor ?? 0), status, methods];
     });
     return [["לתשלום עד", "חבר", "חיוב", "סוג", "סכום", "שולם", "נשאר", "סטטוס", "אמצעי תשלום"], ...rows];
 }
@@ -70,7 +73,7 @@ export async function collectionRows(orgId: string, months: Months): Promise<str
 // "חובות פתוחים": who owes past-due money, since when, and the last reminder.
 export async function debtRows(orgId: string): Promise<string[][]> {
     const charges = await db.charge.findMany({
-        where: { orgId, voidedAt: null },
+        where: { orgId, voidedAt: null, pledgeId: null },
         include: { ...chargeInclude, member: { select: { id: true, firstName: true, lastName: true, phone: true } }, household: { select: { id: true, label: true } } },
     });
     const today = ilToday();
@@ -105,8 +108,8 @@ export async function receiptRows(orgId: string, months: Months): Promise<string
     const from = monthStartUtc(monthKeys(new Date(), months)[0]);
     const pays = await db.payment.findMany({
         where: { orgId, status: "succeeded", receiptNo: { not: null }, receivedAt: { gte: from } },
-        include: { member: { select: { firstName: true, lastName: true } } },
+        include: { member: { select: { firstName: true, lastName: true } }, allocations: { select: { charge: { select: { pledge: { select: { anonymous: true } } } } } } },
         orderBy: { receiptNo: "asc" },
     });
-    return [["מספר קבלה", "תאריך", "שולם על ידי", "סכום", "אמצעי תשלום"], ...pays.map((p) => [String(p.receiptNo), ilDate(p.receivedAt), nameOf(p.member, p.payerName), shekels(p.amountMinor), methodLabel(p.method)])];
+    return [["מספר קבלה", "תאריך", "שולם על ידי", "סכום", "אמצעי תשלום"], ...pays.map((p) => [String(p.receiptNo), ilDate(p.receivedAt), p.allocations.some((a) => a.charge.pledge?.anonymous) ? "בעילום שם" : nameOf(p.member, p.payerName), shekels(p.amountMinor), methodLabel(p.method)])];
 }

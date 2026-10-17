@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { chargeTitle, inFilter, installmentDates, pledgeStatus, readFilter, readPledge, splitAmount, type PledgeInput } from "./donations.ts";
 
-const base: PledgeInput = { memberId: "m1", kind: "pledge", purpose: "תיקון ספר תורה", amount: "1800", installments: "3", first: "2026-10-20", note: "", paidNow: false, method: "cash", notify: true };
+const base: PledgeInput = { memberId: "m1", kind: "pledge", purpose: "תיקון ספר תורה", amount: "1800", installments: "3", first: "2026-10-20", note: "", paidNow: false, method: "cash", notify: true, anonymous: false };
 const today = "2026-10-17";
 
 test("split adds up exactly", () => {
@@ -36,18 +36,15 @@ test("reading the form", () => {
     assert.ok(paid.ok && paid.value.first === today);
 });
 
-test("status from the charges", () => {
-    const now = new Date("2026-10-17T12:00:00Z");
-    const d = (iso: string) => new Date(`${iso}T00:00:00Z`);
-    assert.equal(pledgeStatus([{ leftMinor: 0, due: d("2026-10-01") }], false, now), "paid");
-    assert.equal(pledgeStatus([{ leftMinor: 100, due: d("2026-10-01") }], false, now), "late");
-    assert.equal(pledgeStatus([{ leftMinor: 100, due: d("2026-10-30") }], false, now), "open");
-    assert.equal(pledgeStatus([{ leftMinor: 0, due: d("2026-10-01") }, { leftMinor: 100, due: d("2026-11-01") }], false, now), "installments");
-    assert.equal(pledgeStatus([], true, now), "cancelled");
-    assert.equal(pledgeStatus([{ leftMinor: 0, due: d("2026-10-01") }], true, now), "cancelled");
+test("status from the charges: never late", () => {
+    assert.equal(pledgeStatus([{ leftMinor: 0 }], false), "paid");
+    assert.equal(pledgeStatus([{ leftMinor: 100 }], false), "open");
+    assert.equal(pledgeStatus([{ leftMinor: 0 }, { leftMinor: 100 }], false), "installments");
+    assert.equal(pledgeStatus([], true), "cancelled");
+    assert.equal(pledgeStatus([{ leftMinor: 0 }], true), "cancelled");
     assert.equal(inFilter("installments", "open"), true);
     assert.equal(inFilter("paid", "open"), false);
-    assert.equal(inFilter("open", "late"), false);
-    assert.equal(readFilter("late"), "late");
-    assert.equal(readFilter("x"), "all");
+    assert.equal(inFilter("paid", "paid"), true);
+    assert.equal(readFilter("paid"), "paid");
+    assert.equal(readFilter("late"), "all");
 });

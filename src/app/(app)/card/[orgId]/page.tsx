@@ -8,6 +8,7 @@ import { badgeWords, crowdText, roleLabel } from "@/lib/wallet";
 import { Badge, type TileView } from "@/components/wallet/badge";
 import { memberInquiryCounts } from "@/lib/inquiries-server";
 import { openActivityCount } from "@/lib/activities-server";
+import { hasPrayers } from "@/lib/prayers-server";
 import { sendDueYahrzeitReminders } from "@/lib/yahrzeit-server";
 import { accountShown, moneySummary, moneyTileText, nextLine, nextRenewal, noticeText } from "@/lib/billing/account";
 import { currentHome, ensureMember, memberCharges } from "@/lib/billing/member-money";
@@ -49,6 +50,7 @@ export default async function CardPage({ params }: { params: Promise<{ orgId: st
     const tiles: TileView[] = [{ kind: "money", href: `/card/${org.id}/money`, label: "כספים", sub: moneyTileText(money) }];
     tiles.push({ kind: "messages", href: `/card/${org.id}/messages`, label: "הודעות", sub: unread === 1 ? "הודעה אחת חדשה" : unread > 1 ? `${unread} הודעות חדשות` : "מה ההנהלה כתבה" });
     tiles.push({ kind: "activities", href: `/card/${org.id}/activities`, label: "פעילויות", sub: acts.mine === 1 ? "נרשמתם לפעילות אחת" : acts.mine > 1 ? `נרשמתם ל-${acts.mine} פעילויות` : acts.coming === 1 ? "פעילות אחת בקרוב" : acts.coming > 1 ? `${acts.coming} פעילויות בקרוב` : "מה קורה בארגון" });
+    if (hasPrayers(org.packId)) tiles.push({ kind: "prayers", href: `/card/${org.id}/prayers`, label: "תפילות", sub: "זמני השבוע וזמני שבת" });
     tiles.push({ kind: "inquiries", href: `/card/${org.id}/inquiries`, label: "פניות", sub: asked.answered === 1 ? "תשובה אחת חדשה" : asked.answered > 1 ? `${asked.answered} תשובות חדשות` : asked.open === 1 ? "פנייה אחת פתוחה" : asked.open > 1 ? `${asked.open} פניות פתוחות` : "שאלה או בקשה להנהלה" });
     if (admin) tiles.push({ kind: "manage", href: `/orgs/${org.id}`, label: "ניהול הארגון", sub: requests === 1 ? "בקשת הצטרפות אחת" : requests > 1 ? `${requests} בקשות הצטרפות` : "סקירה, חיובים ובקשות" });
     const color = link.cardColor ?? org.brandColor ?? "#5B3DF5";

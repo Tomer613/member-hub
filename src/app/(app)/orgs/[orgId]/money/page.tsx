@@ -34,13 +34,15 @@ export default async function MoneyPage({ params, searchParams }: { params: Prom
         kupaNumbers(orgId),
         loadMovements(orgId),
         db.chargeDraft.findMany({ where: { orgId }, orderBy: { updatedAt: "desc" } }),
-        db.charge.findMany({ where: { orgId, voidedAt: null }, include: { ...chargeInclude, member: { select: { firstName: true, lastName: true } } }, orderBy: { dueOn: "asc" } }),
-        db.payment.findMany({ where: { orgId, status: "pending", source: "report" }, include: { member: true, allocations: { include: { charge: { select: { description: true } } } } }, orderBy: { createdAt: "asc" } }),
+        db.charge.findMany({ where: { orgId, voidedAt: null }, include: { ...chargeInclude, member: { select: { firstName: true, lastName: true } }, pledge: { select: { anonymous: true } } }, orderBy: { dueOn: "asc" } }),
+        db.payment.findMany({ where: { orgId, status: "pending", source: "report" }, include: { member: true, allocations: { include: { charge: { select: { description: true, pledge: { select: { anonymous: true } } } } } } }, orderBy: { createdAt: "asc" } }),
     ]);
     const name = (m: { firstName: string; lastName: string } | null) => (m ? `${m.firstName} ${m.lastName}`.trim() : "חבר/ה");
     const open = charges.flatMap((c) => {
         const v = chargeView(toChargeIn(c));
-        return v && v.state !== "paid" ? [{ ...v, who: name(c.member), untouched: v.leftMinor === v.amountMinor }] : [];
+        // "בעילום שם" (synagogue-tools 33): staff screens show neither who nor what.
+        const anon = !!c.pledge?.anonymous;
+        return v && v.state !== "paid" ? [{ ...v, who: anon ? "בעילום שם" : name(c.member), description: anon ? "תרומה" : v.description, untouched: v.leftMinor === v.amountMinor }] : [];
     });
     const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem" }).format(new Date());
     const now = new Date();
@@ -99,8 +101,8 @@ export default async function MoneyPage({ params, searchParams }: { params: Prom
                                 {reports.map((r) => (
                                     <li key={r.id} className="flex flex-wrap items-center gap-3 rounded-[16px] border-2 border-[var(--mh-ink)] bg-[var(--mh-ticket)] p-3">
                                         <span className="flex min-w-[200px] flex-1 flex-col">
-                                            <b>{name(r.member)} · <bdi>{formatShekels(r.amountMinor)}</bdi></b>
-                                            <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">{r.allocations.map((x) => x.charge.description).join(", ")} · {methodLabel(r.method, null)} · <bdi>{ilDate(r.receivedAt)}</bdi></span>
+                                            <b>{r.allocations.some((x) => x.charge.pledge?.anonymous) ? "בעילום שם" : name(r.member)} · <bdi>{formatShekels(r.amountMinor)}</bdi></b>
+                                            <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">{r.allocations.map((x) => (x.charge.pledge?.anonymous ? "תרומה" : x.charge.description)).join(", ")} · {methodLabel(r.method, null)} · <bdi>{ilDate(r.receivedAt)}</bdi></span>
                                             {r.note && <span className="text-[14px] font-semibold">״{r.note}״</span>}
                                             {r.proof && <a href={r.proof} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center self-start font-extrabold underline">לאישור שצורף</a>}
                                         </span>

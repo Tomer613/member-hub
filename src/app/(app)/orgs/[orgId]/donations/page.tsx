@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth/session-server";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { onColor } from "@/lib/color";
 import { FILTERS, inFilter, readFilter, STATUS_TEXT } from "@/lib/donations";
-import { donationsAdmin, loadPledges, pledgeNumbers, type PledgeRow } from "@/lib/donations-server";
+import { donationsAdmin, loadPledges, pledgeNumbers, seesAnonymous, type PledgeRow } from "@/lib/donations-server";
 import { formatShekels } from "@/lib/money";
 import { familyOptions } from "@/lib/yahrzeit-server";
 import { RecordForm } from "../money/forms";
@@ -36,7 +36,7 @@ export default async function DonationsPage({ params, searchParams }: { params: 
     const ink = onColor(color);
     const filter = readFilter(sp.f);
     const asked = typeof sp.e === "string" ? sp.e : null;
-    const [rows, members] = await Promise.all([loadPledges(orgId), familyOptions(orgId)]);
+    const [rows, members] = await Promise.all([loadPledges(orgId, await seesAnonymous(orgId, a.role)), familyOptions(orgId)]);
     const nums = await pledgeNumbers(orgId, rows);
     const picked = asked && asked !== "new" ? rows.find((r) => r.id === asked) ?? null : null;
     const shown = rows.filter((r) => inFilter(r.status, filter));
@@ -151,7 +151,7 @@ function Detail({ orgId, r, saved }: { orgId: string; r: PledgeRow; saved: strin
             <div className="flex flex-wrap items-start gap-2">
                 <span className="me-auto flex min-w-0 flex-col">
                     <h2 id="pd-h" className="m-0 font-display text-[22px] leading-tight">{r.kindText} · {r.purpose}</h2>
-                    <span className="font-bold text-[var(--mh-ink-soft)]">{r.name}</span>
+                    <span className="font-bold text-[var(--mh-ink-soft)]">{r.anonymous ? (r.realName ? <>{r.realName} · בעילום שם, רק אתם רואים את השם</> : "בעילום שם. את השם רואה רק הגזבר") : r.name}</span>
                 </span>
                 <span className={tag} style={{ background: s.tint }}>{s.text}</span>
             </div>
@@ -179,7 +179,7 @@ function Detail({ orgId, r, saved }: { orgId: string; r: PledgeRow; saved: strin
             {firstOpen && (
                 <div className="flex flex-col gap-2">
                     <span className="text-[14px] font-semibold text-[var(--mh-ink-soft)]">שילמו במזומן, בהעברה או בצ׳ק? רושמים כאן, והחבר מקבל קבלה בארנק.</span>
-                    <RecordForm chargeId={firstOpen.id} who={r.name} left={formatShekels(firstOpen.leftMinor)} leftValue={String(firstOpen.leftMinor / 100)} today={ilDay()} />
+                    <RecordForm chargeId={firstOpen.id} who={r.realName ?? r.name} left={formatShekels(firstOpen.leftMinor)} leftValue={String(firstOpen.leftMinor / 100)} today={ilDay()} />
                 </div>
             )}
             {r.status !== "cancelled" && r.status !== "paid" && <CancelPledge orgId={orgId} id={r.id} what={what} />}

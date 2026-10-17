@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import Link from "next/link";
+import { useMemo, useRef, useState, useTransition } from "react";
 import { RECORD_METHODS } from "@/lib/billing/account";
-import { MAX_INSTALLMENTS, NOTE_MAX, PLEDGE_KINDS, PURPOSE_MAX, splitAmount, type PledgeInput } from "@/lib/donations";
+import { MAX_INSTALLMENTS, NOTE_MAX, PLEDGE_KINDS, PURPOSE_MAX, QUICK_AMOUNTS, splitAmount, type PledgeInput } from "@/lib/donations";
 import { formatShekels, shekelsToMinor } from "@/lib/money";
 import { cancelPledgeForm, savePledge, type PledgeResult } from "./actions";
 
@@ -29,12 +30,25 @@ function Toggle({ on, onChange, title, line }: { on: boolean; onChange: (v: bool
     );
 }
 
-// "נדר חדש" (board D-ModSynDonations): who, what kind, for what, how much, and whether to spread it.
+// "נדר חדש" (board D-ModSynDonations), as the gabbai's fast entry (synagogue-tools 3): type a name and pick it,
+// an amount or a quick amount, Enter, and the form is ready for the next one.
 export function PledgeForm({ orgId, members, today, first, color, ink }: { orgId: string; members: { id: string; label: string }[]; today: string; first: string; color: string; ink: string }) {
     const router = useRouter();
-    const [v, setV] = useState<PledgeInput>({ memberId: "", kind: "pledge", purpose: "", amount: "", installments: "1", first, note: "", paidNow: false, method: "cash", notify: true });
+    const blank: PledgeInput = { memberId: "", kind: "pledge", purpose: "", amount: "", installments: "1", first, note: "", paidNow: false, method: "cash", notify: true, anonymous: false };
+    const [v, setV] = useState<PledgeInput>(blank);
+    const [who, setWho] = useState("");
     const [res, setRes] = useState<PledgeResult | null>(null);
     const [busy, run] = useTransition();
+    const whoRef = useRef<HTMLInputElement>(null);
+    // Two members with the same name get a number, so the typed name always picks one person.
+    const names = useMemo(() => {
+        const seen = new Map<string, number>();
+        return members.map((m) => {
+            const k = (seen.get(m.label) ?? 0) + 1;
+            seen.set(m.label, k);
+            return { id: m.id, label: k > 1 ? `${m.label} (${k})` : m.label };
+        });
+    }, [members]);
     const set = <K extends keyof PledgeInput>(k: K, x: PledgeInput[K]) => { setV((o) => ({ ...o, [k]: x })); setRes(null); };
     const kind = PLEDGE_KINDS.find((k) => k.value === v.kind) ?? PLEDGE_KINDS[1];
     const n = Number(v.installments);
@@ -43,18 +57,29 @@ export function PledgeForm({ orgId, members, today, first, color, ink }: { orgId
     const save = () => run(async () => {
         const r = await savePledge(orgId, v);
         setRes(r);
-        if (r.id) router.replace(`/orgs/${orgId}/donations?e=${r.id}&saved=${v.paidNow ? "paid" : n > 1 ? `n${n}` : "1"}`);
+        if (r.id) {
+            // Ready for the next one: the same kind and purpose stay (a Shabbat's aliyot are typed in a row).
+            setV({ ...blank, kind: v.kind, purpose: v.purpose });
+            setWho("");
+            router.refresh();
+            whoRef.current?.focus();
+        }
     });
     return (
         <form className={panel} aria-labelledby="pl-h" onSubmit={(e) => { e.preventDefault(); save(); }}>
             <h2 id="pl-h" className="m-0 font-display text-[22px] leading-tight">נדר חדש</h2>
+            {res?.ok && (
+                <p role="status" className="m-0 rounded-[14px] bg-[#D7F5E8] p-3 font-bold text-[#00573A]">
+                    {res.ok} {res.id && <Link href={`/orgs/${orgId}/donations?e=${res.id}`} className="font-extrabold underline">לפרטים</Link>}
+                </p>
+            )}
             <fieldset disabled={busy} className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
                 <label className="flex flex-col gap-2">
                     <span className={label}>מי</span>
-                    <select value={v.memberId} onChange={(e) => set("memberId", e.target.value)} className={field} required>
-                        <option value="">בחרו חבר</option>
-                        {members.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
-                    </select>
+                    <input ref={whoRef} value={who} list="pl-members" autoComplete="off" placeholder="מקלידים שם ובוחרים" className={field} required
+                        onChange={(e) => { const t = e.target.value; setWho(t); set("memberId", names.find((m) => m.label === t)?.id ?? ""); }} />
+                    <datalist id="pl-members">{names.map((m) => <option key={m.id} value={m.label} />)}</datalist>
+                    {who && !v.memberId && <span className={hint}>בחרו שם מהרשימה.</span>}
                 </label>
                 <div className="flex flex-col gap-2">
                     <span className={label} id="pk-l">סוג</span>
@@ -66,10 +91,21 @@ export function PledgeForm({ orgId, members, today, first, color, ink }: { orgId
                     <span className={label}>על מה</span>
                     <input value={v.purpose} onChange={(e) => set("purpose", e.target.value)} maxLength={PURPOSE_MAX} placeholder={kind.hint} className={field} required />
                 </label>
-                <label className="flex flex-col gap-2">
-                    <span className={label}>סכום (₪)</span>
-                    <input value={v.amount} onChange={(e) => set("amount", e.target.value)} inputMode="decimal" dir="ltr" placeholder="0" className={`${field} text-start`} required />
-                </label>
+                <div className="flex flex-col gap-2">
+                    <label className="flex flex-col gap-2">
+                        <span className={label}>סכום (₪)</span>
+                        <input value={v.amount} onChange={(e) => set("amount", e.target.value)} inputMode="decimal" dir="ltr" placeholder="0" className={`${field} text-start`} required />
+                    </label>
+                    <div className="flex flex-wrap gap-2" aria-label="סכומים מהירים">
+                        {QUICK_AMOUNTS.map((q) => (
+                            <button key={q} type="button" onClick={() => set("amount", String(q / 100))} aria-pressed={minor === q}
+                                className={`inline-flex min-h-10 items-center rounded-full border-2 border-[var(--mh-ink)] px-3 text-[14px] font-extrabold transition-[background-color,transform] duration-150 hover:-translate-y-px ${minor === q ? "bg-[var(--mh-ink)] text-white" : "bg-white hover:bg-[var(--mh-ticket)]"}`}>
+                                <bdi>{formatShekels(q)}</bdi>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                <Toggle on={v.anonymous} onChange={(x) => set("anonymous", x)} title="בעילום שם" line="בכל רשימה ודוח יופיע &quot;בעילום שם&quot;. את השם רואים רק הגזבר, או המנהל הראשי כשאין גזבר" />
                 <Toggle on={v.paidNow} onChange={(x) => setV((o) => ({ ...o, paidNow: x, installments: x ? "1" : o.installments }))} title="הכסף כבר התקבל" line="במזומן, בהעברה או בצ׳ק. נרשם כשולם, עם קבלה" />
                 {v.paidNow ? (
                     <div className="flex flex-col gap-2">
@@ -95,7 +131,7 @@ export function PledgeForm({ orgId, members, today, first, color, ink }: { orgId
                                 <input type="date" dir="ltr" value={v.first} min={today} onChange={(e) => set("first", e.target.value)} className={`${field} text-start`} required />
                             </label>
                         </div>
-                        <Toggle on={v.notify} onChange={(x) => set("notify", x)} title="הודעה לחבר" line="באפליקציה ובמייל, עם קישור לתשלום" />
+                        <Toggle on={v.notify} onChange={(x) => set("notify", x)} title="הודעה לחבר" line="הודעת תודה באפליקציה ובמייל, עם קישור לתשלום" />
                     </>
                 )}
                 <label className="flex flex-col gap-2">

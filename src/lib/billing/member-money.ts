@@ -48,6 +48,7 @@ export const toChargeIn = (c: ChargeRow): ChargeIn => ({
     voidedAt: c.voidedAt,
     allocations: c.allocations.map((a) => ({ amountMinor: a.amountMinor, status: a.payment.status })),
     allowPartial: c.allowPartial,
+    gift: !!c.pledgeId,
 });
 
 export async function memberCharges(orgId: string, memberId: string): Promise<ChargeView[]> {
